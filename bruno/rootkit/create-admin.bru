@@ -1,0 +1,22 @@
+meta {
+  name: create-admin
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseurl}}/api/rootkit/create-admin
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: r99a36d29-c85a-480c-8714-1945ce610d0e-e30e1321-a754-499b-a689-ea59d082b549
+}
+
+body:json {
+  {
+    "email": "saikksub@gmail.com",
+    "password": "ui12345"
+  }
+}

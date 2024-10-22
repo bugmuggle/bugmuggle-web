@@ -8,6 +8,20 @@
       "when": 1729602057462,
       "tag": "0000_harsh_galactus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1729607928908,
+      "tag": "0001_fat_loki",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1729607965485,
+      "tag": "0002_wakeful_thanos",
+      "breakpoints": true
     }
   ]
 }

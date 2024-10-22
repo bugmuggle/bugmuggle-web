@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     database: true
   },
   runtimeConfig: {
+    rootkitToken: '',
     adminEmail: '',
     adminPassword: '',
   }
