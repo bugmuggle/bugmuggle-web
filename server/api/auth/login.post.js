@@ -1,5 +1,6 @@
 import { useValidatedBody, z } from "h3-zod";
 import { users } from "@/server/database/schema";
+import bcrypt from 'bcryptjs'
 
 const validationSchema = z.object({
   email: z.string().email(),
@@ -19,7 +20,23 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    console.log(queryUser)
+    const user = queryUser[0]
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordValid) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid password',
+      })
+    }
+
+    await setUserSession(event, {
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    })
+
     return true
   } catch (error) {
     console.error(error)

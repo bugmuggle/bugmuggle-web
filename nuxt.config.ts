@@ -15,5 +15,8 @@ export default defineNuxtConfig({
     rootkitToken: '',
     adminEmail: '',
     adminPassword: '',
+    session: {
+      maxAge: 60 * 60 * 24 * 7 // 1 week
+    }
   }
 })

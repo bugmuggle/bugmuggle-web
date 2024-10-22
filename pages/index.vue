@@ -5,13 +5,11 @@
 </template>
 
 <script setup>
+const { loggedIn } = useUserSession()
+
 onMounted(() => {
-  appInit()
-    .then(() => {
-      // navigateTo('/login')
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  if (!loggedIn.value) {
+    navigateTo('/login')
+  }
 })
 </script>
