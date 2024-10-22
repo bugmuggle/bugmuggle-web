@@ -8,3 +8,17 @@ export const users = sqliteTable('users', {
   password: text('password').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
+
+export const projects = sqliteTable('projects', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  createdBy: integer('created_by').notNull().references(() => users.id),
+})
+
+export const projectMembers = sqliteTable('project_members', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projects.id),
+  userId: integer('user_id').notNull().references(() => users.id),
+})

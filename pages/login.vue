@@ -6,11 +6,22 @@
         <UDivider>Login to access your account</UDivider>
         <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
           <UFormGroup label="Email" name="email">
-            <UInput v-model="state.email" :disabled="isLoading" size="lg" />
+            <UInput
+              v-model="state.email"
+              :disabled="isLoading"
+              size="lg"
+              placeholder="Email"
+            />
           </UFormGroup>
 
           <UFormGroup label="Password" name="password">
-            <UInput v-model="state.password" type="password" :disabled="isLoading" size="lg" />
+            <UInput
+              v-model="state.password"
+              type="password"
+              :disabled="isLoading"
+              size="lg"
+              placeholder="Password"
+            />
           </UFormGroup>
 
           <UButton :disabled="isLoading" :loading="isLoading" type="submit" size="lg" block>
@@ -43,8 +54,8 @@ const schema = z.object({
 })
 
 const state = reactive({
-  email: 'saikksub@gmail.com',
-  password: 'ui12345',
+  email: '',
+  password: '',
 })
 
 const onSubmit = async (event) => {

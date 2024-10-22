@@ -8,8 +8,12 @@
 const { loggedIn } = useUserSession()
 
 onMounted(() => {
-  if (!loggedIn.value) {
-    navigateTo('/login')
-  }
+  setTimeout(() => {
+    if (!loggedIn.value) {
+      navigateTo('/login')
+    } else {
+      navigateTo('/home')
+    }
+  }, 1500)
 })
 </script>
