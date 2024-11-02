@@ -1,6 +1,6 @@
 <template>
-  <NuxtLayout name="app">
-    <div class="w-full max-w-screen-xl mx-auto block space-y-3">
+  <NuxtLayout name="appv2">
+    <view-wrapper class="space-y-3 py-3">
       <UBreadcrumb
         :links="[
           {
@@ -31,7 +31,7 @@
           QA
         </UCard>
       </div>
-    </div>
+    </view-wrapper>
   </NuxtLayout>
 </template>
 

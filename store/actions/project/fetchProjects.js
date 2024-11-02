@@ -6,6 +6,8 @@ export default async function () {
     return 0
   }
 
+  // Clear existing projects and replace with new data
   this.projects = projects
+
   return projects.length
 }

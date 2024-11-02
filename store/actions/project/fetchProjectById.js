@@ -3,7 +3,7 @@ export default async function fetchProjectById (projectId) {
 
   this.isInit[projectId] = true
 
-  const ti = this.getProjects.findIndex(project => project.id === projectId)
+  const ti = this.projects.findIndex(x => x.id === +projectId)
 
   if (ti > -1) {
     this.projects[ti] = project

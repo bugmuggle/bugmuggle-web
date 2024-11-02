@@ -9,7 +9,8 @@
         :ui="{
           size: 'text-xs',
           font: 'font-regular',
-          inactive: 'dark:text-gray-200'
+          active: 'before:dark:bg-primary-500',
+          inactive: 'before:dark:text-gray-200'
         }"
         :links="taskMenu"
       />
@@ -23,7 +24,8 @@
         :ui="{
           size: 'text-xs',
           font: 'font-regular',
-          inactive: 'dark:text-gray-200'
+          active: 'dark:text-primary-500 before:dark:bg-primary-900',
+          inactive: 'before:dark:text-gray-200'
         }"
         :links="projectLinks"
       />
