@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="appv2">
+  <NuxtLayout name="app">
     <view-wrapper class="space-y-3 py-3">
       <h1 class="text-xl font-bold">
         Projects

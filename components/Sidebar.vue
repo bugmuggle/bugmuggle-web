@@ -43,12 +43,14 @@
 import { useProjectStore } from '@/store/project'
 
 const projectStore = useProjectStore()
+const route = useRoute()
 
 const projectLinks = computed(() => {
   return [
     ...projectStore.projects.map((project) => ({
     label: project.name,
-      to: `/app/project/${project.id}/channel`
+      to: `/app/project/${project.id}/chat`,
+      active: route.path.includes(`/app/project/${project.id}`)
     })),
     {
       label: 'Create Project',
@@ -64,4 +66,10 @@ const taskMenu = [
     to: '/app/project/create'
   },
 ]
+
+onMounted(() => {
+  if (!projectStore.isReady) {
+    projectStore.fetchProjects()
+  }
+})
 </script>

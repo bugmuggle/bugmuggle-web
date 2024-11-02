@@ -1,20 +1,9 @@
 <template>
   <NuxtLayout name="app">
-    <div class="w-full max-w-screen-xl mx-auto block space-y-3">
-      <UBreadcrumb
-        :links="[
-          {
-            label: 'Home',
-            to: '/home'
-          },
-          {
-            label: project?.name,
-            to: `/app/project/${projectId}`
-          }
-        ]"
-      />
+    <project-header />
+    <view-wrapper>
       <div class="space-y-3">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 h-10">
           <p class="text-lg">Variables</p>
           <div class="grow" />
           <UButton
@@ -46,7 +35,7 @@
           </template>
         </UTable>
       </div>
-    </div>
+    </view-wrapper>
   </NuxtLayout>
 </template>
 
