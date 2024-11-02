@@ -21,13 +21,22 @@
 </template>
 
 <script setup>
-import { useProjectStore } from '@/store/project'
+import { useChatStore } from '@/store/chat'
 
 useHead({
   title: 'Chat: BugMuggle'
 })
 
+const route = useRoute()
+const chatStore = useChatStore()
+
+const projectId = route.params.projectId
+
 definePageMeta({
   middleware: 'auth'
+})
+
+onMounted(() => {
+  chatStore.sendMessage('Hello, world!', projectId)
 })
 </script>

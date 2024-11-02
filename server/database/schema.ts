@@ -35,3 +35,12 @@ export const projectVariables = sqliteTable('project_variables', {
   projectId: integer('project_id').notNull().references(() => projects.id),
   variableId: integer('variable_id').notNull().references(() => variables.id),
 })
+
+export const messages = sqliteTable('messages', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  message: text('message').notNull(),
+  fromUserId: integer('from_user_id').notNull().references(() => users.id),
+  projectId: integer('project_id').notNull().references(() => projects.id),
+  toUserId: integer('to_user_id').references(() => users.id),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+})
