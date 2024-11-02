@@ -17,12 +17,12 @@
     </div>
 
     <div class="px-1 space-y-1">
-      <p class="text-xs text-gray-500 px-2">
+      <p class="text-sm text-gray-600 px-2">
         Projects
       </p>
       <UVerticalNavigation
         :ui="{
-          size: 'text-xs',
+          size: 'text-sm',
           font: 'font-regular',
           active: 'dark:text-primary-500 before:dark:bg-primary-900',
           inactive: 'before:dark:text-gray-200'
@@ -32,7 +32,7 @@
     </div>
 
     <div class="px-1 space-y-1">
-      <p class="text-xs text-gray-500 px-2">
+      <p class="text-sm text-gray-600 px-2">
         Direct Messages
       </p>
     </div>
