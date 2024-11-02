@@ -3,7 +3,7 @@
     <div class="w-full max-w-screen-xl mx-auto block space-y-3">
       <project-page-wrapper
         :project="project"
-        :slug="slug"
+        :project-id="projectId"
       >
         <div class="space-y-3">
           <div class="flex items-center gap-3">
@@ -63,7 +63,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { slug } = useRoute().params
+const { projectId } = useRoute().params
 
 const variableStore = useVariableStore()
 const projectStore = useProjectStore()
@@ -74,8 +74,8 @@ const columns = [
   { label: 'Actions', key: 'actions', sortable: false }
 ]
 
-const variables = computed(() => variableStore.getVariables(+slug))
-const project = computed(() => projectStore.getProjects.find(project => project.id === +slug) || {})
+const variables = computed(() => variableStore.getVariables(+projectId))
+const project = computed(() => projectStore.getProjects.find(project => project.id === +projectId) || {})
 
 const onClickCopySource = (value) => {
   clipSource.value = value
@@ -87,14 +87,14 @@ const onClickCopySource = (value) => {
 }
 
 const onClickDelete = (id) => {
-  variableStore.deleteVariable(slug, id)
+  variableStore.deleteVariable(projectId, id)
 }
 
 const onClickAddVariable = () => {
   modal.open(
     AddVariable,
     {
-      projectId: slug,
+      projectId,
       onSuccess: () => {
         toast.add({
           title: 'Variable added',
@@ -106,8 +106,8 @@ const onClickAddVariable = () => {
 }
 
 onMounted(() => {
-  if (!variableStore.isProjectVariablesReady(slug)) {
-    variableStore.fetchVariables(slug)
+  if (!variableStore.isProjectVariablesReady(projectId)) {
+    variableStore.fetchVariables(projectId)
   }
 })
 </script>

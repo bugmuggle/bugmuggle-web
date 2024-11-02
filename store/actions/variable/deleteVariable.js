@@ -1,5 +1,5 @@
 export default async function (projectId, variableId) {
-  await $fetch('/api/app/project/variables/' + projectId + '/delete', {
+  await $fetch('/api/app/app//project/variables/' + projectId + '/delete', {
     method: 'DELETE',
     body: {
       variableId

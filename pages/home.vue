@@ -1,10 +1,14 @@
 <template>
-  <NuxtLayout name="app">
-    <view-wrapper class="space-y-12 py-12">
+  <NuxtLayout name="appv2">
+    <view-wrapper class="space-y-3 py-3">
+      <h1 class="text-xl font-bold">
+        Projects
+      </h1>
+
       <div v-if="projectStore.isReady && projectStore.projects.length > 0" class="w-full max-w-screen-xl mx-auto">
         <div class="flex items-start justify-start gap-6 flex-wrap">
           <div v-for="project in projectStore.projects" :key="'home-project-selection-' + project.id">
-            <NuxtLink :to="`/project/v/${project.id}/`">
+            <NuxtLink :to="`/app/project/${project.id}/channel`">
               <UCard class="w-[300px] h-[150px]">
                 {{ project.name }}
               </UCard>
