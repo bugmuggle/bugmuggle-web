@@ -29,6 +29,20 @@
       "when": 1729618739415,
       "tag": "0003_damp_sue_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1730547376570,
+      "tag": "0004_breezy_gravity",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1730548291099,
+      "tag": "0005_nappy_dracula",
+      "breakpoints": true
     }
   ]
 }

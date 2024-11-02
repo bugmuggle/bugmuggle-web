@@ -25,6 +25,7 @@
   "dependencies": {
     "@iconify-json/fluent": "^1.2.4",
     "@pinia/nuxt": "^0.5.5",
+    "@vueuse/nuxt": "^11.2.0",
     "bcryptjs": "^2.4.3",
     "drizzle-orm": "^0.35.3",
     "h3-zod": "^0.5.3",

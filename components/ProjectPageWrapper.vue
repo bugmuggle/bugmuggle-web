@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 px-9">
     <UBreadcrumb
       :links="[
         {
@@ -19,14 +19,16 @@
 
     <div class="grid grid-cols-3 gap-3">
       <div class="col-span-1">
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-rectangle-stack" class="w-6 h-6" />
-              Variables
-            </div>
-          </template>
-        </UCard>
+        <NuxtLink class="block" :to="`/project/v/${slug}/variables`">
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-heroicons-rectangle-stack" class="w-6 h-6" />
+                Variables
+              </div>
+            </template>
+          </UCard>
+        </NuxtLink>
       </div>
 
       <div class="col-span-1">
@@ -52,16 +54,9 @@
       </div>
     </div>
 
-    <UBreadcrumb
-      :links="[
-        {
-          label: 'Channels',
-          to: `/project/v/${slug}`
-        }
-      ]"
-    />
-
-    <slot />
+    <div>
+      <slot />
+    </div>
   </div>
 </template>
 

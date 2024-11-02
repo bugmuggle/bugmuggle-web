@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     "@nuxthub/core",
     "nuxt-auth-utils",
     "@nuxt/image",
-    "@pinia/nuxt"
+    "@pinia/nuxt",
+    "@vueuse/nuxt"
   ],
   compatibilityDate: "2024-10-22",
   hub: {

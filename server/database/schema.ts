@@ -22,3 +22,16 @@ export const projectMembers = sqliteTable('project_members', {
   projectId: integer('project_id').notNull().references(() => projects.id),
   userId: integer('user_id').notNull().references(() => users.id),
 })
+
+export const variables = sqliteTable('variables', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  value: text('value').notNull(),
+  isSecret: integer('is_secret', { mode: 'boolean' }).notNull().default(false),
+})
+
+export const projectVariables = sqliteTable('project_variables', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projects.id),
+  variableId: integer('variable_id').notNull().references(() => variables.id),
+})

@@ -4,4 +4,5 @@
   </NuxtLayout>
 
   <UNotifications />
+  <UModals />
 </template>
