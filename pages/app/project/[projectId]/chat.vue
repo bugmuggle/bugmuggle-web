@@ -4,17 +4,22 @@
       <div class="absolute top-0 right-0 left-0 h-12">
         <project-header />
       </div>
-      <div class="absolute top-12 right-0 bottom-32 left-0 overflow-auto">
-        <div class="h-full flex flex-col">
+      <div class="absolute top-12 right-0 bottom-32 left-0 overflow-auto" ref="chatContainer">
+        <div class="h-full flex flex-col px-3">
           <div class="grow" />
 
-          <div v-for="item in 100" :key="'asdfasfasdf' + item" class="h-12 p-6">
-            Message {{ item }}
-          </div>
+          <chat-bubble
+            v-for="message in messages"
+            :key="`chat-bubble-${message.id}-${message.projectId}`"
+            :message="message.message"
+            :from-user="message.fromUser"
+            :created-at="formatDateMinimal(message.createdAt)"
+          />
+
         </div>
       </div>
-      <div class="absolute right-0 bottom-0 left-0 h-32 bg-gray-800">
-        hello
+      <div class="absolute right-0 bottom-0 left-0 h-32 border-t border-gray-700">
+        <chat-compose />
       </div>
     </resolve-wrapper>
   </NuxtLayout>
@@ -36,7 +41,18 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const chatContainer = ref(null)
+
+const messages = computed(() => (chatStore.getMessages || []).filter((x) => x.projectId === +projectId))
+
 onMounted(() => {
-  chatStore.sendMessage('Hello, world!', projectId)
+  chatStore.fetchMessages({ projectId })
+  
+  // Scroll to bottom
+  nextTick(() => {
+    if (chatContainer.value) {
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+    }
+  })
 })
 </script>

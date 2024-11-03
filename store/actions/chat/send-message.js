@@ -8,7 +8,6 @@ export default async function sendMessage(message, projectId) {
     }
   })
 
-  console.log('newMessage', newMessage)
   this.messages.push(newMessage)
   return newMessage
 }
