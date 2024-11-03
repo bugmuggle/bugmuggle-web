@@ -18,7 +18,7 @@
 
         </div>
       </div>
-      <div class="absolute right-0 bottom-0 left-0 h-32 border-t border-gray-700">
+      <div class="absolute right-0 bottom-0 left-0 h-auto max-h-[500px] overflow-y-auto border-t border-gray-700 bg-gray-900">
         <chat-compose @sent="scrollToBottom" />
       </div>
     </resolve-wrapper>

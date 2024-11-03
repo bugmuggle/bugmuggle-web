@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-0 flex flex-col px-3 h-full pb-4">
-    <div class="flex items-center gap-3 h-12 py-3">
+    <div class="flex items-center gap-3 h-12 py-3 sticky top-0 bg-gray-900">
       <UButton
         icon="i-heroicons-bold"
         variant="ghost"
@@ -50,7 +50,7 @@
     <div class="px-3 cursor-text" @click="editor.commands.focus()">
       <TipTapEditorContent :editor="editor" />
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 sticky bottom-0 bg-gray-900">
       <div class="grow" />
       <UButton
         icon="i-heroicons-paper-airplane"
