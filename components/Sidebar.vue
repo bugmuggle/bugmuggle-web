@@ -7,12 +7,12 @@
     <div class="px-1 space-y-1 !-mt-3">
       <UVerticalNavigation
         :ui="{
-          size: 'text-xs',
+          size: 'text-sm',
           font: 'font-regular',
-          active: 'before:dark:bg-primary-500',
+          active: 'dark:text-primary-500 before:dark:bg-primary-900',
           inactive: 'before:dark:text-gray-200'
         }"
-        :links="taskMenu"
+        :links="appMenu"
       />
     </div>
 
@@ -40,6 +40,8 @@
         :ui="{
           size: 'text-sm',
           font: 'font-regular',
+          active: 'dark:text-primary-500 before:dark:bg-primary-900',
+          inactive: 'before:dark:text-gray-200'
         }"
         :links="dmLinks"
       />
@@ -68,7 +70,7 @@ const projectLinks = computed(() => {
   ]
 })
 
-const taskMenu = [
+const appMenu = [
   {
     label: 'My Tasks',
     icon: 'i-heroicons-check-circle',
@@ -82,7 +84,7 @@ const taskMenu = [
   {
     label: 'Settings',
     icon: 'i-heroicons-cog-6-tooth',
-    to: '/app/project/create'
+    to: '/app/settings'
   },
 ]
 
