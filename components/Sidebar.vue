@@ -35,6 +35,14 @@
       <p class="text-sm text-gray-600 px-2">
         Direct Messages
       </p>
+
+      <UVerticalNavigation
+        :ui="{
+          size: 'text-sm',
+          font: 'font-regular',
+        }"
+        :links="dmLinks"
+      />
     </div>
   </div>
 </template>
@@ -63,9 +71,33 @@ const projectLinks = computed(() => {
 const taskMenu = [
   {
     label: 'My Tasks',
+    icon: 'i-heroicons-check-circle',
+    to: '/app/project/create'
+  },
+  {
+    label: 'All Members',
+    icon: 'i-heroicons-users',
+    to: '/app/project/create'
+  },
+  {
+    label: 'Settings',
+    icon: 'i-heroicons-cog-6-tooth',
     to: '/app/project/create'
   },
 ]
+
+const dmLinks = computed(() => {
+  return [
+    {
+      label: 'Sai K K',
+      avatar: {
+        src: 'https://ipx.nuxt.com/s_16x16/gh_avatar/benjamincanac',
+        srcset: 'https://ipx.nuxt.com/s_32x32/gh_avatar/benjamincanac 2x',
+        alt: ''
+      }
+    }
+  ]
+})
 
 onMounted(() => {
   if (!projectStore.isReady) {
