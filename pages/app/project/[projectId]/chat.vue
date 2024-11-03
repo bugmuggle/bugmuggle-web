@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="absolute right-0 bottom-0 left-0 h-32 border-t border-gray-700">
-        <chat-compose />
+        <chat-compose @sent="scrollToBottom" />
       </div>
     </resolve-wrapper>
   </NuxtLayout>
@@ -45,14 +45,20 @@ const chatContainer = ref(null)
 
 const messages = computed(() => (chatStore.getMessages || []).filter((x) => x.projectId === +projectId))
 
-onMounted(() => {
-  chatStore.fetchMessages({ projectId })
-  
-  // Scroll to bottom
+const scrollToBottom = () => {
   nextTick(() => {
     if (chatContainer.value) {
       chatContainer.value.scrollTop = chatContainer.value.scrollHeight
     }
   })
+}
+
+onMounted(() => {
+  chatStore.fetchMessages({ projectId })
+    .finally(() => {
+      scrollToBottom()
+    })
+  
+  scrollToBottom()
 })
 </script>

@@ -67,6 +67,8 @@ import { useChatStore } from '@/store/chat'
 import StarterKit from '@tiptap/starter-kit'
 const { $TipTapEditor } = useNuxtApp()
 
+const emits = defineEmits(['sent'])
+
 const projectId = useRoute().params.projectId
 const editor = ref(null)
 const chatStore = useChatStore()
@@ -76,6 +78,7 @@ const sendMessage = () => {
   chatStore.sendMessage(message, projectId)
     .finally(() => {
       editor.value.commands.clearContent()
+      emits('sent')
     })
 }
 
