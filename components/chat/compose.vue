@@ -53,7 +53,7 @@
 
     </div>
     <div class="px-3 cursor-text" @click="editor.commands.focus()">
-      <TipTapEditorContent :editor="editor" @keydown.enter.prevent="onKeyDown" />
+      <TipTapEditorContent :editor="editor" />
     </div>
     <div class="flex items-center gap-3 sticky bottom-0 bg-gray-900">
       <div class="grow" />
@@ -71,6 +71,7 @@
 <script setup>
 import { useChatStore } from '@/store/chat'
 import StarterKit from '@tiptap/starter-kit'
+import { Extension } from '@tiptap/core'
 const { $TipTapEditor } = useNuxtApp()
 
 const emits = defineEmits(['sent'])
@@ -78,6 +79,14 @@ const emits = defineEmits(['sent'])
 const projectId = useRoute().params.projectId
 const editor = ref(null)
 const chatStore = useChatStore()
+
+const DisableEnter = Extension.create({
+  addKeyboardShortcuts() {
+    return {
+      Enter: () => true,
+    };
+  },
+});
 
 const sendMessage = () => {
   const message = editor.value.getHTML()
@@ -91,7 +100,10 @@ const sendMessage = () => {
 onMounted(() => {
   editor.value = new $TipTapEditor({
     content: '',
-    extensions: [StarterKit]
+    extensions: [
+      StarterKit,
+      DisableEnter
+    ]
   })
 })
 
@@ -105,17 +117,6 @@ const onClickCompose = (e) => {
 onBeforeUnmount(() => {
   editor.value.destroy()
 })
-
-const onKeyDown = (e) => {
-  // Allow new line if Ctrl or Cmd is pressed
-  if (e.ctrlKey || e.metaKey) {
-    editor.value.commands.enter()
-    return
-  }
-  
-  // Otherwise send the message
-  sendMessage()
-}
 </script>
 
 <style>
