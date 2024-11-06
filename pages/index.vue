@@ -5,15 +5,15 @@
 </template>
 
 <script setup>
-const { loggedIn } = useUserSession()
 
 onMounted(() => {
-  setTimeout(() => {
-    if (!loggedIn.value) {
-      navigateTo('/login')
-    } else {
-      navigateTo('/home')
-    }
-  }, 1500)
+  initAppData()
+    .then((preferences) => {
+      if (preferences.lastVisitedProjectId) {
+        navigateTo(`/app/project/${preferences.lastVisitedProjectId}/chat`)
+      } else {
+        navigateTo('/app/project/create')
+      }
+    })
 })
 </script>

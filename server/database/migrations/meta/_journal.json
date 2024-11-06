@@ -57,6 +57,13 @@
       "when": 1730569670495,
       "tag": "0007_lonely_legion",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1730859062650,
+      "tag": "0008_lovely_killraven",
+      "breakpoints": true
     }
   ]
 }
