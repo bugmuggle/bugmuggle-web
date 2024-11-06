@@ -12,8 +12,9 @@
             v-for="message in messages"
             :key="`chat-bubble-${message.id}-${message.projectId}`"
             :message="message.message"
-            :from-user="message.fromUser"
+            :from-user-id="message.fromUserId"
             :created-at="formatDateMinimal(message.createdAt)"
+            @open-profile="onViewProfile"
           />
 
         </div>
@@ -27,11 +28,13 @@
 
 <script setup>
 import { useChatStore } from '@/store/chat'
+import ViewProfile from '@/components/ViewProfile.vue'
 
 useHead({
   title: 'Chat: BugMuggle'
 })
 
+const slideover = useSlideover()
 const route = useRoute()
 const chatStore = useChatStore()
 
@@ -51,6 +54,10 @@ const scrollToBottom = () => {
       chatContainer.value.scrollTop = chatContainer.value.scrollHeight
     }
   })
+}
+
+const onViewProfile = (userId) => {
+  slideover.open(ViewProfile, { userId })
 }
 
 onMounted(() => {

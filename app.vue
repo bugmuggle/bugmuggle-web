@@ -5,4 +5,5 @@
 
   <UNotifications />
   <UModals />
+  <USlideovers />
 </template>

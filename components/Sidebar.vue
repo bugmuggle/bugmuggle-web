@@ -92,11 +92,7 @@ const dmLinks = computed(() => {
   return [
     {
       label: 'Sai K K',
-      avatar: {
-        src: 'https://ipx.nuxt.com/s_16x16/gh_avatar/benjamincanac',
-        srcset: 'https://ipx.nuxt.com/s_32x32/gh_avatar/benjamincanac 2x',
-        alt: ''
-      }
+      icon: 'i-heroicons-user'
     }
   ]
 })
