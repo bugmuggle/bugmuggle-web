@@ -5,6 +5,7 @@ import fetchProjectById from './actions/project/fetchProjectById'
 
 export const useProjectStore = defineStore('project', () => {
   const projects = ref([])
+  const members = ref({})
   const isReady = ref(false)
   const isInit = ref({})
 
@@ -12,5 +13,20 @@ export const useProjectStore = defineStore('project', () => {
 
   const getInit = computed(() => isInit.value)
 
-  return { projects, isInit, isReady, getProjects, fetchProjects, createProject, fetchProjectById, getInit }
+  const getMembersByProjectId = (projectId) => {
+    return members.value[projectId] || []
+  }
+
+  return {
+    projects,
+    isInit,
+    isReady,
+    getProjects,
+    getInit,
+    members,
+    fetchProjects,
+    createProject,
+    fetchProjectById,
+    getMembersByProjectId
+  }
 })
