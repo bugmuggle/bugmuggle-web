@@ -71,6 +71,13 @@
       "when": 1730866796903,
       "tag": "0009_flowery_lady_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1730878204216,
+      "tag": "0010_violet_mac_gargan",
+      "breakpoints": true
     }
   ]
 }

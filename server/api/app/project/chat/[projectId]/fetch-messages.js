@@ -20,6 +20,7 @@ export default defineAppEventHandler(async (event) => {
         id: users.id,
         firstName: users.firstName,
         lastName: users.lastName,
+        displayName: users.displayName
       },
     })
     .from(messages)

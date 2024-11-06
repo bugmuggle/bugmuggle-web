@@ -6,6 +6,10 @@ export const users = sqliteTable('users', {
   lastName: text('last_name'),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
+  doingTheseDays: text('doing_these_days'),
+  displayName: text('display_name'),
+  position: text('position'),
+  phoneNumber: text('phone_number'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
 

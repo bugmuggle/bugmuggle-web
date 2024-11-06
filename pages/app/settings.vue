@@ -8,30 +8,44 @@
 
         <UCard>
           <template #header>
-            Your Profile
+            <div class="flex items-center justify-between">
+              <p class="text-base">
+                Your Profile
+              </p>
+              <UButton size="sm" label="Save" @click="onClickSaveProfile" />
+            </div>
           </template>
 
           <div class="grid grid-cols-12 gap-6">
             <div class="col-span-8">
-              <UForm class="space-y-3">
-                <UFormGroup label="Full Name">
-                  <UInput size="xl" />
-                </UFormGroup>
+              <UForm :schema="schema" :state="state" class="space-y-3" @submit="onSubmit">
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="col-span-1">
+                    <UFormGroup label="First Name">
+                      <UInput v-model="state.firstName" size="xl" />
+                    </UFormGroup>
+                  </div>
+                  <div class="col-span-1">
+                    <UFormGroup label="Last Name">
+                      <UInput v-model="state.lastName" size="xl" />
+                    </UFormGroup>
+                  </div>
+                </div>
 
                 <UFormGroup label="What are you doing these days?">
-                  <UInput size="xl" />
+                  <UInput v-model="state.doingTheseDays" size="xl" />
                 </UFormGroup>
 
                 <UFormGroup label="Display Name">
-                  <UInput size="xl" />
+                  <UInput v-model="state.displayName" size="xl" />
                 </UFormGroup>
 
                 <UFormGroup label="Position/Title">
-                  <UInput size="xl" />
+                  <UInput v-model="state.position" size="xl" />
                 </UFormGroup>
 
                 <UFormGroup label="Phone Number">
-                  <UInput size="xl" />
+                  <UInput v-model="state.phoneNumber" size="xl" />
                 </UFormGroup>
               </UForm>
             </div>
@@ -81,3 +95,55 @@
     </div>
   </NuxtLayout>
 </template>
+
+<script setup>
+import { z } from 'zod'
+import { useUserStore } from '@/store/user'
+
+const storeUser = useUserStore()
+
+const schema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  doingTheseDays: z.string().optional(),
+  displayName: z.string().optional(),
+  position: z.string().optional(),
+  phoneNumber: z.string().optional(),
+})
+
+const state = reactive({
+  firstName: '',
+  lastName: '',
+  doingTheseDays: '',
+  displayName: '',
+  position: '',
+  phoneNumber: '',
+})
+
+const onSubmit = (e) => {
+  console.log(e.data)
+}
+
+const syncFormData = () => {
+  state.firstName = storeUser.getProfile.firstName || ''
+  state.lastName = storeUser.getProfile.lastName || ''
+  state.doingTheseDays = storeUser.getProfile.doingTheseDays || ''
+  state.displayName = storeUser.getProfile.displayName || ''
+  state.position = storeUser.getProfile.position || ''
+  state.phoneNumber = storeUser.getProfile.phoneNumber || ''
+}
+
+const onClickSaveProfile = () => {
+  storeUser.updateProfile(state)
+}
+
+onMounted(() => {
+  let unwatch = null
+  unwatch = watch(() => storeUser.isReady, (value) => {
+    if (value) {
+      syncFormData()
+      unwatch && unwatch()
+    }
+  }, { immediate: true })
+})
+</script>

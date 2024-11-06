@@ -17,6 +17,10 @@ export default defineAppEventHandler(async (event) => {
       id: users.id,
       firstName: users.firstName,
       lastName: users.lastName,
+      doingTheseDays: users.doingTheseDays,
+      displayName: users.displayName,
+      position: users.position,
+      phoneNumber: users.phoneNumber,
       email: users.email,
     })
     .from(users)

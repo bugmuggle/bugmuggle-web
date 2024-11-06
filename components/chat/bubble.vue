@@ -18,7 +18,12 @@
           class="tracking-wider font-bold first-letter:uppercase"
           @click="onClickOpenProfile"
         >
-          {{ fromUser?.firstName || 'Unknown' }} {{ fromUser?.lastName || '' }}
+          <span v-if="fromUser?.displayName">
+            {{ fromUser?.displayName }}
+          </span>
+          <span v-else>
+            {{ fromUser?.firstName || 'Unknown' }} {{ fromUser?.lastName || '' }}
+          </span>
         </button>
         <p class="text-xs text-gray-500">
           {{ createdAt }}

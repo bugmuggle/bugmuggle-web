@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import setLastVisitedProjectId from './actions/user/setLastVisitedProjectId'
+import updateProfile from './actions/user/updateProfile'
 
 export const useUserStore = defineStore('user', () => {
   const preferences = ref({})
@@ -11,6 +12,10 @@ export const useUserStore = defineStore('user', () => {
       return ''
     }
 
+    if (profile.value.displayName) {
+      return profile.value.displayName
+    }
+
     if (!profile.value.firstName && !profile.value.lastName) {
       return profile.value.email
     }
@@ -18,5 +23,17 @@ export const useUserStore = defineStore('user', () => {
     return `${profile.value.firstName} ${profile.value.lastName}`
   })
 
-  return { preferences, profile, setLastVisitedProjectId, fullName, isReady }
+  const getProfile = computed(() => {
+    return profile.value
+  })
+
+  return {
+    preferences,
+    profile,
+    setLastVisitedProjectId,
+    fullName,
+    isReady,
+    getProfile,
+    updateProfile
+  }
 })
