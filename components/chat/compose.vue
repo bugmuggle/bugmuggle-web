@@ -53,7 +53,7 @@
 
     </div>
     <div class="px-3 cursor-text" @click="editor.commands.focus()">
-      <TipTapEditorContent :editor="editor" />
+      <TipTapEditorContent :editor="editor" @keydown.enter.prevent="onKeyDown" />
     </div>
     <div class="flex items-center gap-3 sticky bottom-0 bg-gray-900">
       <div class="grow" />
@@ -105,6 +105,17 @@ const onClickCompose = (e) => {
 onBeforeUnmount(() => {
   editor.value.destroy()
 })
+
+const onKeyDown = (e) => {
+  // Allow new line if Ctrl or Cmd is pressed
+  if (e.ctrlKey || e.metaKey) {
+    editor.value.commands.enter()
+    return
+  }
+  
+  // Otherwise send the message
+  sendMessage()
+}
 </script>
 
 <style>

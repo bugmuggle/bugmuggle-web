@@ -13,6 +13,7 @@
             :key="`chat-bubble-${message.id}-${message.projectId}`"
             :message="message.message"
             :from-user-id="message.fromUserId"
+            :from-user="message.user"
             :created-at="formatDateMinimal(message.createdAt)"
             @open-profile="onViewProfile"
           />

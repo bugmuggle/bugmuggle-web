@@ -1,5 +1,5 @@
 import { eq, lt, and, desc } from 'drizzle-orm'
-import { messages } from '@/server/database/schema'
+import { messages, users } from '@/server/database/schema'
 
 export default defineAppEventHandler(async (event) => {
   const { projectId } = event.context.params
@@ -9,8 +9,21 @@ export default defineAppEventHandler(async (event) => {
   const { limit = 50, offsetId } = body
 
   const queryMessages = await useDrizzle()
-    .select()
+    .select({
+      id: messages.id,
+      message: messages.message,
+      createdAt: messages.createdAt,
+      projectId: messages.projectId,
+      fromUserId: messages.fromUserId,
+      toUserId: messages.toUserId,
+      user: {
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+      },
+    })
     .from(messages)
+    .leftJoin(users, eq(messages.fromUserId, users.id))
     .where(
       and(
         eq(messages.projectId, projectId),

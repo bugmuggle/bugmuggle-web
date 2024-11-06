@@ -18,7 +18,7 @@
           class="tracking-wider font-bold first-letter:uppercase"
           @click="onClickOpenProfile"
         >
-          {{ fullName }}
+          {{ fromUser?.firstName || 'Unknown' }} {{ fromUser?.lastName || '' }}
         </button>
         <p class="text-xs text-gray-500">
           {{ createdAt }}
@@ -47,6 +47,10 @@ const props = defineProps({
   createdAt: {
     type: String,
     default: () => ''
+  },
+  fromUser: {
+    type: Object,
+    default: () => {}
   }
 })
 
