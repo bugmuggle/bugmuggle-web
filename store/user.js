@@ -4,6 +4,7 @@ import setLastVisitedProjectId from './actions/user/setLastVisitedProjectId'
 export const useUserStore = defineStore('user', () => {
   const preferences = ref({})
   const profile = ref({})
+  const isReady = ref(false)
 
   const fullName = computed(() => {
     if (!profile.value) {
@@ -17,5 +18,5 @@ export const useUserStore = defineStore('user', () => {
     return `${profile.value.firstName} ${profile.value.lastName}`
   })
 
-  return { preferences, profile, setLastVisitedProjectId, fullName }
+  return { preferences, profile, setLastVisitedProjectId, fullName, isReady }
 })

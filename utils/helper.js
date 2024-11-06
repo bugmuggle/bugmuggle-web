@@ -12,5 +12,7 @@ export const initAppData = async () => {
   userStore.preferences = responsePreferences
   userStore.profile = responsePreferences.user
 
+  userStore.isReady = true
+
   return userStore.preferences
 }

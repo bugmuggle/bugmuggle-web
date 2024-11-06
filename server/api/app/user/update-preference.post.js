@@ -6,7 +6,6 @@ export default defineAppEventHandler(async (event) => {
   const db = useDrizzle()
 
   const body = await readBody(event)
-  console.log(body)
 
   const queryPreferenceByKey = await db
     .select()
