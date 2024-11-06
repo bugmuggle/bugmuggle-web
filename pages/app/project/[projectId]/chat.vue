@@ -5,7 +5,7 @@
         <project-header />
       </div>
       <div class="absolute top-12 right-0 bottom-32 left-0 overflow-auto" ref="chatContainer">
-        <div class="h-full flex flex-col px-3">
+        <div class="h-full flex flex-col px-3 py-2 pt-6">
           <div class="grow" />
 
           <chat-bubble
