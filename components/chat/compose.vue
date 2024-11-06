@@ -83,7 +83,14 @@ const chatStore = useChatStore()
 const DisableEnter = Extension.create({
   addKeyboardShortcuts() {
     return {
-      Enter: () => true,
+      Enter: ({ editor }) => {
+        sendMessage()
+        return true
+      },
+      'Mod-Enter': ({ editor }) => {
+        editor.commands.insertContent('<br>')
+        return true
+      },
     };
   },
 });
