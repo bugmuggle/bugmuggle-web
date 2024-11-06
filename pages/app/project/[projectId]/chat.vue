@@ -9,7 +9,7 @@
           <div class="grow" />
 
           <chat-bubble
-            v-for="message in messages"
+            v-for="message in [...messages]"
             :key="`chat-bubble-${message.id}-${message.projectId}`"
             :message="message.message"
             :from-user-id="message.fromUserId"
@@ -47,7 +47,7 @@ definePageMeta({
 
 const chatContainer = ref(null)
 
-const messages = computed(() => (chatStore.getMessages || []).filter((x) => x.projectId === +projectId))
+const messages = computed(() => (chatStore.getMessages || []).filter((x) => x.projectId === +projectId).reverse())
 
 const scrollToBottom = () => {
   nextTick(() => {

@@ -79,7 +79,7 @@ const appMenu = [
   {
     label: 'All Members',
     icon: 'i-heroicons-users',
-    to: '/app/project/create'
+    to: '/app/project/members'
   },
   {
     label: 'Settings',
