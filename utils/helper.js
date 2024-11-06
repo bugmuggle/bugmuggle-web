@@ -10,6 +10,7 @@ export const initAppData = async () => {
 
   const responsePreferences = await $fetch('/api/app/user/init')
   userStore.preferences = responsePreferences
+  userStore.profile = responsePreferences.user
 
   return userStore.preferences
 }

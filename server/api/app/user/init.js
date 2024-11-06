@@ -1,4 +1,4 @@
-import { userPreferences, projects } from '@/server/database/schema'
+import { userPreferences, projects, users } from '@/server/database/schema'
 import { eq } from 'drizzle-orm'
 
 export default defineAppEventHandler(async (event) => {
@@ -6,6 +6,7 @@ export default defineAppEventHandler(async (event) => {
   const db = useDrizzle()
 
   const result = {
+    user: null,
     lastVisitedProjectId: null,
   }
 
@@ -30,6 +31,20 @@ export default defineAppEventHandler(async (event) => {
     if (queryProjects.length > 0) {
       result.lastVisitedProjectId = queryProjects[0].id
     }
+  }
+
+  const queryUser = await db
+    .select({
+      id: users.id,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+    })
+    .from(users)
+    .where(eq(users.id, user.id))
+
+  if (queryUser.length > 0) {
+    result.user = queryUser[0]
   }
 
   return result
