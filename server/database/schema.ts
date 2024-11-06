@@ -28,6 +28,7 @@ export const projectMembers = sqliteTable('project_members', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   projectId: integer('project_id').notNull().references(() => projects.id),
   userId: integer('user_id').notNull().references(() => users.id),
+  role: text('role').notNull().default('member'),
 })
 
 export const variables = sqliteTable('variables', {

@@ -1,0 +1,1 @@
+ALTER TABLE `project_members` ADD `role` text DEFAULT 'member' NOT NULL;
