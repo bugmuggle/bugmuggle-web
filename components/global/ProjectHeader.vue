@@ -32,6 +32,10 @@ const menu = [
   {
     label: 'Files',
     to: `/app/project/${projectId}/files`,
+  },
+  {
+    label: 'Tasks',
+    to: `/app/project/${projectId}/tasks`,
   }
 ]
 
