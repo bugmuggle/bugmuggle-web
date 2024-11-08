@@ -11,7 +11,8 @@ export default defineNuxtConfig({
   ],
   compatibilityDate: "2024-10-22",
   hub: {
-    database: true
+    database: true,
+    blob: true
   },
   runtimeConfig: {
     rootkitToken: '',
