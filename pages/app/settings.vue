@@ -148,7 +148,7 @@ const onClickSaveProfile = () => {
 
 const onSelectProfilePhoto = (event) => {
   const file = event.target.files[0]
-  const maxSize = 2 * 1024 * 1024 // 2MB in bytes
+  const maxSize = 1 * 1024 * 1024 // 2MB in bytes
   
   if (file && file.size > maxSize) {
     toast.add({
@@ -158,6 +158,8 @@ const onSelectProfilePhoto = (event) => {
     event.target.value = '' // Reset the input
     return
   }
+
+  storeUser.setProfilePic(file)
 }
 
 const onClickUploadPhoto = () => {
