@@ -4,9 +4,15 @@
       <project-header />
       <view-wrapper>
         <div class="w-full max-w-screen-md mx-auto block px-3 py-6 space-y-3">
-          <h1 class="text-2xl font-bold">
-            Members
-          </h1>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl font-bold">
+              Members
+            </h1>
+
+            <div class="grow" />
+
+            <UButton icon="i-heroicons-plus" color="gray" label="Add Member" />
+          </div>
 
           <UTable :rows="members" :columns="columns">
             <template #actions-header>
@@ -35,13 +41,18 @@
 </template>
 
 <script setup>
+import { useProjectStore } from '@/store/project'
+
 useHead({
-  title: 'Files: BugMuggle'
+  title: 'Members: BugMuggle'
 })
 
 definePageMeta({
   middleware: 'auth'
 })
+
+const projectStore = useProjectStore()
+const projectId = useRoute().params.projectId
 
 const columns = ref([
   {
@@ -66,8 +77,6 @@ const columns = ref([
   }
 ])
 
-const members = ref([])
-
 const actionMenuMember = [
   [
     {
@@ -81,4 +90,15 @@ const actionMenuMember = [
     }
   ]
 ]
+
+const members = computed(() => {
+  return (projectStore.getMembersByProjectId(projectId) || [])
+    .map(x => ({ ...x, name: `${x.firstName} ${x.lastName}`}))
+})
+
+onMounted(() => {
+  if (!projectStore.isInit['members-' + projectId]) {
+    projectStore.fetchMembers(projectId)
+  }
+})
 </script>
