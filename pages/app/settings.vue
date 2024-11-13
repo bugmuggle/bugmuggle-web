@@ -51,8 +51,15 @@
             </div>
 
             <div class="col-span-4 space-y-3">
-              <div class="h-56 aspect-square bg-gray-800 rounded-lg" />
-              <UButton block label="Upload Photo" variant="outline" size="xl" />
+              <div class="relative h-56 aspect-square bg-gray-800 rounded-lg">
+                <div class="absolute inset-0">
+                  <input ref="profilePhotoInput" type="file" accept="image/*" class="hidden" @change="onSelectProfilePhoto" />
+                </div>
+                <div class="flex items-center justify-center h-full">
+                  <UIcon name="heroicons:user" class="w-10 h-10 text-gray-400" />
+                </div>
+              </div>
+              <UButton block label="Upload Photo" variant="outline" size="xl" @click="onClickUploadPhoto" />
               <UButton block label="Clear Photo" variant="ghost" color="gray" size="xl" />
             </div>
           </div>
@@ -101,6 +108,7 @@ import { z } from 'zod'
 import { useUserStore } from '@/store/user'
 
 const storeUser = useUserStore()
+const toast = useToast()
 
 const schema = z.object({
   firstName: z.string().optional(),
@@ -119,6 +127,7 @@ const state = reactive({
   position: '',
   phoneNumber: '',
 })
+const profilePhotoInput = ref(null)
 
 const onSubmit = (e) => {
   console.log(e.data)
@@ -135,6 +144,26 @@ const syncFormData = () => {
 
 const onClickSaveProfile = () => {
   storeUser.updateProfile(state)
+}
+
+const onSelectProfilePhoto = (event) => {
+  const file = event.target.files[0]
+  const maxSize = 1 * 1024 * 1024 // 2MB in bytes
+  
+  if (file && file.size > maxSize) {
+    toast.add({
+      title: 'File size must be less than 2MB',
+      color: 'red'
+    })
+    event.target.value = '' // Reset the input
+    return
+  }
+
+  storeUser.setProfilePic(file)
+}
+
+const onClickUploadPhoto = () => {
+  profilePhotoInput.value.click()
 }
 
 onMounted(() => {
