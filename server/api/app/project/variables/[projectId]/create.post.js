@@ -7,7 +7,7 @@ const schema = z.object({
   isSecret: z.boolean().optional(),
 })
 
-export default defineEventHandler(async (event) => {
+export default defineAppEventHandler(async (event) => {
   const projectId = event.context.params.projectId
   const body = await readBody(event)
   const data = schema.parse(body)

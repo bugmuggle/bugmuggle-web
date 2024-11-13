@@ -36,6 +36,10 @@ const menu = [
   {
     label: 'Tasks',
     to: `/app/project/${projectId}/tasks`,
+  },
+  {
+    label: 'Members',
+    to: `/app/project/${projectId}/members`,
   }
 ]
 

@@ -77,11 +77,6 @@ const appMenu = [
     to: '/app/project/create'
   },
   {
-    label: 'All Members',
-    icon: 'i-heroicons-users',
-    to: '/app/project/members'
-  },
-  {
     label: 'Settings',
     icon: 'i-heroicons-cog-6-tooth',
     to: '/app/settings'
