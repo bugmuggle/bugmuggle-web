@@ -1,18 +1,59 @@
-import { variables, projectVariables } from '@/server/database/schema'
+import { projectMembers, users } from '@/server/database/schema'
+import { eq, or } from 'drizzle-orm'
 import { z } from 'zod'
+import { nanoid } from 'nanoid'
+import bcrypt from 'bcryptjs'
 
 const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
   email: z.string().min(1, 'Email is required'),
   role: z.enum(['admin', 'member']).optional(),
 })
 
-export default defineEventHandler(async (event) => {
+export default defineAppEventHandler(async (event) => {
+  const { user } = event.context
+
   const projectId = event.context.params.projectId
   const body = await readBody(event)
   const data = schema.parse(body)
+
+  const queryUserIsOwner = await useDrizzle().select().from(projectMembers)
+    .where(eq(projectMembers.userId), user.id)
+    .where(
+      or(
+        eq(projectMembers.role, 'owner'),
+        eq(projectMembers.role, 'admin')
+      )
+    )
+
+  if (!queryUserIsOwner.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Only project owners or admins invite members'
+    })
+  }
+
+  let newUserPassword = null
+  let targetUser = null
+  const queryUser = await useDrizzle().select().from(users).where(eq(users.email, data.email))
+
+  if (!queryUser.length) {
+    // Create user
+    newUserPassword = nanoid()
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hashSync(newUserPassword, salt)
+
+    const newQueryUser = await useDrizzle().insert(users).values({
+      email: data.email,
+      password: hashedPassword,
+      createdAt: new Date(),
+    }).returning()
+
+    targetUser = newQueryUser[0]
+  } else {
+    targetUser = queryUser[0]
+  }
   
-  const queryMember = await useDrizzle().select().from(members).where(eq(members.email, data.email))
+  const queryMember = await useDrizzle().select().from(projectMembers).where(eq(projectMembers.id, targetUser.id))
 
   if (queryMember.length > 0) {
     throw createError({
@@ -21,11 +62,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const newQueryMember = await useDrizzle().insert(members).values(data).returning()
-  const member = newQueryMember[0]
-
-  await useDrizzle().insert(projectMembers).values({
+  const newQueryMember = await useDrizzle().insert(projectMembers).values({
     projectId,
-    memberId: member.id
-  })
+    userId: targetUser.id,
+    role: data.role || 'member'
+  }).returning()
+
+
+  const result = newQueryMember[0]
+
+  if (newUserPassword) {
+    result.password = newUserPassword
+  }
+
+  return result
 })

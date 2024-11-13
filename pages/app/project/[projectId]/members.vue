@@ -11,7 +11,7 @@
 
             <div class="grow" />
 
-            <UButton icon="i-heroicons-plus" color="gray" label="Add Member" />
+            <UButton icon="i-heroicons-plus" color="gray" label="Add Member" @click="onClickAddMember" />
           </div>
 
           <UTable :rows="members" :columns="columns">
@@ -41,6 +41,7 @@
 </template>
 
 <script setup>
+import AddMember from '@/components/dialogs/AddMember'
 import { useProjectStore } from '@/store/project'
 
 useHead({
@@ -50,6 +51,8 @@ useHead({
 definePageMeta({
   middleware: 'auth'
 })
+
+const modal = useModal()
 
 const projectStore = useProjectStore()
 const projectId = useRoute().params.projectId
@@ -93,8 +96,14 @@ const actionMenuMember = [
 
 const members = computed(() => {
   return (projectStore.getMembersByProjectId(projectId) || [])
-    .map(x => ({ ...x, name: `${x.firstName} ${x.lastName}`}))
+    .map(x => ({ ...x, name: `${x.firstName || ''} ${x.lastName || ''}`}))
 })
+
+const onClickAddMember = function () {
+  modal.open(AddMember, {
+    projectId
+  })
+}
 
 onMounted(() => {
   if (!projectStore.isInit['members-' + projectId]) {

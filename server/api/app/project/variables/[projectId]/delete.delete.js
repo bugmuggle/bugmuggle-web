@@ -5,7 +5,7 @@ const schema = z.object({
   variableId: z.number().min(0, 'Variable ID is required')
 })
 
-export default defineEventHandler(async (event) => {
+export default defineAppEventHandler(async (event) => {
   const projectId = event.context.params.projectId
   const body = await readBody(event)
   const data = schema.parse(body)
