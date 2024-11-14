@@ -42,6 +42,16 @@ export const getFirstProjectFromAllProjects = async (db) => {
 }
 
 /**
+ * Get all projects
+ * @param {import('drizzle-orm').Database} db - Database instance
+ * @returns {Promise<Array>} Array of projects
+ */
+export const getAllProjects = async (db) => {
+  const queryProjects = await db.select().from(projects)
+  return queryProjects
+}
+
+/**
  * Creates a sample project and assigns the user as owner
  * @param {import('drizzle-orm').Database} db - Database instance
  * @param {number} userId - ID of the user creating the project
@@ -112,7 +122,7 @@ export const getProjectMembers = async (db, projectId) => {
  * @param {number} userId - ID of the user
  * @returns {Promise<Array>} Array of projects
  */
-export const getProjectsByUserId = async (db, userId) => {
+export const getProjectsByUserId = async (db, user) => {
   const queryProjects = await db.select({
     id: projects.id,
     name: projects.name,
@@ -122,12 +132,18 @@ export const getProjectsByUserId = async (db, userId) => {
   })
     .from(projectMembers)
     .leftJoin(projects, eq(projects.id, projectMembers.projectId))
-    .where(eq(projectMembers.userId, userId))
+    .where(eq(projectMembers.userId, user.id))
     .$dynamic()
 
   return queryProjects
 }
 
+/**
+ * Get the first project by user ID
+ * @param {import('drizzle-orm').Database} db - Database instance
+ * @param {number} userId - ID of the user
+ * @returns {Promise<Object|null>} First project found or null if none exists
+ */
 export const getFirstProjectByUserId = async (db, userId) => {
   const queryProjects = await db.select({
     id: projects.id,

@@ -88,7 +88,7 @@ export default defineAppEventHandler(async (event) => {
   result.user = queryUser
 
   // Check if user is root admin
-  if (await isRootAdmin(db, user.id)) {
+  if (await isRootAdmin(db, user)) {
     const resultAdmin = await adminProcess(db, user)
 
     result = {
