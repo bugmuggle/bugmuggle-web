@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "bruno",
+  "name": "bugmuggle",
   "type": "collection",
   "ignore": [
     "node_modules",

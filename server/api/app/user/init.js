@@ -1,47 +1,36 @@
-import { userPreferences, projects, users, projectMembers } from '@/server/database/schema'
+import {
+  userPreferences,
+  projects,
+  users,
+  projectMembers,
+  rootAdmins,
+} from '@/server/database/schema'
 import { eq } from 'drizzle-orm'
 
-export default defineAppEventHandler(async (event) => {
-  const { user } = event.context
+const adminProcess = async (db, user) => {
+  const result = {}
 
-  const db = useDrizzle()
+  const queryFirstProject = await getFirstProjectFromAllProjects(db)
 
-  const result = {
-    user: null,
-    lastVisitedProjectId: null,
-    members: [],
-  }
-  
-  const queryUser = await db
-    .select({
-      id: users.id,
-      firstName: users.firstName,
-      lastName: users.lastName,
-      doingTheseDays: users.doingTheseDays,
-      displayName: users.displayName,
-      position: users.position,
-      phoneNumber: users.phoneNumber,
-      email: users.email,
-    })
-    .from(users)
-    .where(eq(users.id, user.id))
+  if (!queryFirstProject) {
+    const { id: newSampleProjectId, members: newSampleProjectMembers } = await createSampleProject(db, user)
 
-  if (!queryUser.length) {
-    return createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized'
-    })
+    result.lastVisitedProjectId = newSampleProjectId
+    result.members = newSampleProjectMembers
+  } else {
+    const queryProjectMembers = await getProjectMembers(db, queryFirstProject.id)
+
+    result.lastVisitedProjectId = queryFirstProject.id
+    result.members = queryProjectMembers
   }
 
-  if (queryUser.length > 0) {
-    result.user = queryUser[0]
-  }
+  return result
+}
 
-  const queryUserPreferences = await db
-    .select()
-    .from(userPreferences)
-    .where(eq(userPreferences.userId, user.id))
+const userProcess = async (db, user) => {
+  const result = {}
 
+  const queryUserPreferences = await getUserPreferences(db, user.id)
   const lastVisitedProjectId = queryUserPreferences.find(
     (preference) => preference.preference === 'lastVisitedProjectId'
   )?.value
@@ -49,64 +38,70 @@ export default defineAppEventHandler(async (event) => {
   if (lastVisitedProjectId) {
     result.lastVisitedProjectId = lastVisitedProjectId
 
-    const queryProjectMembers = await db
-      .select()
-      .from(projectMembers)
-      .where(eq(projectMembers.projectId, result.lastVisitedProjectId))
-      .$dynamic()
+    const queryProjectMembers = await getProjectMembers(db, result.lastVisitedProjectId)
 
     result.members = queryProjectMembers
   } else {
-    const queryProjects = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.createdBy, user.id))
-      .limit(1)
+    const firstAvailableProject = await getFirstProjectByUserId(db, user.id)
 
-    if (queryProjects.length > 0) {
-      result.lastVisitedProjectId = queryProjects[0].id
+    if (firstAvailableProject) {
+      result.lastVisitedProjectId = firstAvailableProject.id
 
-      const queryProjectMembers = await db
-        .select()
-        .from(projectMembers)
-        .where(eq(projectMembers.projectId, result.lastVisitedProjectId))
-        .$dynamic()
+      const queryProjectMembers = await getProjectMembers(db, result.lastVisitedProjectId)
 
       result.members = queryProjectMembers
     } else {
-      const sampleProject = await db.insert(projects).values({
-        name: 'Sample Project',
-        createdBy: user.id,
-        createdAt: new Date()
-      }).returning()
+      const { id: sampleProjectId, members: sampleProjectMembers } = await createSampleProject(db, user)
 
-      const sampleProjectId = sampleProject[0].id
-
-      const sampleProjectMember = await db
-        .insert(projectMembers)
-        .values({
-          projectId: sampleProjectId,
-          userId: user.id,
-          role: 'owner',
-          createdAt: new Date()
-        })
-        .returning({
-          id: projectMembers.id,
-          projectId: projectMembers.projectId,
-          userId: projectMembers.userId,
-          role: projectMembers.role,
-          createdAt: projectMembers.createdAt,
-          user: {
-            id: users.id,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            email: users.email,
-          }
-        })
-        .$dynamic();
-
-      result.members = [sampleProjectMember]
+      result.members = sampleProjectMembers
       result.lastVisitedProjectId = sampleProjectId
+    }
+  }
+
+  return result
+}
+
+export default defineAppEventHandler(async (event) => {
+  // Get user from event context
+  const { user } = event.context
+
+  // Get database instance
+  const db = useDrizzle()
+
+  // Initialize result object
+  let result = {
+    isRootAdmin: false,
+    user: null,
+    lastVisitedProjectId: null,
+    members: [],
+  }
+
+  const queryUser = await getUser(db, user.id)
+
+  if (!queryUser) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'User not found',
+    })
+  }
+
+  result.user = queryUser
+
+  // Check if user is root admin
+  if (await isRootAdmin(db, user.id)) {
+    const resultAdmin = await adminProcess(db, user)
+
+    result = {
+      ...result,
+      ...resultAdmin,
+      isRootAdmin: true,
+    }
+  } else {
+    const resultUser = await userProcess(db, user)
+
+    result = {
+      ...result,
+      ...resultUser,
     }
   }
 

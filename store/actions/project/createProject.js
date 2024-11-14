@@ -6,6 +6,7 @@ export default async function (payload) {
     body: { name }
   })
 
+  console.log(project)
   this.projects.push(project)
   return project
 }

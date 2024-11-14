@@ -21,6 +21,11 @@ export const userPreferences = sqliteTable('user_preferences', {
   value: text('value').notNull(),
 })
 
+export const rootAdmins = sqliteTable('root_admins', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+})
+
 export const projects = sqliteTable('projects', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
