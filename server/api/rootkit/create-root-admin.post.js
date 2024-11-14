@@ -1,5 +1,5 @@
 import { useValidatedBody, z } from "h3-zod";
-import { users } from "@/server/database/schema";
+import { users, rootAdmins } from "@/server/database/schema";
 import bcrypt from 'bcryptjs'
 
 const validationSchema = z.object({
@@ -32,10 +32,14 @@ export default defineEventHandler(async (event) => {
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hashSync(password, salt)
 
-    await useDrizzle().insert(users).values({
+    const queryNewUser = await useDrizzle().insert(users).values({
       email,
       password: hashedPassword,
       createdAt: new Date(),
+    }).returning()
+
+    await useDrizzle().insert(rootAdmins).values({
+      userId: queryNewUser[0].id,
     })
 
     return {

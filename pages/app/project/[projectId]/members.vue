@@ -43,6 +43,7 @@
 <script setup>
 import AddMember from '@/components/dialogs/AddMember'
 import { useProjectStore } from '@/store/project'
+import { useUserStore } from '@/store/user'
 
 useHead({
   title: 'Members: BugMuggle'
@@ -54,10 +55,11 @@ definePageMeta({
 
 const modal = useModal()
 
+const userStore = useUserStore()
 const projectStore = useProjectStore()
 const projectId = useRoute().params.projectId
 
-const columns = ref([
+const columnsDefault = [
   {
     key: 'id',
     label: 'ID'
@@ -78,7 +80,17 @@ const columns = ref([
     key: 'actions',
     label: 'Actions'
   }
-])
+]
+
+const areYouAdminOrOwner = computed(() => {
+  const profileId = userStore.getProfile.id
+  return projectStore.isMemberAdmin(profileId, projectId) || projectStore.isMemberOwner(profileId, projectId)
+})
+
+const columns = computed(() => {
+  return areYouAdminOrOwner.value ? columnsDefault : columnsDefault.filter(x => x.key !== 'actions')
+})
+
 
 const actionMenuMember = [
   [

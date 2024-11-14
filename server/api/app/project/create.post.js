@@ -1,5 +1,5 @@
 import { useValidatedBody, z } from 'h3-zod'
-import { projects } from '~/server/database/schema'
+import { projects, projectMembers } from '~/server/database/schema'
 
 const validationSchema = z.object({
   name: z.string().min(1)
@@ -12,7 +12,13 @@ export default defineAppEventHandler(async (event) => {
     name,
     createdBy: event.context.user.id,
     createdAt: new Date()
+  }).returning()
+
+  await useDrizzle().insert(projectMembers).values({
+    projectId: project[0].id,
+    userId: event.context.user.id,
+    role: 'owner'
   })
 
-  return project
+  return project[0]
 })

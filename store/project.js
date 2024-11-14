@@ -23,6 +23,20 @@ export const useProjectStore = defineStore('project', () => {
     return projects.value.find(x => x.id === +projectId) || null
   }
 
+  const getMemberEntry = (profileId, projectId) => {
+    return getMembersByProjectId(projectId).find(x => x.userId === profileId)
+  }
+
+  const isMemberAdmin = (profileId, projectId) => {
+    const memberEntry = getMemberEntry(profileId, projectId)
+    return memberEntry?.role === 'admin'
+  }
+
+  const isMemberOwner = (profileId, projectId) => {
+    const memberEntry = getMemberEntry(profileId, projectId)
+    return memberEntry?.role === 'owner'
+  }
+
   return {
     projects,
     isInit,
@@ -36,6 +50,9 @@ export const useProjectStore = defineStore('project', () => {
     fetchProjectById,
     getMembersByProjectId,
     getProjectById,
-    fetchMembers
+    fetchMembers,
+    getMemberEntry,
+    isMemberAdmin,
+    isMemberOwner
   }
 })

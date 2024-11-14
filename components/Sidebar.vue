@@ -57,7 +57,7 @@ const route = useRoute()
 
 const projectLinks = computed(() => {
   return [
-    ...projectStore.projects.map((project) => ({
+    ...projectStore.getProjects.map((project) => ({
     label: project.name,
       to: `/app/project/${project.id}/chat`,
       active: route.path.includes(`/app/project/${project.id}`)

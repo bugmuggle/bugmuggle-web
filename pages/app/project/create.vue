@@ -37,8 +37,9 @@ const isLoading = ref(false)
 const handleSubmit = (event) => {
   isLoading.value = true
   projectStore.createProject(event.data)
-    .then(() => {
-      navigateTo('/home')
+    .then((project) => {
+      console.log(project)
+      navigateTo(`/app/project/${project.id}/chat`)
     })
     .catch((error) => {
       toast.add({
