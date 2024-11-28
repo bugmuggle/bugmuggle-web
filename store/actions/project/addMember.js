@@ -5,5 +5,5 @@ export default async function addMember (projectId, data) {
   })
 
   this.members[projectId].push(response)
-  return true
+  return response
 }

@@ -3,6 +3,7 @@ import { eq, or } from 'drizzle-orm'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
 import bcrypt from 'bcryptjs'
+import { de } from 'date-fns/locale'
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required'),
@@ -68,12 +69,13 @@ export default defineAppEventHandler(async (event) => {
     role: data.role || 'member'
   }).returning()
 
-
   const result = newQueryMember[0]
 
   if (newUserPassword) {
     result.password = newUserPassword
   }
 
-  return result
+  delete targetUser.password
+
+  return { ...result, ...targetUser }
 })
