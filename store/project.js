@@ -4,6 +4,7 @@ import createProject from './actions/project/createProject'
 import fetchProjectById from './actions/project/fetchProjectById'
 import fetchMembers from './actions/project/fetchMembers'
 import addMember from './actions/project/addMember'
+import deleteMember from './actions/project/deleteMember'
 
 export const useProjectStore = defineStore('project', () => {
   const projects = ref([])
@@ -46,6 +47,7 @@ export const useProjectStore = defineStore('project', () => {
     members,
     fetchProjects,
     addMember,
+    deleteMember,
     createProject,
     fetchProjectById,
     getMembersByProjectId,

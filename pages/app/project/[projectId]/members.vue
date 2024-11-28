@@ -30,6 +30,13 @@
                     square
                     color="gray"
                   />
+
+                  <template #item="{ item }">
+                    <div class="flex items-center justify-between w-full" @click="() => onClickDeleteMember(row.userId)">
+                      <span class="truncate">{{ item.label }}</span>
+                      <UIcon :name="item.icon" class="flex-shrink-0 h-4 w-4 text-gray-400 dark:text-gray-500 ms-auto" />
+                    </div>
+                  </template>
                 </UDropdown>
               </div>
             </template>
@@ -61,7 +68,7 @@ const projectId = useRoute().params.projectId
 
 const columnsDefault = [
   {
-    key: 'id',
+    key: 'userId',
     label: 'ID'
   },
   {
@@ -91,6 +98,20 @@ const columns = computed(() => {
   return areYouAdminOrOwner.value ? columnsDefault : columnsDefault.filter(x => x.key !== 'actions')
 })
 
+const members = computed(() => {
+  return (projectStore.getMembersByProjectId(projectId) || [])
+    .map(x => ({ ...x, name: `${x.firstName || ''} ${x.lastName || ''}`}))
+})
+
+const onClickAddMember = function () {
+  modal.open(AddMember, {
+    projectId
+  })
+}
+
+const onClickDeleteMember = function (userId) {
+  projectStore.deleteMember(userId, projectId)
+}
 
 const actionMenuMember = [
   [
@@ -105,17 +126,6 @@ const actionMenuMember = [
     }
   ]
 ]
-
-const members = computed(() => {
-  return (projectStore.getMembersByProjectId(projectId) || [])
-    .map(x => ({ ...x, name: `${x.firstName || ''} ${x.lastName || ''}`}))
-})
-
-const onClickAddMember = function () {
-  modal.open(AddMember, {
-    projectId
-  })
-}
 
 onMounted(() => {
   if (!projectStore.isInit['members-' + projectId]) {

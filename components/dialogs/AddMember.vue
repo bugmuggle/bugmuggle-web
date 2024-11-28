@@ -18,7 +18,7 @@
       <template #footer>
         <div class="flex items-center gap-2">
           <div class="grow" />
-          <UButton @click="emit('close')" color="gray">
+          <UButton @click="() => refModal.close()" color="gray">
             Cancel
           </UButton>
           <UButton type="button" @click="() => form.submit()">
@@ -65,6 +65,9 @@ const project = computed(() => {
 
 const onSubmit = (event) => {
   projectStore.addMember(props.projectId, event.data)
+    .then(() => {
+      refModal.value.close()
+    })
 }
 
 const emit = defineEmits(['success'])
