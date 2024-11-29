@@ -1,4 +1,4 @@
-
+import { users } from '@/server/database/schema'
 
 export default defineAppEventHandler(async (event) => {
   const form = await readFormData(event)

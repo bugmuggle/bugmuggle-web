@@ -1,5 +1,5 @@
 import { projectMembers, users } from '@/server/database/schema'
-import { eq, or } from 'drizzle-orm'
+import { eq, or, and } from 'drizzle-orm'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
 import bcrypt from 'bcryptjs'
@@ -54,7 +54,10 @@ export default defineAppEventHandler(async (event) => {
     targetUser = queryUser[0]
   }
   
-  const queryMember = await useDrizzle().select().from(projectMembers).where(eq(projectMembers.id, targetUser.id))
+  const queryMember = await useDrizzle().select().from(projectMembers).where(and(
+    eq(projectMembers.id, targetUser.id),
+    eq(projectMembers.projectId, projectId)
+  ))
 
   if (queryMember.length > 0) {
     throw createError({
