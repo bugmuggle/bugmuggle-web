@@ -94,10 +94,11 @@
                 </p>
               </div>
 
-              <UButton size="sm" label="Change Password" variant="link" />
+              <UButton size="sm" label="Change Password" variant="link" @click="showChangePasswordDialog" />
             </div>
           </div>
         </UCard>
+        <change-password ref="changePasswordDialog" />
       </div>
     </div>
   </NuxtLayout>
@@ -106,9 +107,12 @@
 <script setup>
 import { z } from 'zod'
 import { useUserStore } from '@/store/user'
+import ChangePassword from '@/components/dialogs/ChangePassword'
 
 const storeUser = useUserStore()
 const toast = useToast()
+const changePasswordDialog = ref(null)
+const modal = useModal()
 
 const schema = z.object({
   firstName: z.string().optional(),
@@ -175,4 +179,9 @@ onMounted(() => {
     }
   }, { immediate: true })
 })
+
+
+const showChangePasswordDialog = () => {
+  modal.open(ChangePassword)
+}
 </script>
