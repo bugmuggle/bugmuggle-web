@@ -8,5 +8,9 @@ export default async function setProfilePic(file) {
   })
   
   this.profilePicBase64[this.profile.id] = response
+  this.profile = {
+    ...this.profile,
+    profilePicPath: 'images/dp-' + this.profile.id
+  }
   return response
 }
