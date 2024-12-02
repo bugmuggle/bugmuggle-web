@@ -6,7 +6,7 @@ export default async function setProfilePic(file) {
     method: 'POST',
     body: formData
   })
-
-  profilePicBase64.value[this.profile.value.id] = response
+  
+  this.profilePicBase64[this.profile.id] = response
   return response
 }
