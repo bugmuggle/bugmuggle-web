@@ -178,8 +178,16 @@ const onClickUploadPhoto = () => {
 }
 
 const onClickClearPhoto = async () => {
-  await storeUser.clearProfilePic()
-  imagePreview.value = null
+  try {
+    await storeUser.clearProfilePic()
+    imagePreview.value = null
+  } catch (error) {
+    console.error(error)
+    toast.add({
+      title: 'Failed to clear the profile picture ',
+      color: 'red'
+    })
+  }
 }
 
 onMounted(() => {
