@@ -22,25 +22,29 @@
         </UButton>
       </div>
 
-      <UForm v-else ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-        <UFormGroup label="Email" name="email">
-          <UInput v-model="state.email" />
-        </UFormGroup>
+      <div v-else class="space-y-4">
+        <UAlert v-if="error" color="red" variant="outline" :description="error"/>
 
-        <UFormGroup label="Role" name="role">
-          <USelect v-model="state.role" :options="roles" />
-        </UFormGroup>
-      </UForm>
+        <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+          <UFormGroup label="Email" name="email">
+            <UInput v-model="state.email" />
+          </UFormGroup>
+
+          <UFormGroup label="Role" name="role">
+            <USelect v-model="state.role" :options="roles" />
+          </UFormGroup>
+        </UForm>
+      </div>
 
       <template #footer>
         <div v-if="showNewUserPassword" class="flex items-center justify-end gap-2">
-          <UButton @click="() => refModal.close()" color="gray">
+          <UButton @click="closeModal()" color="gray">
             Close
           </UButton>
         </div>
         <div v-else class="flex items-center gap-2">
           <div class="grow" />
-          <UButton @click="() => refModal.close()" color="gray">
+          <UButton @click="closeModal()" color="gray">
             Cancel
           </UButton>
           <UButton type="button" @click="() => form.submit()">
@@ -72,6 +76,7 @@ const form = ref(null)
 const store = useVariableStore()
 const projectStore = useProjectStore()
 
+const error = ref(null)
 const showNewUserPassword = ref(false)
 const newUserPassword = ref('test')
 const { text, copy, copied, isSupported } = useClipboard({ newUserPassword })
@@ -91,6 +96,7 @@ const project = computed(() => {
 })
 
 const onSubmit = (event) => {
+  error.value = null
   projectStore.addMember(props.projectId, event.data)
     .then((response) => {
       if (response.password) {
@@ -100,7 +106,23 @@ const onSubmit = (event) => {
         refModal.value.close()
       }
     })
+    .catch((err) => {
+      error.value = err.statusMessage || 'Failed to add member'
+    })
 }
 
 const emit = defineEmits(['success'])
+
+const closeModal = () => {
+  cleanup()
+  refModal.value.close()
+}
+
+const cleanup = () => {
+  error.value = null
+  state.email = ''
+  state.role = 'member'
+  showNewUserPassword.value = false
+}
+
 </script>

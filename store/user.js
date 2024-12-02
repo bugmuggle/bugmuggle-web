@@ -3,6 +3,7 @@ import setLastVisitedProjectId from './actions/user/setLastVisitedProjectId'
 import updateProfile from './actions/user/updateProfile'
 import setProfilePic from './actions/user/setProfilePic'
 import fetchProfilePic from './actions/user/fetchProfilePic'
+import updatePassword from './actions/user/updatePassword'
 import clearProfilePic from './actions/user/clearProfilePic'
 
 export const useUserStore = defineStore('user', () => {
@@ -47,6 +48,7 @@ export const useUserStore = defineStore('user', () => {
     fetchProfilePic,
     profilePicBase64,
     getProfilePicBase64ByUserId,
+    updatePassword,
     clearProfilePic
   }
 })
