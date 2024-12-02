@@ -197,7 +197,9 @@ onMounted(() => {
       storeUser.fetchProfilePic(storeUser.getProfile.id)
         .then(base64Image => {
           imagePreview.value = base64Image
-          unwatch()
+        })
+        .finally(() => {
+          unwatch() 
         })
     }
   }, { immediate: true })
