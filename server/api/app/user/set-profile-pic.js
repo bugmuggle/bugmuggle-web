@@ -25,8 +25,7 @@ export default defineAppEventHandler(async (event) => {
   }).where(eq(users.id, user.id))
 
   setHeader(event, 'Content-Security-Policy', 'default-src \'none\';')
-  setHeader(event, 'X-Profile-Picture-Path', responseBlobPut.pathname)
-  
   const blob = await hubBlob().serve(event, responseBlobPut.pathname)
+
   return blob
 })
