@@ -38,13 +38,13 @@
 
       <template #footer>
         <div v-if="showNewUserPassword" class="flex items-center justify-end gap-2">
-          <UButton @click="() => refModal.close()" color="gray">
+          <UButton @click="closeModal()" color="gray">
             Close
           </UButton>
         </div>
         <div v-else class="flex items-center gap-2">
           <div class="grow" />
-          <UButton @click="() => refModal.close()" color="gray">
+          <UButton @click="closeModal()" color="gray">
             Cancel
           </UButton>
           <UButton type="button" @click="() => form.submit()">
@@ -113,6 +113,11 @@ const onSubmit = (event) => {
 
 const emit = defineEmits(['success'])
 
+const closeModal = () => {
+  cleanup()
+  refModal.value.close()
+}
+
 const cleanup = () => {
   error.value = null
   state.email = ''
@@ -120,9 +125,4 @@ const cleanup = () => {
   showNewUserPassword.value = false
 }
 
-watch(() => refModal.value?.isOpen, (isOpen) => {
-  if (!isOpen) {
-    cleanup()
-  }
-})
 </script>
