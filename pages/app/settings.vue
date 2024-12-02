@@ -51,11 +51,17 @@
             </div>
 
             <div class="col-span-4 space-y-3">
-              <div class="relative h-56 aspect-square bg-gray-800 rounded-lg">
-                <div class="absolute inset-0">
-                  <input ref="profilePhotoInput" type="file" accept="image/*" class="hidden" @change="onSelectProfilePhoto" />
-                </div>
-                <div class="flex items-center justify-center h-full">
+              <div class="relative h-56 aspect-square bg-gray-800 rounded-lg overflow-hidden">
+                <input ref="profilePhotoInput" type="file" accept="image/*" class="hidden" @change="onSelectProfilePhoto" />
+                
+                <img 
+                  v-if="imagePreview || storeUser.getProfile?.profilePicPath" 
+                  :src="imagePreview || storeUser.getProfilePicBase64ByUserId(storeUser.getProfile?.id)" 
+                  class="absolute inset-0 w-full h-full object-cover"
+                  alt="Profile photo"
+                />
+                
+                <div v-else class="absolute inset-0 flex items-center justify-center">
                   <UIcon name="heroicons:user" class="w-10 h-10 text-gray-400" />
                 </div>
               </div>
@@ -109,6 +115,7 @@ import { useUserStore } from '@/store/user'
 
 const storeUser = useUserStore()
 const toast = useToast()
+const imagePreview = ref(null)
 
 const schema = z.object({
   firstName: z.string().optional(),
@@ -158,7 +165,7 @@ const onSelectProfilePhoto = (event) => {
     event.target.value = '' // Reset the input
     return
   }
-
+  imagePreview.value = URL.createObjectURL(file)
   storeUser.setProfilePic(file)
 }
 
@@ -175,6 +182,7 @@ onMounted(() => {
   unwatch = watch(() => storeUser.isReady, (value) => {
     if (value) {
       syncFormData()
+      storeUser.fetchProfilePic(storeUser.getProfile.id)
       unwatch && unwatch()
     }
   }, { immediate: true })
