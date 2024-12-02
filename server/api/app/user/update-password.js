@@ -10,39 +10,43 @@ const schema = z.object({
 
 export default defineAppEventHandler(async (event) => {
   try {
+    const { user } = event.context
+    const db = useDrizzle()
     
+    const { currentPassword, newPassword } = await useValidatedBody(event, schema)
+
+    const queryUser = await db.select().from(users).where(eq(users.id, user.id))
+
+    if (!queryUser.length) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'User not found'
+      })
+    }
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, queryUser[0].password)
+
+    if (!isPasswordValid) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Current password is incorrect'
+      })
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hashSync(newPassword, salt)
+
+    await db.update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, user.id))
+
+    return true
   } catch (error) {
-    
-  }
-  const { user } = event.context
-  const db = useDrizzle()
-  
-  const { currentPassword, newPassword } = await useValidatedBody(event, schema)
-
-  const queryUser = await db.select().from(users).where(eq(users.id, user.id))
-
-  if (!queryUser.length) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'User not found'
-    })
-  }
-
-  const isPasswordValid = await bcrypt.compare(currentPassword, queryUser[0].password)
-
-  if (!isPasswordValid) {
+    console.error(error)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Current password is incorrect'
+      statusMessage: error.message,
     })
   }
-
-  const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hashSync(newPassword, salt)
-
-  await db.update(users)
-    .set({ password: hashedPassword })
-    .where(eq(users.id, user.id))
-
-  return true
+  
 })
