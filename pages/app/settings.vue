@@ -60,7 +60,7 @@
                 </div>
               </div>
               <UButton block label="Upload Photo" variant="outline" size="xl" @click="onClickUploadPhoto" />
-              <UButton block label="Clear Photo" variant="ghost" color="gray" size="xl" />
+              <UButton block label="Clear Photo" variant="ghost" color="gray" size="xl" @click="onClickClearPhoto" />
             </div>
           </div>
         </UCard>
@@ -164,6 +164,10 @@ const onSelectProfilePhoto = (event) => {
 
 const onClickUploadPhoto = () => {
   profilePhotoInput.value.click()
+}
+
+const onClickClearPhoto = () => {
+  storeUser.clearProfilePic()
 }
 
 onMounted(() => {
