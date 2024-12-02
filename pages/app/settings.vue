@@ -51,16 +51,22 @@
             </div>
 
             <div class="col-span-4 space-y-3">
-              <div class="relative h-56 aspect-square bg-gray-800 rounded-lg">
-                <div class="absolute inset-0">
-                  <input ref="profilePhotoInput" type="file" accept="image/*" class="hidden" @change="onSelectProfilePhoto" />
-                </div>
-                <div class="flex items-center justify-center h-full">
+              <div class="relative h-56 aspect-square bg-gray-800 rounded-lg overflow-hidden">
+                <input ref="profilePhotoInput" type="file" accept="image/*" class="hidden" @change="onSelectProfilePhoto" />
+                
+                <img 
+                  v-if="storeUser.getProfile?.profilePicPath" 
+                  :src="imagePreview" 
+                  class="absolute inset-0 w-full h-full object-cover"
+                  alt="Profile photo"
+                />
+                
+                <div v-else class="absolute inset-0 flex items-center justify-center">
                   <UIcon name="heroicons:user" class="w-10 h-10 text-gray-400" />
                 </div>
               </div>
               <UButton block label="Upload Photo" variant="outline" size="xl" @click="onClickUploadPhoto" />
-              <UButton block label="Clear Photo" variant="ghost" color="gray" size="xl" />
+              <UButton block label="Clear Photo" variant="ghost" color="gray" size="xl" @click="onClickClearPhoto" />
             </div>
           </div>
         </UCard>
@@ -113,6 +119,7 @@ const storeUser = useUserStore()
 const toast = useToast()
 const changePasswordDialog = ref(null)
 const modal = useModal()
+const imagePreview = ref(null)
 
 const schema = z.object({
   firstName: z.string().optional(),
@@ -162,7 +169,7 @@ const onSelectProfilePhoto = (event) => {
     event.target.value = '' // Reset the input
     return
   }
-
+  imagePreview.value = URL.createObjectURL(file)
   storeUser.setProfilePic(file)
 }
 
@@ -170,12 +177,30 @@ const onClickUploadPhoto = () => {
   profilePhotoInput.value.click()
 }
 
+const onClickClearPhoto = async () => {
+  try {
+    await storeUser.clearProfilePic()
+    imagePreview.value = null
+  } catch (error) {
+    console.error(error)
+    toast.add({
+      title: 'Failed to clear the profile picture ',
+      color: 'red'
+    })
+  }
+}
+
 onMounted(() => {
-  let unwatch = null
-  unwatch = watch(() => storeUser.isReady, (value) => {
+  const unwatch = watch(() => storeUser.isReady, (value) => {
     if (value) {
       syncFormData()
-      unwatch && unwatch()
+      storeUser.fetchProfilePic(storeUser.getProfile.id)
+        .then(base64Image => {
+          imagePreview.value = base64Image
+        })
+        .finally(() => {
+          unwatch() 
+        })
     }
   }, { immediate: true })
 })
