@@ -53,6 +53,7 @@
             <div class="col-span-4 space-y-3">
               <div class="relative h-56 aspect-square bg-gray-800 rounded-lg overflow-hidden">
                 <input ref="profilePhotoInput" type="file" accept="image/*" class="hidden" @change="onSelectProfilePhoto" />
+                
                 <img 
                   v-if="storeUser.getProfile?.profilePicPath" 
                   :src="imagePreview" 
@@ -172,17 +173,19 @@ const onClickUploadPhoto = () => {
   profilePhotoInput.value.click()
 }
 
-const onClickClearPhoto = () => {
-  storeUser.clearProfilePic()
+const onClickClearPhoto = async () => {
+  await storeUser.clearProfilePic()
   imagePreview.value = null
 }
 
 onMounted(() => {
-  const unwatch = watch(() => storeUser.isReady, async (value) => {
+  const unwatch = watch(() => storeUser.isReady, (value) => {
     if (value) {
       syncFormData()
-      const base64Image = await storeUser.fetchProfilePic(storeUser.getProfile.id)
-      imagePreview.value = base64Image
+      storeUser.fetchProfilePic(storeUser.getProfile.id)
+        .then(base64Image => {
+          imagePreview.value = base64Image
+        })
       unwatch()
     }
   }, { immediate: true })
