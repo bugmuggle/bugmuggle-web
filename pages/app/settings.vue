@@ -174,6 +174,7 @@ const onClickUploadPhoto = () => {
 }
 
 const onClickClearPhoto = () => {
+  imagePreview.value = null
   storeUser.clearProfilePic()
 }
 

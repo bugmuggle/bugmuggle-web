@@ -5,6 +5,10 @@ export default async function clearProfilePic() {
 
   if (this.profile?.id) {
     delete this.profilePicBase64[this.profile.id]
+    this.profile = {
+      ...this.profile,
+      profilePicPath: null
+    }
   }
   
   return true
