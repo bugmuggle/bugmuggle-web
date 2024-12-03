@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-start gap-3 pb-4">
     <div>
-      <div class="w-12 h-12 bg-gray-700 rounded-md">
+      <div class="w-12 h-12 rounded-md">
         <button
           class="block flex items-center justify-center h-full w-full"
           @click="onClickOpenProfile"
