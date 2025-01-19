@@ -17,6 +17,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.5.1)
+      pocketbase:
+        specifier: ^0.25.0
+        version: 0.25.0
       postcss:
         specifier: ^8.5.1
         version: 8.5.1
@@ -881,6 +884,9 @@ packages:
   pirates@4.0.6:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
     engines: {node: '>= 6'}
+
+  pocketbase@0.25.0:
+    resolution: {integrity: sha512-xbjiQG/tnh2HsjZrTW7ZEJASvl4hmGAB5PQAmNRkRU8BmrPib7zwKyXdiYJl34QN7ADpqykZD2lAMdDtrrQbuw==}
 
   postcss-import@15.1.0:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
@@ -1829,6 +1835,8 @@ snapshots:
   pify@2.3.0: {}
 
   pirates@4.0.6: {}
+
+  pocketbase@0.25.0: {}
 
   postcss-import@15.1.0(postcss@8.5.1):
     dependencies:
