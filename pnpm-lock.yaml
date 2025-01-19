@@ -32,9 +32,15 @@ importers:
       react-router:
         specifier: ^7.1.3
         version: 7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-router-dom:
+        specifier: ^7.1.3
+        version: 7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
     devDependencies:
       '@tailwindcss/typography':
         specifier: ^0.5.16
@@ -945,6 +951,13 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
+  react-router-dom@7.1.3:
+    resolution: {integrity: sha512-qQGTE+77hleBzv9SIUIkGRvuFBQGagW+TQKy53UTZAO/3+YFNBYvRsNIZ1GT17yHbc63FylMOdS+m3oUriF1GA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
   react-router@7.1.3:
     resolution: {integrity: sha512-EezYymLY6Guk/zLQ2vRA8WvdUhWFEj5fcE3RfWihhxXBW7+cd1LsIiA3lmx+KCmneAGQuyBv820o44L2+TtkSA==}
     engines: {node: '>=20.0.0'}
@@ -1130,6 +1143,9 @@ packages:
     resolution: {integrity: sha512-+hSoy/QHluxmC9kCIJyL/uyFmLmc+e5CFR5Wa+bpIhIj85LVb9ZH2nVnqrHoSvKogwODv0ClqZkmiSSaIH5LTA==}
     engines: {node: '>= 14'}
     hasBin: true
+
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
 snapshots:
 
@@ -1890,6 +1906,12 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
+  react-router-dom@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-router: 7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
   react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@types/cookie': 0.6.0
@@ -2081,3 +2103,5 @@ snapshots:
   yallist@3.1.1: {}
 
   yaml@2.7.0: {}
+
+  zod@3.24.1: {}
