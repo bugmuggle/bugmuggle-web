@@ -2,8 +2,10 @@ import { Outlet, useNavigate } from "react-router"
 import { Bars3Icon, InboxIcon, PowerIcon } from '@heroicons/react/24/solid'
 import HeroIcon from "./HeroLogo"
 import pb from "../lib/pocketbase/client";
+import { useActivity } from "../hooks/activity";
 
 export const AppLayout = function () {
+  const { channels, actChannel } = useActivity()
   const navigate = useNavigate()
 
   const handleLogout = function () {
@@ -40,17 +42,15 @@ export const AppLayout = function () {
               <div className="h-4" />
 
               <li className="menu-title text-xs">Channels</li>
-              <li>
-                <a>
-                  JurorSearch
-                </a>
-              </li>
-
-              <li>
-                <a>
-                  Voima
-                </a>
-              </li>
+              {
+                channels.map(ch => (
+                  <li key={'channel-sidenav-' + ch.id}>
+                    <a className={actChannel && ch.id === actChannel ? 'active' : ''}>
+                      {ch.name}
+                    </a>
+                  </li>
+                ))
+              }
             </ul>
 
             <div className="grow" />

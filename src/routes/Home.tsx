@@ -1,5 +1,7 @@
 export default function Home () {
   return (
-    <p>Home</p>
+    <div className="flex items-center justify-center h-full">
+      hello
+    </div>
   )
 }
