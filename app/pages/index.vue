@@ -10,6 +10,8 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const router = useRouter()
+
 const items = ref([
   { id: '1', name: '1', order: 3 },
   { id: '2', name: '2', order: 2 },
@@ -19,7 +21,7 @@ const items = ref([
 onMounted(() => {
   $fetch('/api/init')
     .then((res) => {
-      console.log(res)
+      router.replace('/channel/' + res.data.lastVisitedChannelId)
     })
     .catch(error => {
       // TODO: Handle error using global error handler util

@@ -99,8 +99,4 @@ onMounted(() => {
       setTimeout(() => isReady.value = true, 500)
     })
 })
-
-onUnmounted(() => {
-  console.log('here::1')
-})
 </script>
