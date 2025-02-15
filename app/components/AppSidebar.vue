@@ -2,7 +2,7 @@
   <div class="w-full flex flex-col gap-3 px-3 py-3">
     <nuxt-link to="/" class="inline-flex items-center gap-2">
       <img src="/logo.svg" width="24" height="24" />
-      <span class="text-md font-medium">Bugmulggle</span>
+      <span class="text-md font-medium">Bugmuggle</span>
     </nuxt-link>
 
     <UVerticalNavigation :ui="{ base: 'gap-3', padding: 'px-3 py-1.5' }" :links="userMenu" />
