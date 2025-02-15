@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   // Env variables - https://nuxt.com/docs/getting-started/configuration#environment-variables-and-private-tokens
   runtimeConfig: {
     oauth: {
-      google: {
+      github: {
         clientId: '',
         clientSecret: ''
       }
