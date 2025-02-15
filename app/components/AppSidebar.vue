@@ -26,8 +26,6 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '~/store/auth';
-
 const router = useRouter()
 
 const userMenu = [
@@ -37,8 +35,6 @@ const userMenu = [
     to: '/my-tasks'
   }
 ]
-
-const channelMenu = ref([])
 
 const accountMenu = ref([
   [
@@ -71,5 +67,19 @@ const accountMenu = ref([
   ]
 ])
 
-const authStore = useAuthStore()
+const channels = ref([])
+
+const channelMenu = computed(() => {
+  return channels.value.map((channel) => ({
+    label: channel.name,
+    to: `/channel/${channel.id}`
+  }))
+})
+
+onMounted(() => {
+  $fetch('/api/channel/all')
+    .then((res) => {
+      channels.value = res.data.channels
+    })
+})
 </script>

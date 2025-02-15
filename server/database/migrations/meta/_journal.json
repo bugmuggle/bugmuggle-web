@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1739621441284,
-      "tag": "0000_harsh_quasimodo",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1739621972478,
-      "tag": "0001_kind_ender_wiggin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1739622126816,
-      "tag": "0002_odd_stardust",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1739622392634,
-      "tag": "0003_normal_jean_grey",
+      "when": 1739624577436,
+      "tag": "0000_youthful_outlaw_kid",
       "breakpoints": true
     }
   ]

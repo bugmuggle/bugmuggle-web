@@ -25,7 +25,7 @@
             </li>
             <li class="inline-flex items-center gap-x-4">
               <UIcon name="i-heroicons-sparkles" class="text-orange-400" size="28" />
-              <sapn class="text-xl">Collaborate with granular permissions and real-time sync across teams.</sapn>
+              <span class="text-xl">Collaborate with granular permissions and real-time sync across teams.</span>
             </li>
           </ul>
         </div>
