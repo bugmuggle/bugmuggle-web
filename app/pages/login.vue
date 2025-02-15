@@ -73,12 +73,22 @@ const onClickLogin = () => {
   openInPopup('/auth/github')
 }
 
+watch(loggedIn, () => {
+  if (loggedIn.value) {
+    onSuccess()
+  }
+})
+
+const onSuccess = () => {
+  authStore.isLoggedIn = true
+  router.replace({ path: '/' })
+}
+
 onMounted(() => {
   fetchSession()
     .then(() => {
       if (loggedIn.value) {
-        authStore.isLoggedIn = true
-        router.replace({ path: '/' })
+        return onSuccess()
       }
     })
     .catch(error => {
@@ -88,5 +98,9 @@ onMounted(() => {
     .finally(() => {
       setTimeout(() => isReady.value = true, 500)
     })
+})
+
+onUnmounted(() => {
+  console.log('here::1')
 })
 </script>

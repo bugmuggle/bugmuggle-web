@@ -8,7 +8,6 @@ export default defineOAuthGitHubEventHandler({
         githubId: user.id
       }
     })
-    console.log('here::')
     return sendRedirect(event, '/')
   },
   // Optional, will return a json error and 401 status code by default
