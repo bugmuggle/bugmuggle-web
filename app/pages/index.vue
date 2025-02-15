@@ -1,7 +1,8 @@
 <template>
-  <NuxtLayout name="app">
-    <tasks-list v-model="items" />
-  </NuxtLayout>
+  <!-- <tasks-list v-model="items" /> -->
+  <div class="h-dvh flex items-center justify-center">
+    <USkeleton class="h-12 w-12" :ui="{ rounded: 'rounded-full' }" />
+  </div>
 </template>
 
 <script setup>
@@ -14,4 +15,15 @@ const items = ref([
   { id: '2', name: '2', order: 2 },
   { id: '3', name: '3', order: 1 },
 ])
+
+onMounted(() => {
+  $fetch('/api/init')
+    .then((res) => {
+      console.log(res)
+    })
+    .catch(error => {
+      // TODO: Handle error using global error handler util
+      console.error(error)
+    })
+})
 </script>

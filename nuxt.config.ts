@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // https://nuxt.com/modules
-  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils', '@pinia/nuxt'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils', '@pinia/nuxt', '@nuxthub/core'],
 
   // https://devtools.nuxt.com
   devtools: { enabled: true },
@@ -22,6 +22,10 @@ export default defineNuxtConfig({
   // https://nuxt.com/docs/getting-started/upgrade#testing-nuxt-4
   future: { compatibilityVersion: 4 },
   compatibilityDate: '2024-07-30',
+
+  hub: {
+    database: true
+  },
 
   // https://hub.nuxt.com/docs/getting-started/installation#options
 

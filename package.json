@@ -7,6 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "npx nuxthub preview",
+    "db:generate": "drizzle-kit generate",
     "deploy": "npx nuxthub deploy",
     "postinstall": "nuxt prepare",
     "lint": "eslint ."
@@ -14,7 +15,9 @@
   "dependencies": {
     "@nuxt/eslint": "^0.7.5",
     "@nuxt/ui": "2.21.0",
+    "@nuxthub/core": "0.8.17",
     "@pinia/nuxt": "^0.10.1",
+    "drizzle-orm": "^0.39.3",
     "nuxt": "^3.15.4",
     "nuxt-auth-utils": "0.5.15",
     "pinia": "^3.0.1",
@@ -27,10 +30,11 @@
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.7.5",
+    "drizzle-kit": "^0.30.4",
     "eslint": "^9.18.0",
     "typescript": "^5.7.3",
     "vue-tsc": "^2.2.0",
-    "wrangler": "^3.101.0"
+    "wrangler": "^3.109.1"
   },
   "packageManager": "pnpm@9.15.3"
 }
