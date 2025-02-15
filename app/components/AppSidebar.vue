@@ -16,6 +16,7 @@
     </div>
 
     <UVerticalNavigation :ui="{ base: 'gap-3', padding: 'px-3 py-1.5' }" :links="channelMenu" />
+    <UButton color="gray" size="xs" label="Create Channel" variant="ghost" icon="i-heroicons-plus" />
 
     <div class="grow" />
 
@@ -26,7 +27,10 @@
 </template>
 
 <script setup>
+import { useChannelStore } from '~/store/channel'
+
 const router = useRouter()
+const channelStore = useChannelStore()
 
 const userMenu = [
   {
@@ -67,19 +71,14 @@ const accountMenu = ref([
   ]
 ])
 
-const channels = ref([])
-
 const channelMenu = computed(() => {
-  return channels.value.map((channel) => ({
+  return channelStore.channels.map((channel) => ({
     label: channel.name,
     to: `/channel/${channel.id}`
   }))
 })
 
-onMounted(() => {
-  $fetch('/api/channel/all')
-    .then((res) => {
-      channels.value = res.data.channels
-    })
+onMounted(async () => {
+  await channelStore.fetchChannels()
 })
 </script>
