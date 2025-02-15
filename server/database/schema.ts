@@ -23,3 +23,16 @@ export const members = sqliteTable('members', {
   channelId: integer('channel_id').references(() => channels.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
+
+export const tasks = sqliteTable('tasks', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  priority: integer('priority'),
+  description: text('description'),
+  createdBy: integer('created_by').references(() => users.id),
+  channelId: integer('channel_id').references(() => channels.id),
+  order: integer('order'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+  updatedBy: integer('updated_by').references(() => users.id),
+})

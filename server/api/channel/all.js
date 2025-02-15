@@ -7,7 +7,6 @@ export default defineAuthEventHandler(async (event) => {
   const user = await getUserByGithubId(githubId)
 
   const queryMembers = await useDrizzle().select().from(tables.members).where(eq(tables.members.userId, user.id))
-  console.log('here::queryMembers', queryMembers)
 
   if (queryMembers.length) {
     channels = await useDrizzle().select().from(tables.channels).where(inArray(tables.channels.id, queryMembers.map(m => m.channelId)))

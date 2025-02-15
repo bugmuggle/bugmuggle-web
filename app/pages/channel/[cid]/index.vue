@@ -11,30 +11,70 @@
             square
             variant="ghost"
           />
+
+          <div class="grow" />
+
+          <UButton
+            icon="i-heroicons-plus"
+            size="xs"
+            color="gray"
+            square
+            variant="outline"
+            label="Create Task"
+            @click="() => refCreateTask.open()"
+          />
         </div>
       </template>
 
       <template #content>
-        hello
+        <div class="space-y-3">
+          <tasks-list v-model="tasks" @sort="onSort" />
+
+          <UButton
+            icon="i-heroicons-plus"
+            size="xs"
+            color="white"
+            square
+            variant="soft"
+            label="Create Task"
+            @click="() => refCreateTask.open()"
+          />
+        </div>
       </template>
     </AppPageWrapper>
   </NuxtLayout>
+
+  <DialogsCreateTask ref="refCreateTask" />
 </template>
 
 <script setup>
+import { useTaskStore } from '~/store/task'
+
 definePageMeta({
   middleware: 'auth',
 })
 
 const route = useRoute()
+const taskStore = useTaskStore()
 const cid = route.params.cid
 
 const channel = ref(null)
+const tasks = ref([])
+const refCreateTask = ref(null)
+
+const onSort = () => {
+  taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))
+}
 
 onMounted(() => {
   $fetch('/api/channel/' + cid + '/get')
     .then((res) => {
       channel.value = res.data.channel
+    })
+
+  taskStore.fetchTasks(cid)
+    .then((res) => {
+      tasks.value = res.data.tasks
     })
 })
 </script>
