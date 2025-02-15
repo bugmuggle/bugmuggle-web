@@ -11,5 +11,12 @@ export const useAuthStore = defineStore('authStore', () => {
     }
   }
 
-  return { isLoggedIn, profile, initProfile }
+  const updateLastVisitedChannelId = async (cid) => {
+    await $fetch('/api/user/updateLastVisitedChannelId', {
+      method: 'POST',
+      body: { cid },
+    })
+  }
+
+  return { isLoggedIn, profile, initProfile, updateLastVisitedChannelId }
 })

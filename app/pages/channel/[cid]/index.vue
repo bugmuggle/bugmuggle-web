@@ -17,10 +17,10 @@
           <UButton
             icon="i-heroicons-plus"
             size="xs"
-            color="gray"
+            color="white"
             square
-            variant="outline"
-            label="Create Task"
+            variant="soft"
+            label="Task"
             @click="() => refCreateTask.open()"
           />
         </div>
@@ -48,6 +48,7 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '~/store/auth'
 import { useTaskStore } from '~/store/task'
 
 definePageMeta({
@@ -55,6 +56,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const authStore = useAuthStore()
 const taskStore = useTaskStore()
 const cid = route.params.cid
 
@@ -76,5 +78,7 @@ onMounted(() => {
     .then((res) => {
       tasks.value = res.data.tasks
     })
+
+  authStore.updateLastVisitedChannelId(cid)
 })
 </script>
