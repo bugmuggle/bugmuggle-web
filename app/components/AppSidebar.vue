@@ -12,7 +12,7 @@
     </div>
 
     <div>
-      <label class="text-xs text-gray-400">Channels</label>
+      <label class="text-xs text-gray-600">Channels</label>
     </div>
 
     <UVerticalNavigation :ui="{ base: 'gap-3', padding: 'px-3 py-1.5' }" :links="channelMenu" />
