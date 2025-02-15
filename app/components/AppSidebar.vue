@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-col gap-3 px-3 py-3">
+  <div class="w-full flex flex-col gap-3 px-3 py-3 h-full">
     <nuxt-link to="/" class="inline-flex items-center gap-2">
       <img src="/logo.svg" width="24" height="24" />
       <span class="text-md font-medium">Bugmuggle</span>
@@ -16,10 +16,20 @@
     </div>
 
     <UVerticalNavigation :ui="{ base: 'gap-3', padding: 'px-3 py-1.5' }" :links="channelMenu" />
+
+    <div class="grow" />
+
+    <UDropdown :items="accountMenu" :popper="{ placement: 'bottom-start' }">
+      <account-btn />
+    </UDropdown>
   </div>
 </template>
 
 <script setup>
+import { useAuthStore } from '~/store/auth';
+
+const router = useRouter()
+
 const userMenu = [
   {
     label: 'My Tasks',
@@ -29,4 +39,37 @@ const userMenu = [
 ]
 
 const channelMenu = ref([])
+
+const accountMenu = ref([
+  [
+    {
+      label: 'Account Settings',
+      icon: 'i-heroicons-cog-6-tooth',
+      click: () => {}
+    }
+  ],
+  [
+    {
+      label: 'GitHub',
+      click: () => {}
+    },
+    {
+      label: 'Help & Feedback',
+      click: () => {}
+    },
+    {
+      label: 'Report an issue',
+      click: () => {}
+    }
+  ],
+  [
+    {
+      label: 'Logout',
+      icon: 'i-heroicons-arrow-left-start-on-rectangle',
+      click: () => router.push({ path: '/logout' })
+    }
+  ]
+])
+
+const authStore = useAuthStore()
 </script>
