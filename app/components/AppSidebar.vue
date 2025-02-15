@@ -16,7 +16,7 @@
     </div>
 
     <UVerticalNavigation :ui="{ base: 'gap-3', padding: 'px-3 py-1.5' }" :links="channelMenu" />
-    <UButton color="gray" size="xs" label="Create Channel" variant="ghost" icon="i-heroicons-plus" />
+    <UButton color="gray" size="xs" label="Create Channel" variant="ghost" icon="i-heroicons-plus" @click="() => refCreateChannel.open()" />
 
     <div class="grow" />
 
@@ -24,6 +24,8 @@
       <account-btn />
     </UDropdown>
   </div>
+
+  <DialogsCreateChannel ref="refCreateChannel" />
 </template>
 
 <script setup>
@@ -31,6 +33,7 @@ import { useChannelStore } from '~/store/channel'
 
 const router = useRouter()
 const channelStore = useChannelStore()
+const refCreateChannel = ref(null)
 
 const userMenu = [
   {

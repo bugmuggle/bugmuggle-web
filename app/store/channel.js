@@ -8,5 +8,16 @@ export const useChannelStore = defineStore('channelStore', () => {
     channels.value = res.data.channels
   }
 
-  return { channels, fetchChannels }
+  const createChannel = async (name) => {
+    const res = await $fetch('/api/channel/create', {
+      method: 'POST',
+      body: { name },
+    })
+
+    if (res.success) {
+      channels.value.push(res.data.channel)
+    }
+  }
+
+  return { channels, fetchChannels, createChannel }
 })
