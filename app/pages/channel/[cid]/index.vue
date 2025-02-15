@@ -10,6 +10,7 @@
             color="gray"
             square
             variant="ghost"
+            @click="taskStore.fetchTasks(cid)"
           />
 
           <div class="grow" />

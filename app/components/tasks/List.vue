@@ -1,4 +1,12 @@
 <template>
+  <div class="flex items-start gap-0">
+    <p class="w-full max-w-[800px] px-11 text-sm text-gray-500 pr-2">
+      Task
+    </p>
+    <p class="w-full max-w-[800px] px-11 text-sm text-gray-500 pr-2">
+      Assigned To
+    </p>
+  </div>
   <Sortable
     :list="elements"
     item-key="id"
@@ -14,7 +22,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="5.5" cy="2.5" r=".75"/><circle cx="5.5" cy="8" r=".75"/><circle cx="5.5" cy="13.5" r=".75"/><circle cx="10.496" cy="2.5" r=".75"/><circle cx="10.496" cy="8" r=".75"/><circle cx="10.496" cy="13.5" r=".75"/></g></svg>
         </div>
         <div
-          class="text-sm text-gray-300 p-2 w-full"
+          class="text-sm text-gray-300 p-2 w-full max-w-[764px] pr-2"
           contenteditable
           v-text="element.title"
           @blur="(e) => emits('update:title', element.id, e.target.innerText)"
