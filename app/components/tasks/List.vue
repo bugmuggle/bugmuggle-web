@@ -22,7 +22,7 @@
 <script setup>
 import { Sortable } from "sortablejs-vue3";
 
-const elements = defineModel([])
+const elements = defineModel()
 
 const onEnd = (evt) => {
   const orderIds = Array.prototype.map.call(evt.to.children, function (item) {

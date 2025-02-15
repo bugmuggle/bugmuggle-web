@@ -5,6 +5,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: 'auth'
+})
+
 const items = ref([
   { id: '1', name: '1', order: 3 },
   { id: '2', name: '2', order: 2 },
