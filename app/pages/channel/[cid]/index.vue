@@ -28,7 +28,11 @@
 
       <template #content>
         <div class="space-y-3">
-          <tasks-list v-model="tasks" @sort="onSort" />
+          <tasks-list
+            v-model="tasks"
+            @sort="onSort"
+            @update:title="onUpdateTitle"
+          />
 
           <UButton
             icon="i-heroicons-plus"
@@ -66,6 +70,10 @@ const refCreateTask = ref(null)
 
 const onSort = () => {
   taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))
+}
+
+const onUpdateTitle = (id, title) => {
+  taskStore.updateTask(cid, id, { title })
 }
 
 onMounted(() => {

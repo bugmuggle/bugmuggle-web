@@ -29,5 +29,19 @@ export const useTaskStore = defineStore('taskStore', () => {
     })
   }
 
-  return { tasks, fetchTasks, createTask, updateTaskOrders }
+  const updateTask = async (cid, taskId, updates) => {
+    const res = await $fetch(`/api/channel/${cid}/tasks/${taskId}/update`, {
+      method: 'POST',
+      body: { updates },
+    })
+
+    if (res.success) {
+      const index = tasks.value.findIndex(t => t.id === taskId)
+      if (index !== -1) {
+        tasks.value[index] = res.data
+      }
+    }
+  }
+
+  return { tasks, fetchTasks, createTask, updateTaskOrders, updateTask }
 })
