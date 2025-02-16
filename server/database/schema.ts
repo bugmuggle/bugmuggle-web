@@ -12,6 +12,8 @@ export const channels = sqliteTable('channels', {
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   githubId: text('github_id').notNull(),
+  githubUsername: text('github_username').notNull(),
+  githubAvatarUrl: text('github_avatar_url').notNull(),
   lastVisitedChannelId: integer('last_visited_channel_id').references(() => channels.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })

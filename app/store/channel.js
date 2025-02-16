@@ -19,5 +19,10 @@ export const useChannelStore = defineStore('channelStore', () => {
     }
   }
 
-  return { channels, fetchChannels, createChannel }
+  const getUsers = async (cid) => {
+    const res = await $fetch(`/api/channel/${cid}/get-users`)
+    return res.data
+  }
+
+  return { channels, fetchChannels, createChannel, getUsers }
 })

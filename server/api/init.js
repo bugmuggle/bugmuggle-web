@@ -14,8 +14,12 @@ export default defineAuthEventHandler(async (event) => {
   let queryUser = await useDrizzle().select().from(tables.users).where(eq(tables.users.githubId, user.githubId))
 
   if (!queryUser.length) {
+    const githubUser = await $fetch('https://api.github.com/user/' + user.githubId)
+
     const newUser = await useDrizzle().insert(tables.users).values({
       githubId: user.githubId,
+      githubUsername: githubUser.login,
+      githubAvatarUrl: githubUser.avatar_url,
       createdAt: new Date(),
     }).returning()
 

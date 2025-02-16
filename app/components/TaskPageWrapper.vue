@@ -14,7 +14,7 @@
       taskViewOpen ? 'right-0' : '-right-[700px]'
     ]">
       <div class="h-full">
-        <task-view :task-id="taskViewId" @close="closeTaskView" />
+        <task-view :task-id="taskViewId" :cid="cid" @close="closeTaskView" />
       </div>
     </div>
   </div>
@@ -23,6 +23,8 @@
 <script setup>
 const taskViewOpen = ref(false)
 const taskViewId = ref(null)
+
+const cid = useRoute().params.cid
 
 const openTaskView = (id) => {
   taskViewOpen.value = true

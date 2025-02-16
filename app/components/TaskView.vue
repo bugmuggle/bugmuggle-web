@@ -33,15 +33,22 @@
         </div>
         <div class="col-span-8">
           <USelectMenu
-            v-model="selected"
+            v-model="selectedAssignee"
             :loading="loadingSelectAssignee"
             :searchable="searchAssignee"
             placeholder="Search for a user..."
-            option-attribute="name"
+            option-attribute="login"
             multiple
             trailing
             by="id"
-          />
+          >
+            <template #option="{ option }">
+              <div class="flex items-center gap-2">
+                <img :src="option.avatar_url" class="w-4 h-4 rounded-full" />
+                <p>{{ option.login }}</p>
+              </div>
+            </template>
+          </USelectMenu>
         </div>
       </div>
     </div>
@@ -50,11 +57,16 @@
 
 <script setup>
 import { useTaskStore } from '@/store/task'
-
+import { useChannelStore } from '@/store/channel'
 const taskStore = useTaskStore()
+const channelStore = useChannelStore()
 
 const props = defineProps({
   taskId: {
+    type: String,
+    default: () => { return '' }
+  },
+  cid: {
     type: String,
     default: () => { return '' }
   }
@@ -66,7 +78,19 @@ const task = ref(null)
 const selectedAssignee = ref(null)
 const loadingSelectAssignee = ref(false)
 
-const searchAssignee = (query) => {}
+const searchAssignee = async (query) => {
+  loadingSelectAssignee.value = true
+
+  try {
+    const users = await channelStore.getUsers(props.cid)
+    console.log(users)
+    return users
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loadingSelectAssignee.value = false
+  }
+}
 
 watch(() => props.taskId, (value) => {
   task.value = taskStore.getTask(value)

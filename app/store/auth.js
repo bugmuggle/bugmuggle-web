@@ -5,10 +5,8 @@ export const useAuthStore = defineStore('authStore', () => {
   const profile = ref(null)
 
   const initProfile = async (userId) => {
-    const res = await fetch('https://api.github.com/user/' + userId)
-    if (res.status === 200) {
-      profile.value = await res.json()
-    }
+    const res = await $fetch('https://api.github.com/user/' + userId)
+    profile.value = res
   }
 
   const updateLastVisitedChannelId = async (cid) => {
