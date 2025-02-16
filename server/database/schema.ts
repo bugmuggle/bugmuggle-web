@@ -34,5 +34,15 @@ export const tasks = sqliteTable('tasks', {
   order: integer('order'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+  dueDate: integer('due_date', { mode: 'timestamp' }),
+  status: text('status'),
   updatedBy: integer('updated_by').references(() => users.id),
+})
+
+export const taskAssignees = sqliteTable('task_assignees', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  taskId: integer('task_id').references(() => tasks.id),
+  userId: integer('user_id').references(() => users.id),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 })

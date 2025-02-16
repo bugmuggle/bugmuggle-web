@@ -2,10 +2,24 @@ import { defineStore } from 'pinia'
 
 export const useTaskStore = defineStore('taskStore', () => {
   const tasks = ref([])
+  const assignees = ref([])
 
   const fetchTasks = async (cid) => {
     const res = await $fetch(`/api/channel/${cid}/tasks/all`)
     tasks.value = res.data.tasks.sort((a, b) => a.order - b.order)
+
+    const resolver = []
+    tasks.value.forEach(task => {
+      resolver.push(
+        $fetch(`/api/channel/${cid}/tasks/${task.id}/assignments/get`)
+      )
+    })
+
+    const assignments = (await Promise.allSettled(resolver))
+      .filter(x => x.status === 'fulfilled')
+      .map(x => x.value.data)
+
+    assignees.value = assignments.flat()
 
     return res
   }
@@ -47,5 +61,5 @@ export const useTaskStore = defineStore('taskStore', () => {
     return tasks.value.find(t => t.id === taskId)
   }
 
-  return { tasks, fetchTasks, createTask, updateTaskOrders, updateTask, getTask }
+  return { tasks, assignees, fetchTasks, createTask, updateTaskOrders, updateTask, getTask }
 })

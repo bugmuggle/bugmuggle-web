@@ -19,13 +19,31 @@
             none: 'focus:ring-1'
           },
           size: {
-            xl: 'text-2xl'
+            xl: 'text-2xl h-fit'
           }
         }"
         autoresize
         placeholder="Enter task title"
         variant="none"
       />
+
+      <div class="grid grid-cols-12 gap-3 px-4">
+        <div class="col-span-4">
+          <p class="text-sm text-gray-500 font-medium">Assignees</p>
+        </div>
+        <div class="col-span-8">
+          <USelectMenu
+            v-model="selected"
+            :loading="loadingSelectAssignee"
+            :searchable="searchAssignee"
+            placeholder="Search for a user..."
+            option-attribute="name"
+            multiple
+            trailing
+            by="id"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +63,10 @@ const props = defineProps({
 const emits = defineEmits(['close'])
 
 const task = ref(null)
+const selectedAssignee = ref(null)
+const loadingSelectAssignee = ref(false)
+
+const searchAssignee = (query) => {}
 
 watch(() => props.taskId, (value) => {
   task.value = taskStore.getTask(value)
