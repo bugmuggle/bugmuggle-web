@@ -43,5 +43,9 @@ export const useTaskStore = defineStore('taskStore', () => {
     }
   }
 
-  return { tasks, fetchTasks, createTask, updateTaskOrders, updateTask }
+  const getTask = (taskId) => {
+    return tasks.value.find(t => t.id === taskId)
+  }
+
+  return { tasks, fetchTasks, createTask, updateTaskOrders, updateTask, getTask }
 })

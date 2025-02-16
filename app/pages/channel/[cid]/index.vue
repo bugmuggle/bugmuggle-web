@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="app">
-    <AppPageWrapper>
+    <TaskPageWrapper ref="refTaskPageWrapper">
       <template #header>
         <div class="flex items-center h-full gap-3">
           <p class="text-sm font-medium">{{ channel?.name }}</p>
@@ -33,6 +33,7 @@
             v-model="tasks"
             @sort="onSort"
             @update:title="onUpdateTitle"
+            @click:task="(id) => refTaskPageWrapper.openTaskView(id)"
           />
 
           <UButton
@@ -46,7 +47,7 @@
           />
         </div>
       </template>
-    </AppPageWrapper>
+    </TaskPageWrapper>
   </NuxtLayout>
 
   <DialogsCreateTask ref="refCreateTask" />
@@ -68,7 +69,7 @@ const cid = route.params.cid
 const channel = ref(null)
 const tasks = ref([])
 const refCreateTask = ref(null)
-
+const refTaskPageWrapper = ref(null)
 const onSort = () => {
   taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))
 }
