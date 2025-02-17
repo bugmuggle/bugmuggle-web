@@ -54,6 +54,12 @@ importers:
       '@nuxt/eslint-config':
         specifier: ^0.7.5
         version: 0.7.6(@vue/compiler-sfc@3.5.13)(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
+      '@vueuse/core':
+        specifier: ^12.7.0
+        version: 12.7.0(typescript@5.7.3)
+      '@vueuse/nuxt':
+        specifier: ^12.7.0
+        version: 12.7.0(magicast@0.3.5)(nuxt@3.15.4(@parcel/watcher@2.5.1)(@types/node@22.13.4)(db0@0.2.4(drizzle-orm@0.39.3(@cloudflare/workers-types@4.20250214.0)))(drizzle-orm@0.39.3(@cloudflare/workers-types@4.20250214.0))(eslint@9.20.1(jiti@2.4.2))(ioredis@5.5.0)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.34.7)(terser@5.39.0)(typescript@5.7.3)(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(terser@5.39.0)(yaml@2.7.0))(vue-tsc@2.2.0(typescript@5.7.3))(yaml@2.7.0))(typescript@5.7.3)
       drizzle-kit:
         specifier: ^0.30.4
         version: 0.30.4
@@ -1939,6 +1945,11 @@ packages:
 
   '@vueuse/metadata@12.7.0':
     resolution: {integrity: sha512-4VvTH9mrjXqFN5LYa5YfqHVRI6j7R00Vy4995Rw7PQxyCL3z0Lli86iN4UemWqixxEvYfRjG+hF9wL8oLOn+3g==}
+
+  '@vueuse/nuxt@12.7.0':
+    resolution: {integrity: sha512-JG1yjJifcIZkFr+X1VmfNsdNZyHia/wXcpUHqVI2gwax5+bgmUlybqh9nStNGbX9NLUuPvPNNq043es5DlSJKg==}
+    peerDependencies:
+      nuxt: ^3.0.0
 
   '@vueuse/shared@12.7.0':
     resolution: {integrity: sha512-coLlUw2HHKsm7rPN6WqHJQr18WymN4wkA/3ThFaJ4v4gWGWAQQGK+MJxLuJTBs4mojQiazlVWAKNJNpUWGRkNw==}
@@ -7327,6 +7338,19 @@ snapshots:
       - typescript
 
   '@vueuse/metadata@12.7.0': {}
+
+  '@vueuse/nuxt@12.7.0(magicast@0.3.5)(nuxt@3.15.4(@parcel/watcher@2.5.1)(@types/node@22.13.4)(db0@0.2.4(drizzle-orm@0.39.3(@cloudflare/workers-types@4.20250214.0)))(drizzle-orm@0.39.3(@cloudflare/workers-types@4.20250214.0))(eslint@9.20.1(jiti@2.4.2))(ioredis@5.5.0)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.34.7)(terser@5.39.0)(typescript@5.7.3)(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(terser@5.39.0)(yaml@2.7.0))(vue-tsc@2.2.0(typescript@5.7.3))(yaml@2.7.0))(typescript@5.7.3)':
+    dependencies:
+      '@nuxt/kit': 3.15.4(magicast@0.3.5)
+      '@vueuse/core': 12.7.0(typescript@5.7.3)
+      '@vueuse/metadata': 12.7.0
+      local-pkg: 1.0.0
+      nuxt: 3.15.4(@parcel/watcher@2.5.1)(@types/node@22.13.4)(db0@0.2.4(drizzle-orm@0.39.3(@cloudflare/workers-types@4.20250214.0)))(drizzle-orm@0.39.3(@cloudflare/workers-types@4.20250214.0))(eslint@9.20.1(jiti@2.4.2))(ioredis@5.5.0)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.34.7)(terser@5.39.0)(typescript@5.7.3)(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(terser@5.39.0)(yaml@2.7.0))(vue-tsc@2.2.0(typescript@5.7.3))(yaml@2.7.0)
+      vue: 3.5.13(typescript@5.7.3)
+    transitivePeerDependencies:
+      - magicast
+      - supports-color
+      - typescript
 
   '@vueuse/shared@12.7.0(typescript@5.7.3)':
     dependencies:
