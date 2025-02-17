@@ -40,7 +40,24 @@
           variant="soft"
           @click="() => emits('click:task', element.id)"
         />
-        hello
+        <UAvatarGroup
+          v-if="assignees.filter(a => a.taskId === element.id).length > 0"
+          size="xs"
+          @click="() => emits('click:task', element.id)"
+        >
+          <UAvatar
+            v-for="assignee in assignees.filter(a => a.taskId === element.id)"
+            :key="assignee.id"
+            :src="assignee.githubAvatarUrl"
+            :alt="assignee.githubUsername"
+          />
+        </UAvatarGroup>
+        <div v-else @click="() => emits('click:task', element.id)">
+          <UAvatar
+            size="xs"
+            icon="i-heroicons-exclamation-circle"
+          />
+        </div>
       </div>
     </template>
   </Sortable>
@@ -48,10 +65,17 @@
 
 <script setup>
 import { Sortable } from "sortablejs-vue3";
+import { useTaskStore } from '@/store/task'
+
+const taskStore = useTaskStore()
 
 const elements = defineModel()
 
 const emits = defineEmits(['sort', 'update:title', 'click:task'])
+
+const assignees = computed(() => {
+  return taskStore.assignees
+})
 
 const onSort = (evt) => {
   const orderIds = Array.prototype.map.call(evt.to.children, function (item) {

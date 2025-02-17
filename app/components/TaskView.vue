@@ -10,7 +10,7 @@
         @click="closeTaskView"
       />
     </div>
-    <div v-if="task" class="px-3">
+    <div v-if="task" class="px-3 space-y-3">
       <UTextarea
         v-model="task.title"
         size="xl"
@@ -29,7 +29,7 @@
 
       <div class="grid grid-cols-12 gap-3 px-4">
         <div class="col-span-4">
-          <p class="text-sm text-gray-500 font-medium">Assignees</p>
+          <p class="text-sm text-gray-500 font-medium">Assignee</p>
         </div>
         <div class="col-span-8">
           <USelectMenu
@@ -37,15 +37,39 @@
             :loading="loadingSelectAssignee"
             :searchable="searchAssignee"
             placeholder="Search for a user..."
-            option-attribute="login"
-            multiple
+            option-attribute="githubUsername"
+            :multiple="false"
             trailing
             by="id"
           >
+            <template #label>
+              <div v-if="selectedAssignee" class="flex items-center gap-2">
+                <!--<UAvatarGroup v-if="[selectedAssignee]?.length > 0" size="xs" :max="6">
+                  <UAvatar
+                    v-for="assignee in [selectedAssignee]"
+                    :key="assignee.id"
+                    :src="assignee.githubAvatarUrl"
+                    :alt="assignee.githubUsername"
+                  />
+                </UAvatarGroup> 
+                <div v-else>
+                  <p class="text-sm text-gray-500">No assignees</p>
+                </div> -->
+                <UAvatar
+                  :src="selectedAssignee?.githubAvatarUrl"
+                  :alt="selectedAssignee?.githubUsername"
+                  size="xs"
+                />
+                <p class="text-sm text-gray-500">{{ selectedAssignee?.githubUsername }}</p>
+              </div>
+              <div v-else>
+                <p class="text-sm text-gray-500">No assignee</p>
+              </div>
+            </template>
             <template #option="{ option }">
               <div class="flex items-center gap-2">
-                <img :src="option.avatar_url" class="w-4 h-4 rounded-full" />
-                <p>{{ option.login }}</p>
+                <img :src="option.githubAvatarUrl" class="w-4 h-4 rounded-full" />
+                <p>{{ option.githubUsername }}</p>
               </div>
             </template>
           </USelectMenu>
@@ -77,13 +101,18 @@ const emits = defineEmits(['close'])
 const task = ref(null)
 const selectedAssignee = ref(null)
 const loadingSelectAssignee = ref(false)
+const isReady = ref(true)
+
+const assignees = computed(() => {
+  return taskStore.assignees.filter(a => a.taskId === props.taskId)
+})
 
 const searchAssignee = async (query) => {
   loadingSelectAssignee.value = true
 
   try {
     const users = await channelStore.getUsers(props.cid)
-    return users
+    return users.filter(user => user.githubUsername.toLowerCase().includes(query.toLowerCase()))
   } catch (error) {
     console.error(error)
   } finally {
@@ -95,8 +124,38 @@ watch(() => props.taskId, (value) => {
   task.value = taskStore.getTask(value)
 })
 
+const initAssignees = () => {
+  setTimeout(() => {
+    isReady.value = false
+    selectedAssignee.value = assignees.value[0]
+    nextTick(() => {
+      isReady.value = true
+    })
+  }, 100)
+}
+
+const cleanup = () => {
+  isReady.value = false
+  selectedAssignee.value = null
+  nextTick(() => {
+    isReady.value = true
+  })
+}
+
 const closeTaskView = () => {
   emits('close')
 }
+
+watch(selectedAssignee, (value) => {
+  if (isReady.value) {
+    // taskStore.updateTaskAssignees(props.cid, props.taskId, value.map(a => a.id))
+    taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+  }
+})
+
+defineExpose({
+  cleanup,
+  initAssignees
+})
 </script>
 
