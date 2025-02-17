@@ -13,19 +13,8 @@ export default defineAuthEventHandler(async (event) => {
     .filter(result => result.status === 'fulfilled')
     .map(result => result.value)
 
-  const resolverGithubUsers = []
-
-  users.forEach(async (user) => {
-    resolverGithubUsers.push($fetch('https://api.github.com/user/35134207.0'))
-  })
-
-  const githubUsers = (await Promise.allSettled(resolverGithubUsers))
-    .filter(result => result.status === 'fulfilled')
-    .map(result => result.value)
-
-
   return {
     success: true,
-    data: githubUsers
+    data: users
   }
 })

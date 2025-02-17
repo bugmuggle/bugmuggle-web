@@ -25,7 +25,6 @@ export const useTaskStore = defineStore('taskStore', () => {
   }
 
   const createTask = async (cid, name, description, priority) => {
-    console.log(cid, name, description, priority)
     const res = await $fetch(`/api/channel/${cid}/tasks/create`, {
       method: 'POST',
       body: { name, description, priority },
