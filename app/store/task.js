@@ -60,5 +60,24 @@ export const useTaskStore = defineStore('taskStore', () => {
     return tasks.value.find(t => t.id === taskId)
   }
 
-  return { tasks, assignees, fetchTasks, createTask, updateTaskOrders, updateTask, getTask }
+  const updateTaskAssignees = async (cid, taskId, assigneeIds) => {
+    const res = await $fetch(`/api/channel/${cid}/tasks/${taskId}/assignments/assign`, {
+      method: 'POST',
+      body: { assigneeIds },
+    })
+
+    if (res.success) {
+      // Clear existing assignees by taskId
+      assignees.value = assignees.value.filter(a => a.taskId !== taskId)
+
+      const queryAssignees = await $fetch(`/api/channel/${cid}/tasks/${taskId}/assignments/get`)
+
+      // Add new assignees
+      assignees.value.push(...queryAssignees.data.flat())
+    }
+
+    return true
+  }
+
+  return { tasks, assignees, fetchTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees }
 })

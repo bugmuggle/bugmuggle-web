@@ -32,8 +32,10 @@
 import { useChannelStore } from '~/store/channel'
 
 const router = useRouter()
+const route = useRoute()
 const channelStore = useChannelStore()
 const refCreateChannel = ref(null)
+const cid = route.params.cid
 
 const userMenu = [
   {
@@ -83,5 +85,6 @@ const channelMenu = computed(() => {
 
 onMounted(async () => {
   await channelStore.fetchChannels()
+  await channelStore.getUsers(cid)
 })
 </script>

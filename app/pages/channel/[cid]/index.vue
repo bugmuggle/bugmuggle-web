@@ -15,6 +15,15 @@
 
           <div class="grow" />
 
+          <UAvatarGroup size="xs" :max="2" @click="() => refManageChannelMembers.open()">
+            <UAvatar
+              v-for="member in members"
+              :key="'appbar-member-display-' + member.id"
+              :src="member.githubAvatarUrl"
+              :alt="member.githubUsername"
+            />
+          </UAvatarGroup>
+
           <UButton
             icon="i-heroicons-plus"
             size="xs"
@@ -51,11 +60,13 @@
   </NuxtLayout>
 
   <DialogsCreateTask ref="refCreateTask" />
+  <DialogsManageChannelMembers ref="refManageChannelMembers" />
 </template>
 
 <script setup>
 import { useAuthStore } from '~/store/auth'
 import { useTaskStore } from '~/store/task'
+import { useChannelStore } from '~/store/channel'
 
 definePageMeta({
   middleware: 'auth',
@@ -64,12 +75,17 @@ definePageMeta({
 const route = useRoute()
 const authStore = useAuthStore()
 const taskStore = useTaskStore()
+const channelStore = useChannelStore()
 const cid = route.params.cid
 
 const channel = ref(null)
 const tasks = ref([])
 const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
+const refManageChannelMembers = ref(null)
+
+const members = computed(() => channelStore.members)
+
 const onSort = () => {
   taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))
 }

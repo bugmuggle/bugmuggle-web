@@ -15,6 +15,6 @@ export default defineAuthEventHandler(async (event) => {
 
   return {
     success: true,
-    data: users
+    data: users.flat()
   }
 })
