@@ -4,9 +4,9 @@ export const useAuthStore = defineStore('authStore', () => {
   const isLoggedIn = ref(false)
   const profile = ref(null)
 
-  const initProfile = async (userId) => {
-    const res = await $fetch('https://api.github.com/user/' + userId)
-    profile.value = res
+  const initProfile = async () => {
+    const res = await $fetch('/api/user/self-profile')
+    profile.value = res.data
   }
 
   const updateLastVisitedChannelId = async (cid) => {

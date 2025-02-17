@@ -2,12 +2,12 @@
   <UButton color="white" block variant="ghost">
     <div class="flex items-center justify-start w-full gap-3">
       <UAvatar
-        v-if="authStore.profile?.avatar_url"
-        :src="authStore.profile?.avatar_url"
+        v-if="authStore.profile?.githubAvatarUrl"
+        :src="authStore.profile?.githubAvatarUrl"
         size="xs"
       />
       <UIcon v-else name="i-heroicons-user-circle" size="24" />
-      <span>{{ authStore.profile?.login }}</span>
+      <span>{{ authStore.profile?.githubUsername }}</span>
     </div>
     <template #leading>
       

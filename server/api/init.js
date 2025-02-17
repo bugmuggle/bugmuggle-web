@@ -8,9 +8,6 @@ const createChannel = async (name) => {
 }
 export default defineAuthEventHandler(async (event) => {
   const user = (await getUserSession(event)).user
-  console.log(user)
-  // githubId
-
   let queryUser = await useDrizzle().select().from(tables.users).where(eq(tables.users.githubId, user.githubId))
 
   if (!queryUser.length) {

@@ -83,7 +83,6 @@ const searchAssignee = async (query) => {
 
   try {
     const users = await channelStore.getUsers(props.cid)
-    console.log(users)
     return users
   } catch (error) {
     console.error(error)
