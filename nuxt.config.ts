@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // https://nuxt.com/modules
-  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils', '@pinia/nuxt', '@nuxthub/core'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils', '@pinia/nuxt', '@nuxthub/core', '@vueuse/nuxt'],
 
   // https://devtools.nuxt.com
   devtools: { enabled: true },

@@ -5,8 +5,12 @@
       Task
     </div>
     <div class="w-12" />
-    <p class="grow text-sm text-gray-600">
+    <p class="text-sm text-gray-600">
       Assignee
+    </p>
+    <div v-if="!taskViewOpen" class="grow" />
+    <p v-if="!taskViewOpen" class="w-32 text-sm text-gray-600">
+      Status
     </p>
   </div>
   <Sortable
@@ -40,22 +44,52 @@
           variant="soft"
           @click="() => emits('click:task', element.id)"
         />
-        <UAvatarGroup
-          v-if="assignees.filter(a => a.taskId === element.id).length > 0"
-          size="xs"
-          @click="() => emits('click:task', element.id)"
-        >
-          <UAvatar
-            v-for="assignee in assignees.filter(a => a.taskId === element.id)"
-            :key="assignee.id"
-            :src="assignee.githubAvatarUrl"
-            :alt="assignee.githubUsername"
-          />
-        </UAvatarGroup>
-        <div v-else @click="() => emits('click:task', element.id)">
-          <UAvatar
+        <div class="w-fit">
+          <UAvatarGroup
+            v-if="assignees.filter(a => a.taskId === element.id).length > 0"
             size="xs"
-            icon="i-heroicons-exclamation-circle"
+            @click="() => emits('click:task', element.id)"
+          >
+            <UAvatar
+              v-for="assignee in assignees.filter(a => a.taskId === element.id)"
+              :key="assignee.id"
+              :src="assignee.githubAvatarUrl"
+              :alt="assignee.githubUsername"
+            />
+          </UAvatarGroup>
+          <div v-else @click="() => emits('click:task', element.id)">
+            <UAvatar
+              size="xs"
+              icon="i-heroicons-exclamation-circle"
+            />
+          </div>
+        </div>
+        <div v-if="!taskViewOpen" class="grow" />
+        <div v-if="!taskViewOpen" class="w-32">
+          <UButton
+            :color="
+              element.status === 'Completed'
+                ? 'green' : element.status === 'In Progress'
+                ? 'blue' : element.status === 'Pull Request'
+                ? 'orange' : element.status === 'Testing'
+                ? 'purple' : element.status === 'Cancelled'
+                ? 'red' : element.status === 'Blocked'
+                ? 'red' : element.status === 'To Do'
+                ? 'gray' : 'gray'"
+            :label="element.status || 'None'"
+            :icon="
+              element.status === 'Completed'
+                ? 'i-heroicons-check-circle' : element.status === 'In Progress'
+                ? 'i-heroicons-clock' : null
+
+            "
+            :variant="
+              ['Cancelled', null].includes(element.status)
+                ? 'outline' : 'solid'
+            "
+            size="xs"
+            block
+            @click="() => emits('click:task', element.id)"
           />
         </div>
       </div>
@@ -66,11 +100,11 @@
 <script setup>
 import { Sortable } from "sortablejs-vue3";
 import { useTaskStore } from '@/store/task'
+import { useStorage } from '@vueuse/core'
 
+const taskViewOpen = useStorage('bugmuggle-taskViewOpen', false)
 const taskStore = useTaskStore()
-
 const elements = defineModel()
-
 const emits = defineEmits(['sort', 'update:title', 'click:task'])
 
 const assignees = computed(() => {

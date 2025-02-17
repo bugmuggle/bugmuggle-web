@@ -75,6 +75,23 @@
           </USelectMenu>
         </div>
       </div>
+
+      <div class="grid grid-cols-12 gap-3 px-4">
+        <div class="col-span-4">
+          <p class="text-sm text-gray-500 font-medium">Status</p>
+        </div>
+        <div class="col-span-8">
+          <USelectMenu v-model="selectedStatus" :options="[
+            'To Do',
+            'In Progress',
+            'Pull Request',
+            'Testing',
+            'Completed',
+            'Blocked',
+            'Cancelled'
+          ]" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -100,6 +117,7 @@ const emits = defineEmits(['close'])
 
 const task = ref(null)
 const selectedAssignee = ref(null)
+const selectedStatus = ref(null)
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
 
@@ -128,6 +146,7 @@ const initAssignees = () => {
   setTimeout(() => {
     isReady.value = false
     selectedAssignee.value = assignees.value[0]
+    selectedStatus.value = task.value.status
     nextTick(() => {
       isReady.value = true
     })
@@ -150,6 +169,12 @@ watch(selectedAssignee, (value) => {
   if (isReady.value) {
     // taskStore.updateTaskAssignees(props.cid, props.taskId, value.map(a => a.id))
     taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+  }
+})
+
+watch(selectedStatus, (value) => {
+  if (isReady.value) {
+    taskStore.updateTask(props.cid, props.taskId, { status: value })
   }
 })
 
