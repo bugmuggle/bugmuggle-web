@@ -1,10 +1,12 @@
 <template>
   <div class="flex items-start gap-0">
-    <p class="w-full max-w-[800px] px-11 text-sm text-gray-500 pr-2">
+    <div class="w-8" />
+    <div class="text-gray-600 text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2">
       Task
-    </p>
-    <p class="w-full max-w-[800px] px-11 text-sm text-gray-500 pr-2">
-      Assigned To
+    </div>
+    <div class="w-12" />
+    <p class="grow text-sm text-gray-600">
+      Assignee
     </p>
   </div>
   <Sortable
@@ -12,7 +14,8 @@
     item-key="id"
     tag="div"
     :options="{
-      handle: '.handle'
+      handle: '.handle',
+      filter: '.sortable-disabled'
     }"
     @sort="onSort"
   >
@@ -24,11 +27,16 @@
         <div class="handle w-fit h-fit cursor-grab text-gray-500">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="5.5" cy="2.5" r=".75"/><circle cx="5.5" cy="8" r=".75"/><circle cx="5.5" cy="13.5" r=".75"/><circle cx="10.496" cy="2.5" r=".75"/><circle cx="10.496" cy="8" r=".75"/><circle cx="10.496" cy="13.5" r=".75"/></g></svg>
         </div>
-        <div
+        <!-- <div
           class="text-sm text-gray-300 p-2 w-full max-w-[764px] pr-2 truncate"
           contenteditable
           v-text="element.title"
           @blur="(e) => emits('update:title', element.id, e.target.innerText)"
+        /> -->
+        <input
+          class="overflow-hidden bg-transparent text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2 truncate"
+          :value="element.title"
+          @blur="(e) => emits('update:title', element.id, e.target.value)"
         />
         <UButton
           icon="i-heroicons-chevron-right"
@@ -38,6 +46,7 @@
           variant="soft"
           @click="() => emits('click:task', element.id)"
         />
+        hello
       </div>
     </template>
   </Sortable>
