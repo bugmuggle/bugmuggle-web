@@ -27,34 +27,29 @@
         variant="none"
       />
 
-      <div class="grid grid-cols-12 gap-3 px-4">
-        <div class="col-span-4">
+      <div class="grid grid-cols-12 items-center gap-3 px-4">
+        <div class="col-span-2">
           <p class="text-sm text-gray-500 font-medium">Assignee</p>
         </div>
-        <div class="col-span-8">
+        <div class="col-span-10">
           <USelectMenu
             v-model="selectedAssignee"
             :loading="loadingSelectAssignee"
+            :multiple="false"
             :searchable="searchAssignee"
+            :ui="{
+              variant: {
+                none: 'focus:ring-1'
+              }
+            }"
             placeholder="Search for a user..."
             option-attribute="githubUsername"
-            :multiple="false"
             trailing
+            variant="none"
             by="id"
           >
             <template #label>
               <div v-if="selectedAssignee" class="flex items-center gap-2">
-                <!--<UAvatarGroup v-if="[selectedAssignee]?.length > 0" size="xs" :max="6">
-                  <UAvatar
-                    v-for="assignee in [selectedAssignee]"
-                    :key="assignee.id"
-                    :src="assignee.githubAvatarUrl"
-                    :alt="assignee.githubUsername"
-                  />
-                </UAvatarGroup> 
-                <div v-else>
-                  <p class="text-sm text-gray-500">No assignees</p>
-                </div> -->
                 <UAvatar
                   :src="selectedAssignee?.githubAvatarUrl"
                   :alt="selectedAssignee?.githubUsername"
@@ -76,20 +71,49 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-12 gap-3 px-4">
-        <div class="col-span-4">
+      <div class="grid grid-cols-12 items-center gap-3 px-4">
+        <div class="col-span-2">
           <p class="text-sm text-gray-500 font-medium">Status</p>
         </div>
-        <div class="col-span-8">
-          <USelectMenu v-model="selectedStatus" :options="[
-            'To Do',
-            'In Progress',
-            'Pull Request',
-            'Testing',
-            'Completed',
-            'Blocked',
-            'Cancelled'
-          ]" />
+        <div class="col-span-10">
+          <USelectMenu
+            v-model="selectedStatus"
+            :options="[
+              'To Do',
+              'In Progress',
+              'Pull Request',
+              'Testing',
+              'Completed',
+              'Blocked',
+              'Cancelled'
+            ]"
+            :ui="{
+              variant: {
+                none: 'focus:ring-1'
+              }
+            }"
+            variant="none"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-12 items-center gap-3 px-4">
+        <div class="col-span-2">
+          <p class="text-sm text-gray-500 font-medium">Due date</p>
+        </div>
+        <div class="col-span-10">
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton 
+              icon="i-heroicons-calendar-days-20-solid" 
+              variant="ghost" 
+              color="gray" 
+              :label="selectedDueDate ? format(selectedDueDate, 'd MMM, yyy') : 'Select due date'" 
+            />
+
+            <template #panel="{ close }">
+              <DatePicker v-model="selectedDueDate" is-required @close="close" />
+            </template>
+          </UPopover>
         </div>
       </div>
     </div>
@@ -97,6 +121,7 @@
 </template>
 
 <script setup>
+import { format } from 'date-fns'
 import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
 const taskStore = useTaskStore()
@@ -118,6 +143,7 @@ const emits = defineEmits(['close'])
 const task = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
+const selectedDueDate = ref(null)
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
 
@@ -147,6 +173,7 @@ const initAssignees = () => {
     isReady.value = false
     selectedAssignee.value = assignees.value[0]
     selectedStatus.value = task.value.status
+    selectedDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
     nextTick(() => {
       isReady.value = true
     })
@@ -175,6 +202,12 @@ watch(selectedAssignee, (value) => {
 watch(selectedStatus, (value) => {
   if (isReady.value) {
     taskStore.updateTask(props.cid, props.taskId, { status: value })
+  }
+})
+
+watch(selectedDueDate, (value) => {
+  if (isReady.value) {
+    taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
   }
 })
 

@@ -95,6 +95,7 @@ const onUpdateTitle = (id, title) => {
 }
 
 onMounted(() => {
+  refTaskPageWrapper.value.closeTaskView()
   $fetch('/api/channel/' + cid + '/get')
     .then((res) => {
       channel.value = res.data.channel
