@@ -24,12 +24,6 @@ NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_github_client_secret
 pnpm install
 ```
 
-3. You can update the main text displayed by creating a `.env`:
-
-```bash
-NUXT_PUBLIC_HELLO_TEXT="Hello my world!"
-```
-
 ## Development Server
 
 Start the development server on `http://localhost:3000`:
