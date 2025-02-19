@@ -1,29 +1,30 @@
-# Hello Edge
+<br />
+<img src="public/logo.svg" width="80" />
 
-A minimal [Nuxt](https://nuxt.com) starter deployed on the Edge using [NuxtHub](https://hub.nuxt.com).
+### Bugmuggle - Opensource Bug Tracking Web Application
+Bugmuggle is a simple, easy to use bug tracking web application built with Nuxt.js. It's designed to be a lightweight and flexible bug tracking system that can be easily customized to fit your needs. It uses the Github API to authenticate users and access channels like sections to track and manage issues.
 
-https://hello.nuxt.dev
+Bugmuggle is built with [Nuxt](https://nuxt.com) and deployed on Cloudflare Pages using [NuxtHub](https://hub.nuxt.com). All the data is stored in Cloudflare D1.
 
 <a href="https://hello.nuxt.dev">
-<img src="https://github.com/nuxt-hub/hello-edge/assets/904724/99d1bd54-ef7e-4ac9-83ad-0a290f85edcf" alt="Hello World template for NuxtHub" />
+<img src="screenshot.png" alt="A latest screenshot of Bugmuggle app" />
 </a>
 
-## Features
-
-- Server-Side rendering on Cloudflare Workers
-- ESLint setup
-- Ready to add a database, blob and KV storage
-- One click deploy on 275+ locations for free
-
 ## Setup
+1. Create a `.env` file in the root of the project and add the following:
+```bash
+NUXT_SESSION_PASSWORD=password-with-at-least-32-characters
+NUXT_OAUTH_GITHUB_CLIENT_ID=your_github_client_id
+NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_github_client_secret
+```
 
-Make sure to install the dependencies with [pnpm](https://pnpm.io/installation#using-corepack):
+2. Make sure to install the dependencies with [pnpm](https://pnpm.io/installation#using-corepack):
 
 ```bash
 pnpm install
 ```
 
-You can update the main text displayed by creating a `.env`:
+3. You can update the main text displayed by creating a `.env`:
 
 ```bash
 NUXT_PUBLIC_HELLO_TEXT="Hello my world!"
@@ -58,3 +59,10 @@ Then checkout your server logs, analaytics and more in the [NuxtHub Admin](https
 
 You can also deploy using [Cloudflare Pages CI](https://hub.nuxt.com/docs/getting-started/deploy#cloudflare-pages-ci).
 
+## Stay in touch
+[LinkedIn](https://www.linkedin.com/showcase/bugmuggle/)
+
+## Trademark
+**Logo**
+
+The logo is sourced from [OpenMoji](https://openmoji.org/library/emoji-1F436/). License: CC [BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
