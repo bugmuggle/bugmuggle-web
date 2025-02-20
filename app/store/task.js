@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useTaskStore = defineStore('taskStore', () => {
   const tasks = ref([])
+  const myTasks = ref([])
   const assignees = ref([])
 
   const fetchTasks = async (cid) => {
@@ -79,5 +80,13 @@ export const useTaskStore = defineStore('taskStore', () => {
     return true
   }
 
-  return { tasks, assignees, fetchTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees }
+  const fetchMyTasks = async () => {
+    const res = await $fetch('/api/user/my-tasks')
+    if (res.success) {
+      myTasks.value = res.data.tasks
+    }
+    return res
+  }
+
+  return { tasks, myTasks, assignees, fetchTasks, fetchMyTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees }
 })
