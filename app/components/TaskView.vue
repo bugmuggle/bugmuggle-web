@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 overflow-y-auto">
     <div class="flex items-center gap-3 h-12 px-3">
       <UButton
         icon="i-heroicons-x-mark"
@@ -29,7 +29,7 @@
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
         <div class="col-span-2">
-          <p class="text-sm text-gray-500 font-medium">Assignee</p>
+          <p class="text-sm text-gray-500 font-regular">Assignee</p>
         </div>
         <div class="col-span-10">
           <USelectMenu
@@ -73,7 +73,7 @@
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
         <div class="col-span-2">
-          <p class="text-sm text-gray-500 font-medium">Status</p>
+          <p class="text-sm text-gray-500 font-regular">Status</p>
         </div>
         <div class="col-span-10">
           <USelectMenu
@@ -99,7 +99,7 @@
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
         <div class="col-span-2">
-          <p class="text-sm text-gray-500 font-medium">Due date</p>
+          <p class="text-sm text-gray-500 font-regular">Due date</p>
         </div>
         <div class="col-span-10">
           <UPopover :popper="{ placement: 'bottom-start' }">
@@ -115,6 +115,12 @@
             </template>
           </UPopover>
         </div>
+      </div>
+
+      <div class="px-4 space-y-1">
+        <div class="h-2" />
+        <p class="text-sm text-gray-500 font-regular">Description</p>
+        <editor v-model="editDescription" />
       </div>
     </div>
   </div>
@@ -144,6 +150,7 @@ const task = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
 const selectedDueDate = ref(null)
+const editDescription = ref('')
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
 
