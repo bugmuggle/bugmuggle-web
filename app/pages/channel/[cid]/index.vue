@@ -104,6 +104,10 @@ onMounted(() => {
   taskStore.fetchTasks(cid)
     .then((res) => {
       tasks.value = res.data.tasks
+
+      useHead({
+        title: `${channel.value?.name} | Bugmuggle`,
+      })
     })
 
   authStore.updateLastVisitedChannelId(cid)

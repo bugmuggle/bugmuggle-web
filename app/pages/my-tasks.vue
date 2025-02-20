@@ -37,6 +37,10 @@ definePageMeta({
   middleware: 'auth',
 })
 
+useHead({
+  title: 'My Tasks | Bugmuggle',
+})
+
 const taskStore = useTaskStore()
 const tasks = ref([])
 const refTaskPageWrapper = ref(null)
