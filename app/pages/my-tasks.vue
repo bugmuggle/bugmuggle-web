@@ -12,7 +12,8 @@
             color="gray"
             square
             variant="ghost"
-            @click="taskStore.fetchMyTasks()"
+            :class="{ 'hover:!bg-transparent animate-spin': isFetching }"
+            @click="refreshTasks()"
           />
         </div>
       </template>
@@ -43,13 +44,22 @@ useHead({
 
 const taskStore = useTaskStore()
 const tasks = ref([])
+const isFetching = ref(false)
 const refTaskPageWrapper = ref(null)
+
+const refreshTasks = async () => {
+  isFetching.value = true
+  try {
+    const res = await taskStore.fetchMyTasks()
+    tasks.value = res.data.tasks
+  }
+  finally {
+    isFetching.value = false
+  }
+}
 
 onMounted(() => {
   refTaskPageWrapper.value.closeTaskView()
-  taskStore.fetchMyTasks()
-    .then((res) => {
-      tasks.value = res.data.tasks
-    })
+  refreshTasks()
 })
 </script>
