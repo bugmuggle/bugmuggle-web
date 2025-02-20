@@ -50,8 +50,8 @@ const refTaskPageWrapper = ref(null)
 const refreshTasks = async () => {
   isFetching.value = true
   try {
-    const res = await taskStore.fetchMyTasks()
-    tasks.value = res.data.tasks
+    const res = await taskStore.myTasks()
+    tasks.value = res
   }
   finally {
     isFetching.value = false
