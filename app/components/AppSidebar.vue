@@ -26,15 +26,16 @@
   </div>
 
   <DialogsCreateChannel ref="refCreateChannel" />
+  <DialogsLogout ref="refLogoutDialog" />
 </template>
 
 <script setup>
 import { useChannelStore } from '~/store/channel'
 
-const router = useRouter()
 const route = useRoute()
 const channelStore = useChannelStore()
 const refCreateChannel = ref(null)
+const refLogoutDialog = ref(null)
 const searchQuery = ref('')
 const cid = route.params.cid
 
@@ -72,7 +73,7 @@ const accountMenu = ref([
     {
       label: 'Logout',
       icon: 'i-heroicons-arrow-left-start-on-rectangle',
-      click: () => router.push({ path: '/logout' }),
+      click: () => refLogoutDialog.value.open(),
     },
   ],
 ])
