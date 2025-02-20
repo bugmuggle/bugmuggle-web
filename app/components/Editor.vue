@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-transparent hover:border-zinc-500 rounded-md h-auto p-2">
+  <div class="border border-zinc-800 hover:border-zinc-500 rounded-md h-auto p-2">
     <TiptapEditorContent :editor="editor" />
   </div>
 </template>
@@ -21,6 +21,8 @@ lowlight.register('html', html)
 lowlight.register('css', css)
 lowlight.register('js', js)
 lowlight.register('ts', ts)
+lowlight.register('javascript', js)
+lowlight.register('typescript', ts)
 
 const inputContent = defineModel()
 
@@ -31,12 +33,18 @@ const editor = useEditor({
     },
   },
   extensions: [
-    TiptapStarterKit,
+    TiptapStarterKit.configure({
+      codeBlock: false,
+    }),
     Highlight,
     Typography,
-    TiptapPlaceholder.configure({
+    /* TiptapPlaceholder.configure({
       emptyEditorClass: 'is-data-empty',
       placeholder: 'Describe the task...',
+    }), */
+    CodeBlockLowlight.configure({
+      lowlight,
+      defaultLanguage: 'javascript',
     }),
   ],
   onUpdate: ({ editor }) => {

@@ -224,3 +224,93 @@ defineExpose({
 })
 </script>
 
+<style>
+.tiptap :first-child {
+  margin-top: 0;
+}
+
+.tiptap pre {
+  background: #292929;
+  border-radius: 0.5rem;
+  color: var(--white);
+  font-family: 'JetBrainsMono', monospace;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.tiptap code {
+  background: #2d2d2d;
+  border-radius: 0.25rem;
+  color: #e4e4e4;
+  padding: 0.2rem 0.4rem;
+}
+
+.tiptap pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.8rem;
+  padding: 0;
+}
+
+/* Code styling */
+.tiptap pre .hljs-comment,
+.tiptap pre .hljs-quote {
+  color: #616161;
+}
+
+.tiptap pre .hljs-variable,
+.tiptap pre .hljs-template-variable,
+.tiptap pre .hljs-attribute,
+.tiptap pre .hljs-tag,
+.tiptap pre .hljs-name,
+.tiptap pre .hljs-regexp,
+.tiptap pre .hljs-link,
+.tiptap pre .hljs-name,
+.tiptap pre .hljs-selector-id,
+.tiptap pre .hljs-selector-class {
+  color: #f98181;
+}
+
+.tiptap pre .hljs-number,
+.tiptap pre .hljs-meta,
+.tiptap pre .hljs-built_in,
+.tiptap pre .hljs-builtin-name,
+.tiptap pre .hljs-literal,
+.tiptap pre .hljs-type,
+.tiptap pre .hljs-params {
+  color: #fbbc88;
+}
+
+.tiptap pre .hljs-string,
+.tiptap pre .hljs-symbol,
+.tiptap pre .hljs-bullet {
+  color: #b9f18d;
+}
+
+.tiptap pre .hljs-title,
+.tiptap pre .hljs-section {
+  color: #faf594;
+}
+
+.tiptap pre .hljs-keyword,
+.tiptap pre .hljs-selector-tag {
+  color: #70cff8;
+}
+
+.tiptap pre .hljs-emphasis {
+  font-style: italic;
+}
+
+.tiptap pre .hljs-strong {
+  font-weight: 700;
+}
+
+/* Add blockquote styling */
+.tiptap blockquote {
+  border-left: 3px solid #4a5568;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #e6e6e6;
+}
+</style>
+
