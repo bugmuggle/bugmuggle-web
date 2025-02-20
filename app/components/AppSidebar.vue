@@ -8,7 +8,7 @@
     <UVerticalNavigation :ui="{ base: 'gap-3', padding: 'px-3 py-1.5' }" :links="userMenu" />
 
     <div class="z-10 sticky top-0 bg-neutral-900">
-      <UInput placeholder="Search channels" />
+      <UInput v-model="searchQuery" placeholder="Search channels" />
     </div>
 
     <div>
@@ -35,6 +35,7 @@ const router = useRouter()
 const route = useRoute()
 const channelStore = useChannelStore()
 const refCreateChannel = ref(null)
+const searchQuery = ref('')
 const cid = route.params.cid
 
 const userMenu = [
@@ -76,11 +77,30 @@ const accountMenu = ref([
   ]
 ])
 
+// const channelMenu = computed(() => {
+//   return channelStore.channels.map((channel) => ({
+//     label: channel.name,
+//     to: `/channel/${channel.id}`
+//   }))
+// })
+
 const channelMenu = computed(() => {
-  return channelStore.channels.map((channel) => ({
-    label: channel.name,
-    to: `/channel/${channel.id}`
-  }))
+  const channels = channelStore.channels
+  if (!searchQuery.value) {
+    return channels.map(channel => ({
+      label: channel.name,
+      to: `/channel/${channel.id}`,
+    }))
+  }
+
+  return channels
+    .filter(channel =>
+      channel.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .map(channel => ({
+      label: channel.name,
+      to: `/channel/${channel.id}`,
+    }))
 })
 
 onMounted(async () => {
