@@ -42,8 +42,8 @@ const userMenu = [
   {
     label: 'My Tasks',
     icon: 'i-heroicons-inbox',
-    to: '/my-tasks'
-  }
+    to: '/my-tasks',
+  },
 ]
 
 const accountMenu = ref([
@@ -51,38 +51,31 @@ const accountMenu = ref([
     {
       label: 'Account Settings',
       icon: 'i-heroicons-cog-6-tooth',
-      click: () => {}
-    }
+      click: () => {},
+    },
   ],
   [
     {
       label: 'GitHub',
-      click: () => {}
+      click: () => window.open('https://github.com/bugmuggle/bugmuggle', '_blank'),
     },
     {
       label: 'Help & Feedback',
-      click: () => {}
+      click: () => {},
     },
     {
       label: 'Report an issue',
-      click: () => {}
-    }
+      click: () => window.open('https://github.com/bugmuggle/bugmuggle/issues/new', '_blank'),
+    },
   ],
   [
     {
       label: 'Logout',
       icon: 'i-heroicons-arrow-left-start-on-rectangle',
-      click: () => router.push({ path: '/logout' })
-    }
-  ]
+      click: () => router.push({ path: '/logout' }),
+    },
+  ],
 ])
-
-// const channelMenu = computed(() => {
-//   return channelStore.channels.map((channel) => ({
-//     label: channel.name,
-//     to: `/channel/${channel.id}`
-//   }))
-// })
 
 const channelMenu = computed(() => {
   const channels = channelStore.channels
