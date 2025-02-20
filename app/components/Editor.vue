@@ -128,15 +128,15 @@ onBeforeUnmount(() => {
 
   /* Code and preformatted text styles */
   code {
-    background-color: var(--purple-light);
-    border-radius: 0.4rem;
-    color: var(--black);
+    background-color: #2d2d2d;
+    border-radius: 0.25rem;
+    color: #e4e4e4;
     font-size: 0.85rem;
-    padding: 0.25em 0.3em;
+    padding: 0.2rem 0.4rem;
   }
 
   pre {
-    background: var(--black);
+    background: #292929;
     border-radius: 0.5rem;
     color: var(--white);
     font-family: 'JetBrainsMono', monospace;
@@ -149,19 +149,65 @@ onBeforeUnmount(() => {
       font-size: 0.8rem;
       padding: 0;
     }
-  }
 
-  mark {
-    background-color: #FAF594;
-    border-radius: 0.4rem;
-    box-decoration-break: clone;
-    padding: 0.1rem 0.3rem;
+    /* Code highlighting styles */
+    .hljs-comment,
+    .hljs-quote {
+      color: #616161;
+    }
+
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attribute,
+    .hljs-tag,
+    .hljs-name,
+    .hljs-regexp,
+    .hljs-link,
+    .hljs-selector-id,
+    .hljs-selector-class {
+      color: #f98181;
+    }
+
+    .hljs-number,
+    .hljs-meta,
+    .hljs-built_in,
+    .hljs-builtin-name,
+    .hljs-literal,
+    .hljs-type,
+    .hljs-params {
+      color: #fbbc88;
+    }
+
+    .hljs-string,
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #b9f18d;
+    }
+
+    .hljs-title,
+    .hljs-section {
+      color: #faf594;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag {
+      color: #70cff8;
+    }
+
+    .hljs-emphasis {
+      font-style: italic;
+    }
+
+    .hljs-strong {
+      font-weight: 700;
+    }
   }
 
   blockquote {
-    border-left: 3px solid var(--gray-3);
-    margin: 1.5rem 0;
+    border-left: 3px solid #4a5568;
     padding-left: 1rem;
+    margin: 1rem 0;
+    color: #e6e6e6;
   }
 
   hr {
