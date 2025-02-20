@@ -52,16 +52,24 @@ const editor = useEditor({
   }
 });
 
-onMounted(() => {
+const setContent = (content) => {
   if (!!unref(editor)) {
-    console.log('content', inputContent.value)
-    unref(editor).commands.setContent(inputContent.value);
+    unref(editor).commands.setContent(content);
   }
+}
+
+onMounted(() => {
+  setContent(inputContent.value)
 });
 
 onBeforeUnmount(() => {
   unref(editor).destroy();
 });
+
+
+defineExpose({
+  setContent
+})
 </script>
 
 <style>

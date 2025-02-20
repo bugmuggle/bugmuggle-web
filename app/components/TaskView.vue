@@ -120,13 +120,14 @@
       <div class="px-4 space-y-1">
         <div class="h-2" />
         <p class="text-sm text-gray-500 font-regular">Description</p>
-        <editor v-model="editDescription" />
+        <editor ref="elEditor" v-model="editDescription" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useDebounceFn } from '@vueuse/core'
 import { format } from 'date-fns'
 import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
@@ -153,7 +154,7 @@ const selectedDueDate = ref(null)
 const editDescription = ref('')
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
-
+const elEditor = ref(null)
 const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
 })
@@ -181,6 +182,10 @@ const initAssignees = () => {
     selectedAssignee.value = assignees.value[0]
     selectedStatus.value = task.value.status
     selectedDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
+    editDescription.value = task.value.description
+    if (elEditor.value) {
+      elEditor.value.setContent(task.value.description)
+    }
     nextTick(() => {
       isReady.value = true
     })
@@ -215,6 +220,16 @@ watch(selectedStatus, (value) => {
 watch(selectedDueDate, (value) => {
   if (isReady.value) {
     taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
+  }
+})
+
+const debouncedUpdateTask = useDebounceFn((value) => {
+  taskStore.updateTask(props.cid, props.taskId, { description: value })
+}, 1000)
+
+watch(editDescription, (value) => {
+  if (isReady.value) {
+    debouncedUpdateTask(value)
   }
 })
 
