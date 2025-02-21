@@ -10,6 +10,10 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useHead({
+  title: 'Bugmuggle',
+})
+
 const router = useRouter()
 
 const items = ref([

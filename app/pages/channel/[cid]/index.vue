@@ -99,6 +99,9 @@ onMounted(() => {
   $fetch('/api/channel/' + cid + '/get')
     .then((res) => {
       channel.value = res.data.channel
+      useHead({
+        title: `${res.data.channel.name} | Bugmuggle`,
+      })
     })
 
   taskStore.fetchTasks(cid)
