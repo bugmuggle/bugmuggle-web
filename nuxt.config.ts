@@ -11,6 +11,10 @@ export default defineNuxtConfig({
     'nuxt-tiptap-editor'
   ],
 
+  colorMode: {
+    preference: 'dark'
+  },
+
   tiptap: {
     prefix: 'Tiptap'
   },
