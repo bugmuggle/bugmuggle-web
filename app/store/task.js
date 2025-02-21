@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
+import { useAuthStore } from './auth'
 
 export const useTaskStore = defineStore('taskStore', () => {
   const tasks = ref([])
   const assignees = ref([])
+  const authStore = useAuthStore()
 
   const fetchTasks = async (cid) => {
     const res = await $fetch(`/api/channel/${cid}/tasks/all`)
@@ -79,5 +81,20 @@ export const useTaskStore = defineStore('taskStore', () => {
     return true
   }
 
-  return { tasks, assignees, fetchTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees }
+  const fetchMyTasks = async () => {
+    const res = await $fetch('/api/user/my-tasks')
+    if (res.success) {
+      res.data.tasks.forEach((newTask) => {
+        const exists = tasks.value.some(task => task.id === newTask.id)
+        if (!exists) {
+          tasks.value.push(newTask)
+        }
+      })
+    }
+    return res
+  }
+
+  const myTasks = computed(() => tasks.value.filter(task => task.assigneeUserId === authStore.profile.id))
+
+  return { tasks, myTasks, assignees, fetchTasks, fetchMyTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees }
 })

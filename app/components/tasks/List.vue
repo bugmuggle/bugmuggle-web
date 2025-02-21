@@ -5,11 +5,11 @@
       Task
     </div>
     <div class="w-12" />
-    <p class="text-sm text-gray-600">
+    <p v-if="!myTasks" class="text-sm text-gray-600">
       Assignee
     </p>
     <div v-if="!taskViewOpen" class="grow" />
-    <p v-if="!taskViewOpen" class="w-32 text-sm text-gray-600">
+    <p v-if="!taskViewOpen && !myTasks" class="w-32 text-sm text-gray-600">
       Status
     </p>
   </div>
@@ -28,12 +28,16 @@
         class="select-none flex items-center gap-3 border-b border-gray-700 h-10 px-3 hover:bg-neutral-800"
         :data-id="element.id" :key="element.id"
       >
-        <div class="handle w-fit h-fit cursor-grab text-gray-500">
+        <div
+          class="handle w-fit h-fit cursor-grab text-gray-500"
+          :class="{ 'pointer-events-none opacity-50': myTasks }"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="5.5" cy="2.5" r=".75"/><circle cx="5.5" cy="8" r=".75"/><circle cx="5.5" cy="13.5" r=".75"/><circle cx="10.496" cy="2.5" r=".75"/><circle cx="10.496" cy="8" r=".75"/><circle cx="10.496" cy="13.5" r=".75"/></g></svg>
         </div>
         <input
           class="overflow-hidden bg-transparent text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2 truncate"
           :value="element.title"
+          :disabled="myTasks"
           @blur="(e) => emits('update:title', element.id, e.target.value)"
         />
         <UButton
@@ -42,9 +46,10 @@
           color="white"
           square
           variant="soft"
+          class="ml-auto"
           @click="() => emits('click:task', element.id)"
         />
-        <div class="w-fit">
+        <div v-if="!myTasks" class="w-fit">
           <UAvatarGroup
             v-if="assignees.filter(a => a.taskId === element.id).length > 0"
             size="xs"
@@ -64,8 +69,8 @@
             />
           </div>
         </div>
-        <div v-if="!taskViewOpen" class="grow" />
-        <div v-if="!taskViewOpen" class="w-32">
+        <div v-if="!taskViewOpen && !myTasks" class="grow" />
+        <div v-if="!taskViewOpen && !myTasks" class="w-32">
           <UButton
             :color="
               element.status === 'Completed'
@@ -125,4 +130,8 @@ const onSort = (evt) => {
 
   emits('sort')
 }
+
+defineProps({
+  myTasks: Boolean,
+})
 </script>
