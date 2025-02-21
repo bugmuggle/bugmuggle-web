@@ -58,7 +58,7 @@ const accountMenu = ref([
   [
     {
       label: 'GitHub',
-      click: () => {}
+      click: () => window.open('https://github.com/bugmuggle/bugmuggle', '_blank'),
     },
     {
       label: 'Help & Feedback',
@@ -66,7 +66,7 @@ const accountMenu = ref([
     },
     {
       label: 'Report an issue',
-      click: () => {}
+      click: () => window.open('https://github.com/bugmuggle/bugmuggle/issues/new', '_blank'),
     }
   ],
   [
