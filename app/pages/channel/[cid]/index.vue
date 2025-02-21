@@ -10,7 +10,8 @@
             color="gray"
             square
             variant="ghost"
-            @click="taskStore.fetchTasks(cid)"
+            :class="{ 'hover:!bg-transparent animate-spin': isFetching }"
+            @click="refreshTasks()"
           />
 
           <div class="grow" />
@@ -83,6 +84,7 @@ const tasks = ref([])
 const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
+const isFetching = ref(false)
 
 const members = computed(() => channelStore.members)
 
@@ -94,6 +96,17 @@ const onUpdateTitle = (id, title) => {
   taskStore.updateTask(cid, id, { title })
 }
 
+const refreshTasks = async () => {
+  isFetching.value = true
+  try {
+    const res = await taskStore.fetchTasks(cid)
+    tasks.value = res.data.tasks
+  }
+  finally {
+    isFetching.value = false
+  }
+}
+
 onMounted(() => {
   refTaskPageWrapper.value.closeTaskView()
   $fetch('/api/channel/' + cid + '/get')
@@ -101,10 +114,7 @@ onMounted(() => {
       channel.value = res.data.channel
     })
 
-  taskStore.fetchTasks(cid)
-    .then((res) => {
-      tasks.value = res.data.tasks
-    })
+  refreshTasks()
 
   authStore.updateLastVisitedChannelId(cid)
 })
