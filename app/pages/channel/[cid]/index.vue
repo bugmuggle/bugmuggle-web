@@ -102,8 +102,8 @@ onMounted(() => {
     })
 
   taskStore.fetchTasks(cid)
-    .then((res) => {
-      tasks.value = res.data.tasks
+    .then(() => {
+      tasks.value = taskStore.getTasksByChannelId(cid)
     })
 
   authStore.updateLastVisitedChannelId(cid)
