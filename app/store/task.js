@@ -7,11 +7,11 @@ export const useTaskStore = defineStore('taskStore', () => {
   const authStore = useAuthStore()
 
   const fetchTasks = async (cid) => {
-    const res = await $fetch(`/api/channel/${cid}/tasks/all`)
-    tasks.value = res.data.tasks.sort((a, b) => a.order - b.order)
+    const response = await $fetch(`/api/channel/${cid}/tasks/all`)
+    tasks.value = response.data
 
     const resolver = []
-    tasks.value.forEach(task => {
+    response.data.forEach(task => {
       resolver.push(
         $fetch(`/api/channel/${cid}/tasks/${task.id}/assignments/get`)
       )
@@ -23,7 +23,7 @@ export const useTaskStore = defineStore('taskStore', () => {
 
     assignees.value = assignments.flat()
 
-    return res
+    return response
   }
 
   const createTask = async (cid, name, description, priority) => {
@@ -82,19 +82,25 @@ export const useTaskStore = defineStore('taskStore', () => {
   }
 
   const fetchMyTasks = async () => {
-    const res = await $fetch('/api/user/my-tasks')
-    if (res.success) {
-      res.data.tasks.forEach((newTask) => {
-        const exists = tasks.value.some(task => task.id === newTask.id)
-        if (!exists) {
-          tasks.value.push(newTask)
-        }
-      })
-    }
-    return res
+    const response = await $fetch('/api/user/my-tasks')
+
+    response.data.forEach((newTask) => {
+      const targetIndex = tasks.value.findIndex(task => task.id === newTask.id)
+      if (targetIndex > -1) {
+        tasks.value[targetIndex] = newTask
+      } else {
+        tasks.push(newTask)
+      }
+    })
+
+    return response.data
   }
 
   const myTasks = computed(() => tasks.value.filter(task => task.assigneeUserId === authStore.profile.id))
 
-  return { tasks, myTasks, assignees, fetchTasks, fetchMyTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees }
+  const getTasksByChannelId = (channelId) => tasks.value
+    .filter(x => x.channelId === +channelId)
+    .sort((x, y) => x.order - y.order)
+
+  return { tasks, myTasks, assignees, fetchTasks, fetchMyTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees, getTasksByChannelId }
 })

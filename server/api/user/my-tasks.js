@@ -14,6 +14,6 @@ export default defineAuthEventHandler(async (event) => {
 
   return {
     success: true,
-    data: { tasks },
+    data: tasks
   }
 })

@@ -22,7 +22,7 @@
         <div class="space-y-3">
           <tasks-list
             v-model="tasks"
-            :my-tasks="true"
+            :readonly="true"
             @click:task="(id) => refTaskPageWrapper.openTaskView(id)"
           />
         </div>
