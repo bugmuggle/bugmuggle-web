@@ -10,7 +10,8 @@
             color="gray"
             square
             variant="ghost"
-            @click="taskStore.fetchTasks(cid)"
+            :class="{ 'hover:!bg-transparent animate-spin': isFetching }"
+            @click="refreshTasks()"
           />
 
           <div class="grow" />
@@ -83,6 +84,7 @@ const tasks = ref([])
 const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
+const isFetching = ref(false)
 
 const members = computed(() => channelStore.members)
 
