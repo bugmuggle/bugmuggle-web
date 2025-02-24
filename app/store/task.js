@@ -89,7 +89,7 @@ export const useTaskStore = defineStore('taskStore', () => {
       if (targetIndex > -1) {
         tasks.value[targetIndex] = newTask
       } else {
-        tasks.push(newTask)
+        tasks.value.push(newTask)
       }
     })
 
