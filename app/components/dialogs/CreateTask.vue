@@ -23,6 +23,8 @@
 <script setup>
 import { useTaskStore } from '~/store/task'
 
+const emit = defineEmits(['success'])
+
 const route = useRoute()
 const cid = route.params.cid
 const taskStore = useTaskStore()
@@ -44,6 +46,7 @@ const createTask = () => {
   taskStore.createTask(cid, name.value, description.value, 0)
     .then(() => {
       close()
+      emit('success')
     })
     .catch((err) => {
       console.error(err)
