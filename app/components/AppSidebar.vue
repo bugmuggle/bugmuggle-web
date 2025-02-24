@@ -26,6 +26,7 @@
   </div>
 
   <DialogsCreateChannel ref="refCreateChannel" />
+  <DialogsLogout ref="refLogoutDialog" />
 </template>
 
 <script setup>
@@ -35,6 +36,7 @@ const router = useRouter()
 const route = useRoute()
 const channelStore = useChannelStore()
 const refCreateChannel = ref(null)
+const refLogoutDialog = ref(null)
 const cid = route.params.cid
 
 const userMenu = [
@@ -56,7 +58,7 @@ const accountMenu = ref([
   [
     {
       label: 'GitHub',
-      click: () => {}
+      click: () => window.open('https://github.com/bugmuggle/bugmuggle', '_blank'),
     },
     {
       label: 'Help & Feedback',
@@ -64,14 +66,14 @@ const accountMenu = ref([
     },
     {
       label: 'Report an issue',
-      click: () => {}
+      click: () => window.open('https://github.com/bugmuggle/bugmuggle/issues/new', '_blank'),
     }
   ],
   [
     {
       label: 'Logout',
       icon: 'i-heroicons-arrow-left-start-on-rectangle',
-      click: () => router.push({ path: '/logout' })
+      click: () => refLogoutDialog.value.open(),
     }
   ]
 ])

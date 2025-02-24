@@ -38,7 +38,7 @@
                   Connect with GitHub Account
                 </p>
                 <p class="text-center text-gray-500">
-                  Get started with a free account and start deploying your Nuxt apps globally. 
+                  Get started with a free account and start deploying your Nuxt apps globally.
                 </p>
 
                 <UButton size="lg" block variant="solid" color="white" @click="onClickLogin">
@@ -47,7 +47,7 @@
                 </UButton>
 
                 <div class="text-center text-gray-500 text-sm w-full max-w-xs mx-auto block">
-                  By signing up, you agree to our Privacy Policy and Terms of Service. 
+                  By signing up, you agree to our Privacy Policy and Terms of Service.
                 </div>
               </div>
             </UCard>
@@ -68,6 +68,10 @@ const { loggedIn, fetch: fetchSession, openInPopup } = useUserSession()
 const isReady = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
+
+useHead({
+  title: 'Login | Bugmuggle',
+})
 
 const onClickLogin = () => {
   openInPopup('/auth/github')
