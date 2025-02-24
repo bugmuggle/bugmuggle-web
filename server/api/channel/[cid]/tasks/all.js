@@ -3,6 +3,6 @@ export default defineAuthEventHandler(async (event) => {
   const tasks = await useDrizzle().select().from(tables.tasks).where(eq(tables.tasks.channelId, cid))
   return {
     success: true,
-    data: { tasks },
+    data: tasks,
   }
 })

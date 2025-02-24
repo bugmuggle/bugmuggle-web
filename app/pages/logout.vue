@@ -7,6 +7,10 @@
 <script setup>
 const { clear: clearSession } = useUserSession()
 
+useHead({
+  title: 'LogOut | Bugmuggle',
+})
+
 onMounted(() => {
   clearSession()
     .then(() => {
