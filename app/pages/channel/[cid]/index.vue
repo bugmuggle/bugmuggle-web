@@ -59,7 +59,7 @@
     </TaskPageWrapper>
   </NuxtLayout>
 
-  <DialogsCreateTask ref="refCreateTask" />
+  <DialogsCreateTask ref="refCreateTask" @success="refreshTasks" />
   <DialogsManageChannelMembers ref="refManageChannelMembers" />
 </template>
 
@@ -94,6 +94,17 @@ const onUpdateTitle = (id, title) => {
   taskStore.updateTask(cid, id, { title })
 }
 
+const refreshTasks = async () => {
+  isFetching.value = true
+  try {
+    const res = await taskStore.fetchTasks(cid)
+    tasks.value = taskStore.getTasksByChannelId(cid)
+  }
+  finally {
+    isFetching.value = false
+  }
+}
+
 onMounted(() => {
   refTaskPageWrapper.value.closeTaskView()
   $fetch('/api/channel/' + cid + '/get')
@@ -104,11 +115,7 @@ onMounted(() => {
       })
     })
 
-  taskStore.fetchTasks(cid)
-    .then(() => {
-      tasks.value = taskStore.getTasksByChannelId(cid)
-    })
-
+  refreshTasks()
   authStore.updateLastVisitedChannelId(cid)
 })
 </script>
