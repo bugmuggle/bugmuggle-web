@@ -13,6 +13,8 @@
             @click="taskStore.fetchTasks(cid)"
           />
 
+          <ManageRepoAccess />
+
           <div class="grow" />
 
           <UAvatarGroup size="xs" :max="2" @click="() => refManageChannelMembers.open()">

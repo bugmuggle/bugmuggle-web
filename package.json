@@ -13,6 +13,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@iconify-json/mdi": "^1.2.3",
     "@nuxt/eslint": "^0.7.5",
     "@nuxt/ui": "2.21.0",
     "@nuxthub/core": "0.8.17",
