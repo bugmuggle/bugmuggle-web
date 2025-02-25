@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { format } from "date-fns"
 import { useAuthStore } from './auth'
 
 export const useTaskStore = defineStore('taskStore', () => {
@@ -96,11 +97,19 @@ export const useTaskStore = defineStore('taskStore', () => {
     return response.data
   }
 
-  const myTasks = computed(() => tasks.value.filter(task => task.assigneeUserId === authStore.profile.id))
+  const getHeroDate = (date) => {
+    return date ? format(date, 'MMM d, yyyy') : null
+  }
+
+  const myTasks = computed(() =>
+    tasks.value.filter(task => task.assigneeUserId === authStore.profile.id)
+      .map(x => ({ ...x, dueDateHero: getHeroDate(x.dueDate) }))
+  )
 
   const getTasksByChannelId = (channelId) => tasks.value
     .filter(x => x.channelId === +channelId)
     .sort((x, y) => x.order - y.order)
+    .map(x => ({ ...x, dueDateHero: getHeroDate(x.dueDate) }))
 
   return { tasks, myTasks, assignees, fetchTasks, fetchMyTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees, getTasksByChannelId }
 })

@@ -52,7 +52,8 @@
                   <div class="space-y-2">
                     <UCheckbox
                       v-for="member in members"
-                      v-model="hideTasksByGithubId[member.githubId]"
+                      :model-value="!hideTasksByGithubId[member.githubId]"
+                      @update:model-value="() => hideTasksByGithubId[member.githubId] = !hideTasksByGithubId[member.githubId]"
                     >
                       <template #label>
                         <div class="flex items-center gap-2">
@@ -152,7 +153,7 @@ const tasks = computed({
         const assignee = assignees.value.find(a => a.taskId === t.id)
 
         if (assignee) {
-          return processHideTasksByGithubId.value.includes(+assignee.githubId)
+          return !processHideTasksByGithubId.value.includes(+assignee.githubId)
         }
 
         return true
