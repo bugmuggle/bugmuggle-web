@@ -80,13 +80,19 @@ const channelStore = useChannelStore()
 const cid = route.params.cid
 
 const channel = ref(null)
-const tasks = ref([])
 const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
 
 const members = computed(() => channelStore.members)
+
+const tasks = computed({
+  get() {
+    return taskStore.getTasksByChannelId(cid)
+  },
+  set(_) {},
+})
 
 const onSort = () => {
   taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))

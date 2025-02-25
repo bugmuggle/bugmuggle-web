@@ -1,7 +1,6 @@
 export default defineAuthEventHandler(async (event) => {
   const cid = getRouterParam(event, 'cid')
   const { username } = await readBody(event)
-  console.log(username)
 
   let queryUser = await useDrizzle().select().from(tables.users).where(eq(tables.users.githubUsername, username))
 
