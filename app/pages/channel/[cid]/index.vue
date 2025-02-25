@@ -87,7 +87,12 @@ const isFetching = ref(false)
 
 const members = computed(() => channelStore.members)
 
-const tasks = computed(() => taskStore.getTasksByChannelId(cid))
+const tasks = computed({
+  get() {
+    return taskStore.getTasksByChannelId(cid)
+  },
+  set(_) {},
+})
 
 const onSort = () => {
   taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))
