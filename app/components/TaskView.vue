@@ -9,6 +9,26 @@
         variant="solid"
         @click="closeTaskView"
       />
+
+      <div class="grow" />
+
+      <UButton
+        v-if="!selfView"
+        icon="i-heroicons-arrow-top-right-on-square"
+        size="sm"
+        color="gray"
+        square
+        @click="openTaskInNewTab"
+      />
+
+      <UButton
+        v-else
+        :to="`/channel/${cid}?task=${taskId}`"
+        size="sm"
+        color="gray"
+        variant="solid"
+        label="Open in app"
+      />
     </div>
     <div v-if="task" class="px-3 space-y-3">
       <UTextarea
@@ -142,12 +162,15 @@ const props = defineProps({
   cid: {
     type: String,
     default: () => { return '' }
+  },
+  selfView: {
+    type: Boolean,
+    default: () => { return false }
   }
 })
 
 const emits = defineEmits(['close'])
 
-const task = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
 const selectedDueDate = ref(null)
@@ -157,6 +180,13 @@ const isReady = ref(true)
 const elEditor = ref(null)
 const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
+})
+
+const task = computed({
+  get: () => {
+    return taskStore.getTask(+props.taskId)
+  },
+  set: (_) => {}
 })
 
 const searchAssignee = async (query) => {
@@ -201,6 +231,11 @@ const cleanup = () => {
 }
 
 const closeTaskView = () => {
+  useRouter().push({
+    query: {
+      task: null,
+    },
+  })
   emits('close')
 }
 
@@ -232,6 +267,10 @@ watch(editDescription, (value) => {
     debouncedUpdateTask(value)
   }
 })
+
+const openTaskInNewTab = () => {
+  window.open(`/channel/${props.cid}/task/${props.taskId}`, '_blank')
+}
 
 defineExpose({
   cleanup,

@@ -68,6 +68,9 @@ const { loggedIn, fetch: fetchSession, openInPopup } = useUserSession()
 const isReady = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
+const toTaskId = route.query.task
+const to = route.query.to
 
 useHead({
   title: 'Login | Bugmuggle',
@@ -85,7 +88,7 @@ watch(loggedIn, () => {
 
 const onSuccess = () => {
   authStore.isLoggedIn = true
-  router.replace({ path: '/' })
+  router.replace({ path: '/', query: { task: toTaskId, to: to } })
 }
 
 onMounted(() => {

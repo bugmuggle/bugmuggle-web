@@ -15,6 +15,9 @@ useHead({
 })
 
 const router = useRouter()
+const route = useRoute()
+const taskId = route.query.task
+const to = route.query.to
 
 const items = ref([
   { id: '1', name: '1', order: 3 },
@@ -25,7 +28,12 @@ const items = ref([
 onMounted(() => {
   $fetch('/api/init')
     .then((res) => {
-      router.replace('/channel/' + res.data.lastVisitedChannelId)
+      router.replace({
+        path: to ? to : '/channel/' + res.data.lastVisitedChannelId,
+        query: {
+          task: taskId,
+        },
+      })
     })
     .catch(error => {
       // TODO: Handle error using global error handler util
