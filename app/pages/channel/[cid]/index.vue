@@ -34,6 +34,38 @@
             label="Task"
             @click="() => refCreateTask.open()"
           />
+
+          <UPopover>
+            <UChip :show="hasFiltersApplied">
+              <UButton color="gray" variant="ghost" square size="sm" icon="i-heroicons-funnel" />
+            </UChip>
+
+            <template #panel>
+              <div class="p-4 w-64 space-y-3">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-300">Show completed tasks</p>
+                  <UToggle v-model="showCompletedTasks" color="primary" />
+                </div>
+
+                <div class="space-y-2 w-full">
+                  <p class="text-xs font-medium text-gray-400">Show tasks by</p>
+                  <div class="space-y-2">
+                    <UCheckbox
+                      v-for="member in members"
+                      v-model="hideTasksByGithubId[member.githubId]"
+                    >
+                      <template #label>
+                        <div class="flex items-center gap-2">
+                          <UAvatar :src="member.githubAvatarUrl" :alt="member.githubUsername" size="2xs" />
+                          <p class="text-sm font-medium text-gray-300">{{ member.githubUsername }}</p>
+                        </div>
+                      </template>
+                    </UCheckbox>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </UPopover>
         </div>
       </template>
 
@@ -68,6 +100,9 @@
 import { useAuthStore } from '~/store/auth'
 import { useTaskStore } from '~/store/task'
 import { useChannelStore } from '~/store/channel'
+import { useStorage as useStorageLocal } from '@vueuse/core'
+
+const { user } = useUserSession()
 
 definePageMeta({
   middleware: 'auth',
@@ -84,12 +119,44 @@ const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
+const showCompletedTasks = useStorageLocal('showCompletedTasks', true)
+const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
 
 const members = computed(() => channelStore.members)
+const assignees = computed(() => {
+  return taskStore.assignees
+})
+
+const processHideTasksByGithubId = computed(() => {
+  return Object.keys(hideTasksByGithubId.value).filter(id => hideTasksByGithubId.value[id]).map(id => +id)
+})
+
+const hasFiltersApplied = computed(() => {
+  return (
+    !showCompletedTasks.value ||
+    processHideTasksByGithubId.value.length !== members.value.length
+  )
+})
 
 const tasks = computed({
   get() {
-    return taskStore.getTasksByChannelId(cid)
+    return (taskStore.getTasksByChannelId(cid))
+      .filter((t) => {
+        if (!showCompletedTasks.value && t.status === 'Completed') {
+          return false
+        }
+
+        return true
+      })
+      .filter((t) => {
+        const assignee = assignees.value.find(a => a.taskId === t.id)
+
+        if (assignee) {
+          return processHideTasksByGithubId.value.includes(+assignee.githubId)
+        }
+
+        return true
+      })
   },
   set(_) {},
 })

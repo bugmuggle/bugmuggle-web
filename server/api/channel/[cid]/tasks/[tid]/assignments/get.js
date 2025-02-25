@@ -11,6 +11,7 @@ export default defineAuthEventHandler(async (event) => {
     updatedAt: tables.taskAssignees.updatedAt,
     githubUsername: tables.users.githubUsername,
     githubAvatarUrl: tables.users.githubAvatarUrl,
+    githubId: tables.users.githubId,
   })
     .from(tables.taskAssignees)
     .leftJoin(tables.users, eq(tables.taskAssignees.userId, tables.users.id))
