@@ -15,7 +15,7 @@
           />
 
           <div class="grow" />
-
+          <UInput v-model="searchQuery" placeholder="Search tasks..." class="w-[300px]" />
           <UAvatarGroup size="xs" :max="2" @click="() => refManageChannelMembers.open()">
             <UAvatar
               v-for="member in members"
@@ -122,7 +122,7 @@ const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
 const showCompletedTasks = useStorageLocal('showCompletedTasks', true)
 const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
-
+const searchQuery = ref('')
 const members = computed(() => channelStore.members)
 const assignees = computed(() => {
   return taskStore.assignees
@@ -146,7 +146,9 @@ const tasks = computed({
         if (!showCompletedTasks.value && t.status === 'Completed') {
           return false
         }
-
+        if (searchQuery.value && !t.title.toLowerCase().includes(searchQuery.value.toLowerCase())) {
+          return false
+        }
         return true
       })
       .filter((t) => {
