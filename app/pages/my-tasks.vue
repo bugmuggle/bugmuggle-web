@@ -15,13 +15,15 @@
             :class="{ 'hover:!bg-transparent animate-spin': isFetching }"
             @click="refreshTasks()"
           />
+          <div class="grow"/>
+          <UInput v-model="searchQuery" placeholder="Search tasks..." class="w-[300px]" />
         </div>
       </template>
 
       <template #content>
         <div class="space-y-3">
           <tasks-list
-            v-model="tasks"
+            v-model="filteredTasks"
             :readonly="true"
             @click:task="(id) => refTaskPageWrapper.openTaskView(id)"
           />
@@ -46,6 +48,7 @@ const taskStore = useTaskStore()
 const tasks = ref([])
 const isFetching = ref(false)
 const refTaskPageWrapper = ref(null)
+const searchQuery = ref('');
 
 const refreshTasks = async () => {
   isFetching.value = true
@@ -57,6 +60,12 @@ const refreshTasks = async () => {
     isFetching.value = false
   }
 }
+
+const filteredTasks = computed(() => {
+  return tasks.value.filter(task => 
+    task.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
 
 onMounted(() => {
   refTaskPageWrapper.value.closeTaskView()
