@@ -7,6 +7,23 @@ export const useTaskStore = defineStore('taskStore', () => {
   const assignees = ref([])
   const authStore = useAuthStore()
 
+  const fetchTaskById = async (cid, tid) => {
+    const taskResponse = await $fetch(`/api/channel/${cid}/tasks/${tid}/get`)
+    const taskAssignResponse =  await $fetch(`/api/channel/${cid}/tasks/${tid}/assignments/get`)
+
+    const ti_task = tasks.value.findIndex(t => t?.id === tid)
+
+    if (ti_task > -1) {
+      tasks.value[ti_task] = taskResponse.data
+    } else {
+      tasks.value.push(taskResponse.data)
+    }
+
+    assignees.value = taskAssignResponse.data.flat()
+
+    return taskResponse.data
+  }
+
   const fetchTasks = async (cid) => {
     const response = await $fetch(`/api/channel/${cid}/tasks/all`)
     tasks.value = response.data
@@ -111,5 +128,14 @@ export const useTaskStore = defineStore('taskStore', () => {
     .sort((x, y) => x.order - y.order)
     .map(x => ({ ...x, dueDateHero: getHeroDate(x.dueDate) }))
 
-  return { tasks, myTasks, assignees, fetchTasks, fetchMyTasks, createTask, updateTaskOrders, updateTask, getTask, updateTaskAssignees, getTasksByChannelId }
+  return {
+    tasks,
+    myTasks,
+    assignees,
+    fetchTaskById,
+    fetchTasks,
+    fetchMyTasks,
+    createTask,
+    updateTaskOrders, updateTask, getTask, updateTaskAssignees, getTasksByChannelId
+  }
 })

@@ -1,13 +1,37 @@
 <template>
   <div class="space-y-3 overflow-y-auto">
-    <div class="flex items-center gap-3 h-12 px-3">
+    <div class="flex items-center gap-1 h-16 px-3">
       <UButton
         icon="i-heroicons-x-mark"
         size="sm"
         color="gray"
         square
-        variant="solid"
+        variant="ghost"
         @click="closeTaskView"
+      />
+
+      <div class="grow" />
+
+      <UButton
+        :icon="
+          isCopiedTaskUrl
+            ? 'i-heroicons-check-circle'
+            : 'i-heroicons-clipboard-document-list'
+        "
+        size="sm"
+        square
+        color="white"
+        variant="ghost"
+        @click="onClickCopyTaskUrl"
+      />
+
+      <UButton
+        icon="i-heroicons-arrow-top-right-on-square"
+        size="sm"
+        color="white"
+        variant="ghost"
+        square
+        @click="openTaskInNewTab"
       />
     </div>
     <div v-if="task" class="px-3 space-y-3">
@@ -127,7 +151,7 @@
 </template>
 
 <script setup>
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useClipboard } from '@vueuse/core'
 import { format } from 'date-fns'
 import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
@@ -136,8 +160,8 @@ const channelStore = useChannelStore()
 
 const props = defineProps({
   taskId: {
-    type: String,
-    default: () => { return '' }
+    type: Number,
+    default: () => { return -1 }
   },
   cid: {
     type: String,
@@ -147,7 +171,11 @@ const props = defineProps({
 
 const emits = defineEmits(['close'])
 
-const task = ref(null)
+const { copy: copyTaskUrl, copied: isCopiedTaskUrl } = useClipboard()
+const onClickCopyTaskUrl = () => {
+  copyTaskUrl(`${window.location.origin}/channel/${props.cid}/task/${props.taskId}`)
+}
+
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
 const selectedDueDate = ref(null)
@@ -157,6 +185,17 @@ const isReady = ref(true)
 const elEditor = ref(null)
 const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
+})
+
+const task = computed({
+  get: () => {
+    return taskStore.getTask(+props.taskId)
+  },
+  set: (_) => {}
+})
+
+const taskUrl = computed(() => {
+  return `/channel/${props.cid}/task/${props.taskId}`
 })
 
 const searchAssignee = async (query) => {
@@ -201,6 +240,11 @@ const cleanup = () => {
 }
 
 const closeTaskView = () => {
+  useRouter().push({
+    query: {
+      task: null,
+    },
+  })
   emits('close')
 }
 
@@ -232,6 +276,10 @@ watch(editDescription, (value) => {
     debouncedUpdateTask(value)
   }
 })
+
+const openTaskInNewTab = () => {
+  window.open(`/channel/${props.cid}/task/${props.taskId}`, '_blank')
+}
 
 defineExpose({
   cleanup,

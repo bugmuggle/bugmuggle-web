@@ -74,9 +74,10 @@
         <div class="space-y-3">
           <tasks-list
             v-model="tasks"
+            :showExtraColumns="showExtraColumns"
             @sort="onSort"
             @update:title="onUpdateTitle"
-            @click:task="(id) => refTaskPageWrapper.openTaskView(id)"
+            @click:task="onClickTask"
           />
 
           <UButton
@@ -114,6 +115,7 @@ const authStore = useAuthStore()
 const taskStore = useTaskStore()
 const channelStore = useChannelStore()
 const cid = route.params.cid
+const showExtraColumns = ref(true)
 
 const channel = ref(null)
 const refCreateTask = ref(null)
@@ -122,6 +124,18 @@ const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
 const showCompletedTasks = useStorageLocal('showCompletedTasks', true)
 const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
+
+const taskId = computed(() => route.query.task)
+
+watch(taskId, (value) => {
+  if (!value) {
+    setTimeout(() => {
+      showExtraColumns.value = true
+    }, 100)
+  } else {
+    showExtraColumns.value = false
+  }
+})
 
 const members = computed(() => channelStore.members)
 const assignees = computed(() => {
@@ -170,11 +184,27 @@ const onUpdateTitle = (id, title) => {
   taskStore.updateTask(cid, id, { title })
 }
 
+const onClickTask = (id) => {
+  if (id) {
+    refTaskPageWrapper.value.openTaskView(id)
+    // Update query params
+    useRouter().push({
+      query: {
+        task: id,
+      },
+    })
+  }
+}
+
 const refreshTasks = async () => {
   isFetching.value = true
   try {
     const res = await taskStore.fetchTasks(cid)
     tasks.value = taskStore.getTasksByChannelId(cid)
+
+    if (taskId.value) {
+      refTaskPageWrapper.value.openTaskView(+taskId.value)
+    }
   }
   finally {
     isFetching.value = false
