@@ -25,8 +25,11 @@
   >
     <template #item="{element, index}">
       <div
-        class="select-none flex items-center gap-3 border-b border-gray-700 h-fit py-2 px-3 hover:bg-neutral-800"
+        class="select-none flex items-center gap-3 border-b border-gray-700 h-fit py-2 px-3"
         :data-id="element.id" :key="element.id"
+        :class="[
+          +taskId === element.id ? 'bg-primary/20 hover:bg-primary/40' : 'bg-transparent hover:bg-neutral-800'
+        ]"
       >
         <div
           class="handle w-fit h-fit cursor-grab text-gray-500"
@@ -81,7 +84,7 @@
           </div>
         </div>
         <div v-if="!taskViewOpen" class="grow" />
-        <div v-if="!taskViewOpen" class="w-32">
+        <div v-if="!taskViewOpen" class="w-32" :class="[showExtraColumns ? 'visible': 'invisible']">
           <UButton
             :color="
               element.status === 'Completed'
@@ -119,8 +122,22 @@ import { useTaskStore } from '@/store/task'
 import { useStorage } from '@vueuse/core'
 
 defineProps({
-  readonly: Boolean,
+  readonly: {
+    type: Boolean,
+    default: () => {
+      return false
+    }
+  },
+  showExtraColumns: {
+    type: Boolean,
+    default: () => {
+      return true
+    }
+  }
 })
+
+const route = useRoute()
+const taskId = computed(() => route.query.task)
 
 const taskViewOpen = useStorage('bugmuggle-taskViewOpen', false)
 const taskStore = useTaskStore()

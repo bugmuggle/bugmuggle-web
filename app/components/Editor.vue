@@ -15,6 +15,13 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 
+const props = defineProps({
+  readonly: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const lowlight = createLowlight(all);
 
 lowlight.register('html', html)
@@ -27,6 +34,7 @@ lowlight.register('typescript', ts)
 const inputContent = defineModel()
 
 const editor = useEditor({
+  editable: !props.readonly,
   editorProps: {
     attributes: {
       class: 'focus:outline-none min-h-[200px]'
@@ -48,7 +56,9 @@ const editor = useEditor({
     }),
   ],
   onUpdate: ({ editor }) => {
-    inputContent.value = editor.getHTML()
+    if (!props.readonly) {
+      inputContent.value = editor.getHTML()
+    }
   }
 });
 
