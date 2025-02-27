@@ -1,33 +1,37 @@
 <template>
   <div class="space-y-3 overflow-y-auto">
-    <div class="flex items-center gap-3 h-12 px-3">
+    <div class="flex items-center gap-1 h-16 px-3">
       <UButton
         icon="i-heroicons-x-mark"
         size="sm"
         color="gray"
         square
-        variant="solid"
+        variant="ghost"
         @click="closeTaskView"
       />
 
       <div class="grow" />
 
       <UButton
-        v-if="!selfView"
-        icon="i-heroicons-arrow-top-right-on-square"
+        :icon="
+          isCopiedTaskUrl
+            ? 'i-heroicons-check-circle'
+            : 'i-heroicons-clipboard-document-list'
+        "
         size="sm"
-        color="gray"
         square
-        @click="openTaskInNewTab"
+        color="white"
+        variant="ghost"
+        @click="onClickCopyTaskUrl"
       />
 
       <UButton
-        v-else
-        :to="`/channel/${cid}?task=${taskId}`"
+        icon="i-heroicons-arrow-top-right-on-square"
         size="sm"
-        color="gray"
-        variant="solid"
-        label="Open in app"
+        color="white"
+        variant="ghost"
+        square
+        @click="openTaskInNewTab"
       />
     </div>
     <div v-if="task" class="px-3 space-y-3">
@@ -147,7 +151,7 @@
 </template>
 
 <script setup>
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useClipboard } from '@vueuse/core'
 import { format } from 'date-fns'
 import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
@@ -156,20 +160,21 @@ const channelStore = useChannelStore()
 
 const props = defineProps({
   taskId: {
-    type: String,
-    default: () => { return '' }
+    type: Number,
+    default: () => { return -1 }
   },
   cid: {
     type: String,
     default: () => { return '' }
-  },
-  selfView: {
-    type: Boolean,
-    default: () => { return false }
   }
 })
 
 const emits = defineEmits(['close'])
+
+const { copy: copyTaskUrl, copied: isCopiedTaskUrl } = useClipboard()
+const onClickCopyTaskUrl = () => {
+  copyTaskUrl(`${window.location.origin}/channel/${props.cid}/task/${props.taskId}`)
+}
 
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
@@ -187,6 +192,10 @@ const task = computed({
     return taskStore.getTask(+props.taskId)
   },
   set: (_) => {}
+})
+
+const taskUrl = computed(() => {
+  return `/channel/${props.cid}/task/${props.taskId}`
 })
 
 const searchAssignee = async (query) => {

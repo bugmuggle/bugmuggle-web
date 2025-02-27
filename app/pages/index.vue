@@ -29,7 +29,7 @@ onMounted(() => {
   $fetch('/api/init')
     .then((res) => {
       router.replace({
-        path: to ? to : '/channel/' + res.data.lastVisitedChannelId,
+        path: to && to !== '/' ? to : '/channel/' + res.data.lastVisitedChannelId,
         query: {
           task: taskId,
         },
