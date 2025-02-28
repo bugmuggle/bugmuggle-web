@@ -44,15 +44,26 @@
             :disabled="readonly"
             @blur="(e) => emits('update:title', element.id, e.target.value)"
           />
-          <UBadge
-            v-if="element.dueDate"
-            class="block w-fit"
-            size="xs"
-            color="orange"
-            variant="soft"
-          >
-            {{ element.dueDateHero || '' }}
-          </UBadge>
+          <div class="flex items-center gap-1">
+            <UBadge
+              v-if="element.dueDate"
+              class="block w-fit"
+              size="xs"
+              color="orange"
+              variant="soft"
+            >
+              {{ element.dueDateHero || '' }}
+            </UBadge>
+
+            <UBadge
+              v-if="element.archived"
+              color="yellow" :ui="{ rounded: 'rounded-full' }"
+              size="xs"
+              variant="outline"
+            >
+              Archived
+            </UBadge>
+          </div>
         </div>
         <UButton
           icon="i-heroicons-chevron-right"

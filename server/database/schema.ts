@@ -38,6 +38,7 @@ export const tasks = sqliteTable('tasks', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
   dueDate: integer('due_date', { mode: 'timestamp' }),
   status: text('status'),
+  archived: integer('archived', { mode: 'boolean' }),
   updatedBy: integer('updated_by').references(() => users.id),
 })
 

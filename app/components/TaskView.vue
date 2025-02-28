@@ -5,15 +5,52 @@
 
       <div class="grow" />
 
-      <UButton :icon="isCopiedTaskUrl
-        ? 'i-heroicons-check-circle'
-        : 'i-heroicons-clipboard-document-list'
-        " size="sm" square color="white" variant="ghost" @click="onClickCopyTaskUrl" />
+      <UButton
+        :icon="
+          isCopiedTaskUrl
+            ? 'i-heroicons-check-circle'
+            : 'i-heroicons-clipboard-document-list'
+        "
+        size="sm"
+        square
+        color="white"
+        variant="ghost"
+        @click="onClickCopyTaskUrl"
+      />
 
-      <UButton icon="i-heroicons-arrow-top-right-on-square" size="sm" color="white" variant="ghost" square
-        @click="openTaskInNewTab" />
+      <UButton
+        icon="i-heroicons-arrow-top-right-on-square"
+        size="sm"
+        color="white"
+        variant="ghost"
+        square
+        @click="openTaskInNewTab"
+      />
+
+      <UDropdown :items="taskMenu" :popper="{ placement: 'bottom-start' }">
+        <UButton
+          icon="i-heroicons-ellipsis-vertical"
+          size="sm"
+          color="white"
+          variant="ghost"
+          square
+          @click="() => {}"
+        />
+      </UDropdown>
     </div>
     <div v-if="task" class="px-3 space-y-3">
+      <UAlert
+        v-if="task.archived"
+        :actions="[
+          { variant: 'solid', color: 'primary', label: 'Unarchive', click: onUnarchiveTask }
+        ]"
+        icon="i-heroicons-archive-box-20-solid"
+        color="yellow"
+        variant="outline"
+        title="Archived"
+        description="This task is archived. You can unarchive it by clicking the button below."
+      />
+
       <UTextarea v-model="task.title" size="xl" :ui="{
         variant: {
           none: 'focus:ring-1'
@@ -136,6 +173,41 @@ const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
 })
 
+const onArchiveTask = () => {
+  if (!task.value.archived) {
+    taskStore.updateTask(props.cid, props.taskId, { archived: true })
+  }
+}
+
+const onDeleteTask = () => {
+  taskStore.deleteTask(props.cid, props.taskId)
+    .then(() => {
+      closeTaskView()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const taskMenu = [
+  [
+    {
+      label: 'Archive',
+      icon: 'i-heroicons-archive-box-20-solid',
+      click: onArchiveTask
+    }
+  ],
+  [
+    {
+      label: 'Delete Permanently',
+      icon: 'i-heroicons-trash-20-solid',
+      iconClass: 'bg-red-400',
+      class: '!text-red-400',
+      click: onDeleteTask
+    }
+  ]
+]
+
 const dateAttributes = [
   {
     dot: "green",
@@ -150,9 +222,9 @@ const task = computed({
   set: (_) => { }
 })
 
-const taskUrl = computed(() => {
-  return `/channel/${props.cid}/task/${props.taskId}`
-})
+const onUnarchiveTask = () => {
+  taskStore.updateTask(props.cid, props.taskId, { archived: false })
+}
 
 const searchAssignee = async (query) => {
   loadingSelectAssignee.value = true

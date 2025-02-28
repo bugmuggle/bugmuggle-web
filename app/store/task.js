@@ -24,8 +24,10 @@ export const useTaskStore = defineStore('taskStore', () => {
     return taskResponse.data
   }
 
-  const fetchTasks = async (cid) => {
-    const response = await $fetch(`/api/channel/${cid}/tasks/all`)
+  const fetchTasks = async (cid, { archived = false } = {}) => {
+    const response = await $fetch(`/api/channel/${cid}/tasks/all`, {
+      query: { archived }
+    })
     tasks.value = response.data
 
     const resolver = []
@@ -74,6 +76,21 @@ export const useTaskStore = defineStore('taskStore', () => {
         tasks.value[index] = res.data
       }
     }
+  }
+
+  const deleteTask = async (cid, taskId) => {
+    const res = await $fetch(`/api/channel/${cid}/tasks/${taskId}/delete`, {
+      method: 'DELETE',
+    })
+
+    if (res.success) {
+      const ti = tasks.value.findIndex(t => t.id === taskId)
+      if (ti !== -1) {
+        tasks.value.splice(ti, 1)
+      }
+    }
+
+    return res.data
   }
 
   const getTask = (taskId) => {
@@ -136,6 +153,7 @@ export const useTaskStore = defineStore('taskStore', () => {
     fetchTasks,
     fetchMyTasks,
     createTask,
+    deleteTask,
     updateTaskOrders, updateTask, getTask, updateTaskAssignees, getTasksByChannelId
   }
 })
