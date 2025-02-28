@@ -179,6 +179,16 @@ const onArchiveTask = () => {
   }
 }
 
+const onDeleteTask = () => {
+  taskStore.deleteTask(props.cid, props.taskId)
+    .then(() => {
+      closeTaskView()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
 const taskMenu = [
   [
     {
@@ -193,9 +203,7 @@ const taskMenu = [
       icon: 'i-heroicons-trash-20-solid',
       iconClass: 'bg-red-400',
       class: '!text-red-400',
-      click: () => {
-        console.log('Delete Permanently')
-      }
+      click: onDeleteTask
     }
   ]
 ]
