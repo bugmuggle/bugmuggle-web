@@ -20,6 +20,7 @@ Bugmuggle is built with [Nuxt](https://nuxt.com) and deployed on Cloudflare Page
     NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_github_client_secret
     ```
     You can get your Github Client ID and Client Secret from your [Github's developer profile settings](https://github.com/settings/developers)
+    Follow this guide to [create a new OAuth App](https://github.com/bugmuggle/bugmuggle/wiki/Setup-GitHub-OAuth-Application)
 
 
 3. Make sure to install the dependencies with [pnpm](https://pnpm.io/installation#using-corepack):
