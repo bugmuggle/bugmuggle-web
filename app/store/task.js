@@ -24,8 +24,10 @@ export const useTaskStore = defineStore('taskStore', () => {
     return taskResponse.data
   }
 
-  const fetchTasks = async (cid) => {
-    const response = await $fetch(`/api/channel/${cid}/tasks/all`)
+  const fetchTasks = async (cid, { archived = false } = {}) => {
+    const response = await $fetch(`/api/channel/${cid}/tasks/all`, {
+      query: { archived }
+    })
     tasks.value = response.data
 
     const resolver = []

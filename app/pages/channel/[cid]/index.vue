@@ -43,6 +43,10 @@
             <template #panel>
               <div class="p-4 w-64 space-y-3">
                 <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-300">Show archived tasks</p>
+                  <UToggle v-model="showArchivedTasks" color="primary" />
+                </div>
+                <div class="flex items-center justify-between">
                   <p class="text-sm font-medium text-gray-300">Show completed tasks</p>
                   <UToggle v-model="showCompletedTasks" color="primary" />
                 </div>
@@ -123,6 +127,7 @@ const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
 const showCompletedTasks = useStorageLocal('showCompletedTasks', true)
+const showArchivedTasks = useStorageLocal('showArchivedTasks', false)
 const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
 const searchQuery = ref('')
 
@@ -202,7 +207,7 @@ const onClickTask = (id) => {
 const refreshTasks = async () => {
   isFetching.value = true
   try {
-    const res = await taskStore.fetchTasks(cid)
+    await taskStore.fetchTasks(cid, { archived: showArchivedTasks.value })
     tasks.value = taskStore.getTasksByChannelId(cid)
 
     if (taskId.value) {
@@ -213,6 +218,11 @@ const refreshTasks = async () => {
     isFetching.value = false
   }
 }
+
+watchEffect(() => {
+  showArchivedTasks.value;
+  refreshTasks();
+})
 
 onMounted(() => {
   refTaskPageWrapper.value.closeTaskView()
