@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 overflow-y-auto">
+  <div class="space-y-3">
     <div class="flex items-center gap-1 h-16 px-3">
       <UButton icon="i-heroicons-x-mark" size="sm" color="gray" square variant="ghost" @click="closeTaskView" />
 
@@ -132,6 +132,8 @@
         <p class="text-sm text-gray-500 font-regular">Description</p>
         <editor ref="elEditor" v-model="editDescription" />
       </div>
+
+      <div class="h-24" />
     </div>
   </div>
 </template>
