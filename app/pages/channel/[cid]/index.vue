@@ -42,10 +42,10 @@
 
             <template #panel>
               <div class="p-4 w-64 space-y-3">
-                <div class="flex items-center justify-between">
+                <!-- <div class="flex items-center justify-between">
                   <p class="text-sm font-medium text-gray-300">Show archived tasks</p>
                   <UToggle v-model="showArchivedTasks" color="primary" />
-                </div>
+                </div> -->
                 <div class="flex items-center justify-between">
                   <p class="text-sm font-medium text-gray-300">Show completed tasks</p>
                   <UToggle v-model="showCompletedTasks" color="primary" />
@@ -127,7 +127,7 @@ const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
 const showCompletedTasks = useStorageLocal('showCompletedTasks', true)
-const showArchivedTasks = useStorageLocal('showArchivedTasks', false)
+const showArchivedTasks = ref(false)
 const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
 const searchQuery = ref('')
 
