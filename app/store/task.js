@@ -28,6 +28,7 @@ export const useTaskStore = defineStore('taskStore', () => {
     const response = await $fetch(`/api/channel/${cid}/tasks/all`, {
       query: { archived }
     })
+
     tasks.value = response.data
 
     const resolver = []
@@ -84,7 +85,8 @@ export const useTaskStore = defineStore('taskStore', () => {
     })
 
     if (res.success) {
-      const ti = tasks.value.findIndex(t => t.id === taskId)
+      const ti = tasks.value.findIndex(t => t.id === +taskId)
+      console.log('deleteTask::ti', ti, +taskId)
       if (ti !== -1) {
         tasks.value.splice(ti, 1)
       }

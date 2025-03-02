@@ -1,8 +1,11 @@
 <template>
-  <div class="flex items-start gap-0">
+  <div class="sticky top-0 z-10 bg-neutral-900 flex items-start gap-0">
     <div class="w-8" />
     <div class="text-gray-600 text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2">
-      Task
+      <div class="flex items-center gap-2 pl-1">
+        <UCheckbox v-model="selectAllTasks" />
+        Task
+      </div>
     </div>
     <div class="w-12" />
     <p class="text-sm text-gray-600">
@@ -38,12 +41,15 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="5.5" cy="2.5" r=".75"/><circle cx="5.5" cy="8" r=".75"/><circle cx="5.5" cy="13.5" r=".75"/><circle cx="10.496" cy="2.5" r=".75"/><circle cx="10.496" cy="8" r=".75"/><circle cx="10.496" cy="13.5" r=".75"/></g></svg>
         </div>
         <div class="space-y-0.5 text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2">
-          <input
-            class="overflow-hidden bg-transparent w-full truncate block"
-            :value="element.title"
-            :disabled="readonly"
-            @blur="(e) => emits('update:title', element.id, e.target.value)"
-          />
+          <div class="flex items-center gap-2">
+            <UCheckbox v-model="selectTaskById[element.id]" />
+            <input
+              class="overflow-hidden bg-transparent w-full truncate block"
+              :value="element.title"
+              :disabled="readonly"
+              @blur="(e) => emits('update:title', element.id, e.target.value)"
+            />
+          </div>
           <div class="flex items-center gap-1">
             <UBadge
               v-if="element.dueDate"
@@ -125,6 +131,8 @@
       </div>
     </template>
   </Sortable>
+
+  <DialogsDeleteTasks ref="refDeleteTasks" />
 </template>
 
 <script setup>
@@ -150,10 +158,28 @@ defineProps({
 const route = useRoute()
 const taskId = computed(() => route.query.task)
 
+const refDeleteTasks = ref(null)
+const selectAllTasks = ref(false)
+const selectTaskById = ref({})
 const taskViewOpen = useStorage('bugmuggle-taskViewOpen', false)
 const taskStore = useTaskStore()
 const elements = defineModel()
-const emits = defineEmits(['sort', 'update:title', 'click:task'])
+const emits = defineEmits(['sort', 'update:title', 'click:task', 'has-any-selected-tasks'])
+
+watch(selectAllTasks, (value) => {
+  selectTaskById.value = elements.value.reduce((acc, element) => {
+    acc[element.id] = value
+    return acc
+  }, {})
+})
+
+const hasAnySelectedTasks = computed(() => {
+  return Object.values(selectTaskById.value).some(value => value)
+})
+
+watch(hasAnySelectedTasks, (value) => {
+  emits('has-any-selected-tasks', value)
+})
 
 const assignees = computed(() => {
   return taskStore.assignees
@@ -173,4 +199,18 @@ const onSort = (evt) => {
 
   emits('sort')
 }
+
+const onDeleteTask = () => {
+  refDeleteTasks.value.onBeforeDeleteTasks(
+    Object.keys(selectTaskById.value).filter(key => selectTaskById.value[key]),
+    () => {
+      selectTaskById.value = {}
+      selectAllTasks.value = false
+    }
+  )
+}
+
+defineExpose({
+  onDeleteTask
+})
 </script>

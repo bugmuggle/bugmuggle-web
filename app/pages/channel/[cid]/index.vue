@@ -15,6 +15,15 @@
           />
 
           <div class="grow" />
+          <UButton
+            v-if="hasAnySelectedTasks"
+            icon="i-heroicons-trash"
+            size="xs"
+            color="red"
+            variant="outline"
+            label="Delete Task(s)"
+            @click="() => refTasksList.onDeleteTask()"
+          />
           <UInput v-model="searchQuery" placeholder="Search tasks..." class="w-[300px]" />
           <UAvatarGroup size="xs" :max="2" @click="() => refManageChannelMembers.open()">
             <UAvatar
@@ -77,11 +86,13 @@
       <template #content>
         <div class="space-y-3">
           <tasks-list
+            ref="refTasksList"
             v-model="tasks"
             :showExtraColumns="showExtraColumns"
             @sort="onSort"
             @update:title="onUpdateTitle"
             @click:task="onClickTask"
+            @has-any-selected-tasks="(v) => hasAnySelectedTasks = v"
           />
 
           <UButton
@@ -123,6 +134,7 @@ const channelStore = useChannelStore()
 const cid = route.params.cid
 const showExtraColumns = ref(true)
 
+const refTasksList = ref(null)
 const channel = ref(null)
 const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
@@ -132,6 +144,7 @@ const showCompletedTasks = useStorageLocal('showCompletedTasks', true)
 const showArchivedTasks = ref(false)
 const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
 const searchQuery = ref('')
+const hasAnySelectedTasks = ref(false)
 
 const taskId = computed(() => route.query.task)
 
@@ -182,6 +195,7 @@ const tasks = computed({
 
         return true
       })
+      .sort((a, b) => (a.order ?? 999999) - (b.order ?? 999999))
   },
   set(_) {},
 })
