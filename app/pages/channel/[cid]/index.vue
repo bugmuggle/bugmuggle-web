@@ -94,7 +94,7 @@
             @click="() => refCreateTask.open()"
           />
 
-          <div class="h-12" />
+          <div class="h-4" />
         </div>
       </template>
     </TaskPageWrapper>
