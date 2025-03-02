@@ -8,3 +8,9 @@
     </div>
   </div>
 </template>
+
+<script setup>
+definePageMeta({
+  colorMode: 'dark'
+})
+</script>

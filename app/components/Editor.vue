@@ -101,11 +101,28 @@ defineExpose({
   ol {
     padding: 0 1rem;
     margin: 1.25rem 1rem 1.25rem 0.4rem;
+    color: #e4e4e4;
 
-    li p {
-      margin-top: 0.25em;
-      margin-bottom: 0.25em;
+    li {
+      p {
+        margin-top: 0.25em;
+        margin-bottom: 0.25em;
+      }
     }
+    
+    li::marker {
+      color: #e4e4e4;
+    }
+  }
+  
+  /* Add specific styling for ordered lists */
+  ol {
+    list-style-type: decimal;
+  }
+  
+  /* Add specific styling for unordered lists */
+  ul {
+    list-style-type: disc;
   }
 
   /* Heading styles */
