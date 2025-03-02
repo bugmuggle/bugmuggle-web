@@ -10,7 +10,7 @@
       <slot name="content" />
     </div>
     <div :class="[
-      'z-10 absolute top-0 bottom-0 w-[700px] bg-neutral-900 transition-all duration-300',
+      'z-10 absolute top-0 bottom-0 w-[700px] bg-neutral-900 transition-all duration-300 overflow-y-auto',
       taskViewOpen ? 'right-0' : '-right-[700px]'
     ]">
       <div class="h-full">
