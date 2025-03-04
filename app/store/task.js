@@ -164,9 +164,7 @@ export const useTaskStore = defineStore('taskStore', () => {
       responseType: 'blob'
     })
     const url = window.URL.createObjectURL(response)
-    const link = document.createElement('a')
-    link.href = url
-    link.click()
+    window.open(url, '_blank')
     window.URL.revokeObjectURL(url)
   }
 
