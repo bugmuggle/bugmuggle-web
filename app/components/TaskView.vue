@@ -133,6 +133,50 @@
         <editor ref="elEditor" v-model="editDescription" />
       </div>
 
+      <div class="px-4 space-y-1 mt-4">
+        <p class="text-sm text-gray-500 font-regular">Attachments</p>
+        
+        <div class="space-y-2">
+          <UInput
+            ref="refFileInput"
+            type="file"
+            multiple
+            @change="(e) => onFileUpload(e)"
+          />
+
+          <div v-for="attachment in attachments" :key="attachment.id" 
+               class="flex items-center justify-between p-2 border border-gray-700 rounded-md">
+            <div class="flex items-center gap-2">
+              <UIcon name="i-heroicons-paper-clip" />
+              <span class="text-sm">{{ attachment.fileName }}</span>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <UButton
+                :icon="downloadingAttachments.has(attachment.id) 
+                  ? 'i-heroicons-arrow-path' 
+                  : 'i-heroicons-arrow-down-tray'"
+                size="xs"
+                color="gray"
+                variant="ghost"
+                :loading="downloadingAttachments.has(attachment.id)"
+                @click="downloadAttachment(attachment.id)"
+              />
+              <UButton
+                :icon="deletingAttachments.has(attachment.id)
+                  ? 'i-heroicons-arrow-path'
+                  : 'i-heroicons-trash'"
+                size="xs"
+                color="red"
+                variant="ghost"
+                :loading="deletingAttachments.has(attachment.id)"
+                @click="deleteAttachment(attachment.id)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="h-24" />
     </div>
   </div>
@@ -145,6 +189,7 @@ import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
 const taskStore = useTaskStore()
 const channelStore = useChannelStore()
+const toast = useToast()
 
 const props = defineProps({
   taskId: {
@@ -171,6 +216,8 @@ const editDescription = ref('')
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
 const elEditor = ref(null)
+const downloadingAttachments = ref(new Set())
+const deletingAttachments = ref(new Set())
 const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
 })
@@ -245,19 +292,46 @@ watch(() => props.taskId, (value) => {
   task.value = taskStore.getTask(value)
 })
 
+const attachments = ref([])
+
+const fetchAttachments = async () => {
+  try {
+    const res = await taskStore.fetchTaskAttachments(props.cid, props.taskId)
+    attachments.value = res
+  } catch (error) {
+    console.error('Error fetching attachments:', error)
+  }
+}
+
+const refFileInput = ref(null)
+
 const initAssignees = () => {
-  setTimeout(() => {
-    isReady.value = false
-    selectedAssignee.value = assignees.value[0]
-    selectedStatus.value = task.value.status
-    selectedDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
-    editDescription.value = task.value.description
-    if (elEditor.value) {
-      elEditor.value.setContent(task.value.description)
+  setTimeout(async () => {
+    try {
+      isReady.value = false
+      selectedAssignee.value = assignees.value[0]
+      selectedStatus.value = task.value.status
+      selectedDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
+      editDescription.value = task.value.description
+      if (elEditor.value) {
+        elEditor.value.setContent(task.value.description)
+      }
+      await fetchAttachments()
+      if (refFileInput.value) {
+        refFileInput.value.input.value = null
+      }
+    } catch (error) {
+      console.error('Error initializing task:', error)
+      toast.add({
+        title: 'Error',
+        description: 'Failed to initialize task details',
+        color: 'red'
+      })
+    } finally {
+      nextTick(() => {
+        isReady.value = true
+      })
     }
-    nextTick(() => {
-      isReady.value = true
-    })
   }, 100)
 }
 
@@ -309,6 +383,113 @@ watch(editDescription, (value) => {
 
 const openTaskInNewTab = () => {
   window.open(`/channel/${props.cid}/task/${props.taskId}`, '_blank')
+}
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+const validateFileSize = (files) => {
+  const oversizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
+  return oversizedFiles;
+};
+
+const uploadFiles = async (files) => {
+  const resolvers = files.map((file) => taskStore.uploadTaskAttachment(props.cid, props.taskId, file));
+  const results = await Promise.allSettled(resolvers);
+  return results;
+};
+
+const handleUploadResults = (results) => {
+  const succeeded = results.filter((r) => r.status === 'fulfilled');
+  const failed = results.filter((r) => r.status === 'rejected');
+
+  succeeded.forEach((result) => {
+    attachments.value.push(result.value);
+  });
+
+  if (succeeded.length) {
+    toast.add({
+      title: 'Upload successful',
+      description: `${succeeded.length} file(s) uploaded successfully`,
+      color: 'green',
+    });
+  }
+
+  if (failed.length) {
+    toast.add({
+      title: 'Upload failed',
+      description: `${failed.length} file(s) failed to upload`,
+      color: 'red',
+    });
+  }
+};
+
+const onFileUpload = async (Uploads) => {
+  const files = Array.from(Uploads)
+  if (!files.length) return;
+
+  const oversizedFiles = validateFileSize(files);
+  if (oversizedFiles.length) {
+    toast.add({
+      title: 'Files too large',
+      description: `${oversizedFiles.map((file) => file.name).join(', ')} exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB limit`,
+      color: 'red',
+    });
+    return;
+  }
+
+  try {
+    const results = await uploadFiles(files);
+    handleUploadResults(results);
+  } catch (error) {
+    console.error('Error during file upload:', error);
+    toast.add({
+      title: 'Upload error',
+      description: 'An error occurred while uploading files',
+      color: 'red',
+    });
+  }
+};
+
+const downloadAttachment = (attachmentId) => {
+  downloadingAttachments.value.add(attachmentId)
+  
+  taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
+    .catch((error) => {
+      console.error('Error downloading attachment:', error)
+      toast.add({
+        title: 'Download failed',
+        description: 'Failed to download attachment',
+        color: 'red'
+      })
+    })
+    .finally(() => {
+      downloadingAttachments.value.delete(attachmentId)
+    })
+}
+
+const deleteAttachment = (attachmentId) => {
+  deletingAttachments.value.add(attachmentId)
+  
+  taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
+    .then(() => {
+      attachments.value = attachments.value.filter(a => a.id !== attachmentId)
+      toast.add({
+        title: 'Attachment deleted',
+        description: 'File was successfully deleted',
+        color: 'green'
+      })
+    })
+    .catch((error) => {
+      console.error('Error deleting attachment:', error)
+      toast.add({
+        title: 'Delete failed',
+        description: 'Failed to delete attachment',
+        color: 'red'
+      })
+    })
+    .finally(() => {
+      deletingAttachments.value.delete(attachmentId)
+    })
 }
 
 defineExpose({
