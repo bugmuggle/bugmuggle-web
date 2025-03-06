@@ -1,11 +1,8 @@
-import { promises as fs } from 'node:fs'
-
 export default defineAuthEventHandler(async (event) => {
   try {
     const formData = await readFormData(event)
     const file = formData.get('file')
     
-    // Validate file exists
     if (!file) {
       throw createError({ statusCode: 400, message: 'Invalid file upload' })
     }
@@ -14,15 +11,15 @@ export default defineAuthEventHandler(async (event) => {
     const githubId = (await getUserSession(event)).user.githubId
     const user = await getUserByGithubId(githubId)
 
-    const uploadDir = `./.bugmuggle/uploads`
-    await fs.mkdir(uploadDir, { recursive: true })
-
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`
-    const filePath = `${uploadDir}/${fileName}`
-
     const arrayBuffer = await file.arrayBuffer()
-    await fs.writeFile(filePath, Buffer.from(arrayBuffer))
+    const blobKey = `tasks/${tid}/attachments/${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+    
+    await hubBlob().put(blobKey, arrayBuffer, {
+      type: file.type,
+      metadata: {
+        fileName: file.name
+      }
+    })
 
     const db = useDrizzle()
     const attachment = await db.insert(tables.taskAttachments).values({
@@ -30,7 +27,7 @@ export default defineAuthEventHandler(async (event) => {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      filePath,
+      blobKey,
       uploadedBy: user.id,
       createdAt: new Date()
     }).returning()

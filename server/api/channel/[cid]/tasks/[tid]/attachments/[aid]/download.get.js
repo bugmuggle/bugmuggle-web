@@ -1,5 +1,3 @@
-import { promises as fs } from 'node:fs'
-
 export default defineAuthEventHandler(async (event) => {
   const aid = getRouterParam(event, 'aid')
   
@@ -9,17 +7,19 @@ export default defineAuthEventHandler(async (event) => {
     .where(eq(tables.taskAttachments.id, aid))
     .get()
 
-  const filePath = `${process.cwd()}/${attachment.filePath}`
-  if (!await fs.access(filePath).then(() => true).catch(() => false)) {
+  if (!attachment) {
+    throw createError({ statusCode: 404, message: 'Attachment not found' })
+  }
+
+  const blob = await hubBlob().get(attachment.blobKey)
+  if (!blob) {
     throw createError({ statusCode: 404, message: 'File not found' })
   }
-  
-  const fileData = await fs.readFile(filePath)
   
   setHeaders(event, {
     'Content-Type': attachment.fileType,
     'Content-Disposition': `attachment; filename="${attachment.fileName}"`
   })
 
-  return fileData
+  return blob
 })

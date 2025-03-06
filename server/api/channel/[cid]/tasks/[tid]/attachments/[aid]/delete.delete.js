@@ -1,5 +1,3 @@
-import { promises as fs } from 'node:fs'
-
 export default defineAuthEventHandler(async (event) => {
   const aid = getRouterParam(event, 'aid')
   
@@ -9,7 +7,7 @@ export default defineAuthEventHandler(async (event) => {
     .returning()
 
   if (attachment.length > 0) {
-    await fs.unlink(attachment[0].filePath).catch(console.error)
+    await hubBlob().delete(attachment[0].blobKey).catch(console.error)
   }
 
   return {

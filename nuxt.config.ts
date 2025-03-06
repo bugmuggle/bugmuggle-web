@@ -40,7 +40,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-07-30',
 
   hub: {
-    database: true
+    database: true,
+    blob: true
   },
 
   // https://hub.nuxt.com/docs/getting-started/installation#options

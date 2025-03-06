@@ -56,7 +56,7 @@ export const taskAttachments = sqliteTable('task_attachments', {
   fileName: text('file_name').notNull(),
   fileSize: integer('file_size').notNull(),
   fileType: text('file_type').notNull(),
-  filePath: text('file_path').notNull(),
+  blobKey: text('blob_key').notNull(),
   uploadedBy: integer('uploaded_by').references(() => users.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
