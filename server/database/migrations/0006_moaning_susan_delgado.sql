@@ -1,0 +1,1 @@
+ALTER TABLE `task_attachments` ADD `thumbnail_blob_key` text;
