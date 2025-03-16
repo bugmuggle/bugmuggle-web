@@ -11,6 +11,10 @@ export default defineNuxtConfig({
     'nuxt-tiptap-editor'
   ],
 
+  nitro: {
+    preset: 'node-server',
+  },
+
   colorMode: {
     preference: 'dark'
   },
