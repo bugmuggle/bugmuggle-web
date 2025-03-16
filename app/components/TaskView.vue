@@ -51,14 +51,22 @@
         description="This task is archived. You can unarchive it by clicking the button below."
       />
 
-      <UTextarea v-model="task.title" size="xl" :ui="{
-        variant: {
-          none: 'focus:ring-1'
-        },
-        size: {
-          xl: 'text-2xl h-fit'
-        }
-      }" autoresize placeholder="Enter task title" variant="none" />
+      <UTextarea
+        v-model="task.title"
+        size="xl"
+        :ui="{
+          variant: {
+            none: 'focus:ring-1'
+          },
+          size: {
+            xl: 'text-2xl h-fit'
+          }
+        }"
+        autoresize
+        placeholder="Enter task title"
+        variant="none"
+        @keyup="onChangeTaskTitle"
+      />
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
         <div class="col-span-2">
@@ -228,6 +236,10 @@ const onArchiveTask = () => {
   }
 }
 
+const onChangeTaskTitle = useDebounceFn((e) => {
+  taskStore.updateTask(props.cid, props.taskId, { title: e.target.value })
+}, 1000)
+
 const onDeleteTask = () => {
   taskStore.deleteTask(props.cid, props.taskId)
     .then(() => {
@@ -268,7 +280,7 @@ const task = computed({
   get: () => {
     return taskStore.getTask(+props.taskId)
   },
-  set: (_) => { }
+  set: (_) => {}
 })
 
 const onUnarchiveTask = () => {
