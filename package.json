@@ -25,6 +25,7 @@
     "highlight.js": "^11.11.1",
     "jimp-compact": "0.16.1-2",
     "lowlight": "^3.3.0",
+    "nanoid": "^5.1.4",
     "nuxt": "^3.15.4",
     "nuxt-auth-utils": "0.5.15",
     "nuxt-tiptap-editor": "^2.1.4",

@@ -10,8 +10,6 @@ export default defineAuthEventHandler(async (event) => {
   const githubId = (await getUserSession(event)).user.githubId
   const user = await getUserByGithubId(githubId)
 
-  console.log('updates', updates)
-
   const task = await useDrizzle().update(tables.tasks)
     .set({
       ...updates,

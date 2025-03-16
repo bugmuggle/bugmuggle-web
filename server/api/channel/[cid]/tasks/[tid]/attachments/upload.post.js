@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+
 export default defineAuthEventHandler(async (event) => {
   try {
     const formData = await readFormData(event)
@@ -11,8 +13,9 @@ export default defineAuthEventHandler(async (event) => {
     const githubId = (await getUserSession(event)).user.githubId
     const user = await getUserByGithubId(githubId)
 
+    const uniqueId = nanoid()
     const arrayBuffer = await file.arrayBuffer()
-    const blobKey = `tasks/${tid}/attachments/${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+    const blobKey = `tasks/${tid}/attachments/${uniqueId}.${file.type.split('/')[1]}`
     
     await hubBlob().put(blobKey, file, {
       type: file.type,
@@ -21,13 +24,23 @@ export default defineAuthEventHandler(async (event) => {
       }
     })
 
+    const thumbnail = await generateThumbnail(arrayBuffer, file.type)
+    const thumbnailBlobKey = `tasks/${tid}/attachments/thumbnails/${uniqueId}-thumbnail.${file.type.split('/')[1]}`
+
+    if (thumbnail) {
+      await hubBlob().put(thumbnailBlobKey, new File([thumbnail], file.name, { type: file.type }), {
+        type: file.type,
+      })
+    }
+
+
     const db = useDrizzle()
     const attachment = await db.insert(tables.taskAttachments).values({
       taskId: tid,
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      // thumbnailBlobKey,
+      thumbnailBlobKey: thumbnail ? thumbnailBlobKey : null,
       blobKey,
       uploadedBy: user.id,
       createdAt: new Date()
