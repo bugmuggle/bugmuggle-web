@@ -25,7 +25,7 @@ export default defineAuthEventHandler(async (event) => {
     let thumbnailBlobKey = null
     if (file.type.startsWith('image/') || file.type === 'application/pdf') {
       try {
-        // Create a thumbnail using Sharp or other image processing library
+        // Create a thumbnail using jimp or other image processing library
         const thumbnailBuffer = await generateThumbnail(arrayBuffer, file.type)
         thumbnailBlobKey = `${blobKey}-thumbnail`
         
