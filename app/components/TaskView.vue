@@ -233,14 +233,14 @@
             
             <!-- Scroll indicators -->
             <div v-if="canScrollLeft" 
-                 class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-zinc-900 to-transparent flex items-center">
-              <UButton icon="i-heroicons-chevron-left" size="xs" color="white" variant="ghost" square 
-                      @click="scrollAttachments('left')" class="ml-1" />
+                 class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-zinc-900 to-transparent flex items-center justify-center">
+              <UButton icon="i-heroicons-chevron-left" size="sm" color="white" variant="ghost" square 
+                      @click="scrollAttachments('left')" />
             </div>
             <div v-if="canScrollRight" 
-                 class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-zinc-900 to-transparent flex items-center justify-end">
-              <UButton icon="i-heroicons-chevron-right" size="xs" color="white" variant="ghost" square 
-                      @click="scrollAttachments('right')" class="mr-1" />
+                 class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-zinc-900 to-transparent flex items-center justify-center">
+              <UButton icon="i-heroicons-chevron-right" size="sm" color="white" variant="ghost" square 
+                      @click="scrollAttachments('right')" />
             </div>
           </div>
           <UInput
