@@ -51,14 +51,34 @@
         description="This task is archived. You can unarchive it by clicking the button below."
       />
 
-      <UTextarea v-model="task.title" size="xl" :ui="{
-        variant: {
-          none: 'focus:ring-1'
-        },
-        size: {
-          xl: 'text-2xl h-fit'
-        }
-      }" autoresize placeholder="Enter task title" variant="none" />
+      <div class="flex items-center gap-3 px-3 -my-2 text-xs text-gray-500 font-regular">
+        <div class="flex items-center">
+          Created by
+          <div class="w-2" />
+          <UAvatar class="mr-1" :src="task.createdByGithubAvatarUrl" :alt="task.createdByGithubUsername" size="xs" />
+          <span class="text-gray-300">{{ task.createdByGithubUsername }}</span>
+        </div>
+
+        <div class="grow" />
+        <p class="text-gray-500">{{ useDateFormat(task.createdAt, 'YYYY-MM-DD HH:mm:ss') }}</p>
+      </div>
+
+      <UTextarea
+        v-model="task.title"
+        size="xl"
+        :ui="{
+          variant: {
+            none: 'focus:ring-1'
+          },
+          size: {
+            xl: 'text-2xl h-fit'
+          }
+        }"
+        autoresize
+        placeholder="Enter task title"
+        variant="none"
+        @keyup="onChangeTaskTitle"
+      />
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
         <div class="col-span-2">
@@ -137,6 +157,78 @@
         <p class="text-sm text-gray-500 font-regular">Attachments</p>
         
         <div class="space-y-2">
+          <div class="flex items-center overflow-x-auto gap-3">
+            <div 
+              v-for="attachment in attachments"
+              :key="'task-view-attachment-' + attachment.id"
+            >
+              <UPopover :popper="{ placement: 'top-start' }" mode="hover">
+                <div
+                  class="relative w-fit h-fit relative bg-zinc-800 rounded-md"
+                  @mouseenter="hoverAttachmentId = attachment.id"
+                  @mouseleave="hoverAttachmentId = null"
+                  :name="attachment.fileName"
+                >
+                  <div
+                    v-if="attachment.thumbnailBase64Url"
+                    class="w-36 h-36 bg-cover bg-center"
+                    :style="{
+                      backgroundImage: `url(${attachment.thumbnailBase64Url})`
+                    }"
+                  />
+                  <div v-else class="flex items-center justify-center w-36 h-36">
+                    <UIcon v-if="attachment.fileType.startsWith('image/')" name="i-heroicons-photo" class="w-10 h-10 text-gray-500" />
+                    <UIcon v-else name="i-heroicons-document-text" class="w-10 h-10 text-gray-500" />
+                  </div>
+                  <div v-show="hoverAttachmentId === attachment.id" class="absolute top-0 right-0 bottom-0 left-0 bg-black bg-opacity-60">
+                    <div class="flex items-center justify-center h-full">
+                      <div class="inline-flex items-center gap-2">
+                        <UButton
+                          icon="i-heroicons-arrow-down-tray"
+                          size="sm"
+                          color="primary"
+                          square
+                          variant="soft"
+                          @click="downloadAttachment(attachment.id)"
+                        />
+                        <UButton
+                          icon="i-heroicons-trash"
+                          size="sm"
+                          color="red"
+                          square
+                          variant="soft"
+                          @click="deleteAttachment(attachment.id)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <template #panel>
+                  <UCard>
+                    <div class="space-y-3">
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">File name</p>
+                        <div class="grow" />
+                        <p class="text-sm text-gray-300">{{ attachment.fileName }}</p>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">File size</p>
+                        <div class="grow" />
+                        <p class="text-sm text-gray-300">{{ attachment.fileSize }}</p>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">File type</p>
+                        <div class="grow" />
+                        <p class="text-sm text-gray-300">{{ attachment.fileType }}</p>
+                      </div>
+                    </div>
+                  </UCard>
+                </template>
+              </UPopover>
+            </div>
+          </div>
           <UInput
             ref="refFileInput"
             type="file"
@@ -144,36 +236,6 @@
             @change="(e) => onFileUpload(e)"
           />
 
-          <div v-for="attachment in attachments" :key="attachment.id" 
-               class="flex items-center justify-between p-2 border border-gray-700 rounded-md">
-            <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-paper-clip" />
-              <span class="text-sm">{{ attachment.fileName }}</span>
-            </div>
-            
-            <div class="flex items-center gap-2">
-              <UButton
-                :icon="downloadingAttachments.has(attachment.id) 
-                  ? 'i-heroicons-arrow-path' 
-                  : 'i-heroicons-arrow-down-tray'"
-                size="xs"
-                color="gray"
-                variant="ghost"
-                :loading="downloadingAttachments.has(attachment.id)"
-                @click="downloadAttachment(attachment.id)"
-              />
-              <UButton
-                :icon="deletingAttachments.has(attachment.id)
-                  ? 'i-heroicons-arrow-path'
-                  : 'i-heroicons-trash'"
-                size="xs"
-                color="red"
-                variant="ghost"
-                :loading="deletingAttachments.has(attachment.id)"
-                @click="deleteAttachment(attachment.id)"
-              />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -184,6 +246,7 @@
 
 <script setup>
 import { useDebounceFn, useClipboard } from '@vueuse/core'
+import { useDateFormat } from '@vueuse/core'
 import { format } from 'date-fns'
 import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
@@ -209,6 +272,7 @@ const onClickCopyTaskUrl = () => {
   copyTaskUrl(`${window.location.origin}/channel/${props.cid}/task/${props.taskId}`)
 }
 
+const hoverAttachmentId = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
 const selectedDueDate = ref(null)
@@ -227,6 +291,10 @@ const onArchiveTask = () => {
     taskStore.updateTask(props.cid, props.taskId, { archived: true })
   }
 }
+
+const onChangeTaskTitle = useDebounceFn((e) => {
+  taskStore.updateTask(props.cid, props.taskId, { title: e.target.value })
+}, 1000)
 
 const onDeleteTask = () => {
   taskStore.deleteTask(props.cid, props.taskId)
@@ -268,7 +336,7 @@ const task = computed({
   get: () => {
     return taskStore.getTask(+props.taskId)
   },
-  set: (_) => { }
+  set: (_) => {}
 })
 
 const onUnarchiveTask = () => {
@@ -403,6 +471,7 @@ const handleUploadResults = (results) => {
   const failed = results.filter((r) => r.status === 'rejected');
 
   succeeded.forEach((result) => {
+    console.log('result::', result.value)
     attachments.value.push(result.value);
   });
 
@@ -412,6 +481,10 @@ const handleUploadResults = (results) => {
       description: `${succeeded.length} file(s) uploaded successfully`,
       color: 'green',
     });
+    
+    if (refFileInput.value) {
+      refFileInput.value.input.value = null;
+    }
   }
 
   if (failed.length) {
