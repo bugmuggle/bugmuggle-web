@@ -15,8 +15,11 @@ export default defineAuthEventHandler(async (event) => {
       ...updates,
       updatedAt: new Date(),
       updatedBy: user.id,
+      createdByGithubAvatarUrl: tables.users.githubAvatarUrl,
+      createdByGithubUsername: tables.users.githubUsername
     })
     .where(eq(tables.tasks.id, tid))
+    .leftJoin(tables.users, eq(tables.tasks.createdBy, tables.users.id))
     .returning()
 
   return {
