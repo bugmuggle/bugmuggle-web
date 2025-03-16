@@ -28,9 +28,9 @@ export default defineAuthEventHandler(async (event) => {
     const thumbnailBlobKey = `tasks/${tid}/attachments/thumbnails/${uniqueId}-thumbnail.${file.type.split('/')[1]}`
 
     if (thumbnail) {
-      await hubBlob().put(thumbnailBlobKey, new File([thumbnail], file.name, { type: file.type }), {
+      /* await hubBlob().put(thumbnailBlobKey, new File([thumbnail], file.name, { type: file.type }), {
         type: file.type,
-      })
+      }) */
     }
 
 
@@ -40,7 +40,7 @@ export default defineAuthEventHandler(async (event) => {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      thumbnailBlobKey: thumbnail ? thumbnailBlobKey : null,
+      thumbnailBlobKey: null,
       blobKey,
       uploadedBy: user.id,
       createdAt: new Date()
