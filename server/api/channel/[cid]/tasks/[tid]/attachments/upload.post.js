@@ -21,33 +21,13 @@ export default defineAuthEventHandler(async (event) => {
       }
     })
 
-    // Generate thumbnail for images and PDFs
-    let thumbnailBlobKey = null
-    if (file.type.startsWith('image/') || file.type === 'application/pdf') {
-      try {
-        // Create a thumbnail using jimp or other image processing library
-        const thumbnailBuffer = await generateThumbnail(arrayBuffer, file.type)
-        thumbnailBlobKey = `${blobKey}-thumbnail`
-        
-        await hubBlob().put(thumbnailBlobKey, new File([thumbnailBuffer], file.name + '-thumbnail', { type: file.type }), {
-          type: file.type,
-          metadata: {
-            fileName: file.name + '-thumbnail'
-          }
-        })
-      } catch (thumbError) {
-        console.error('Thumbnail generation error:', thumbError)
-        // Continue without thumbnail if generation fails
-      }
-    }
-
     const db = useDrizzle()
     const attachment = await db.insert(tables.taskAttachments).values({
       taskId: tid,
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      thumbnailBlobKey,
+      // thumbnailBlobKey,
       blobKey,
       uploadedBy: user.id,
       createdAt: new Date()

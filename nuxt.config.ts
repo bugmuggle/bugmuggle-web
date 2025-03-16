@@ -11,10 +11,6 @@ export default defineNuxtConfig({
     'nuxt-tiptap-editor'
   ],
 
-  nitro: {
-    preset: 'cloudflare_pages',
-  },
-
   colorMode: {
     preference: 'dark'
   },
