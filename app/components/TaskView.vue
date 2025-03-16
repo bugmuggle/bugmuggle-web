@@ -157,76 +157,90 @@
         <p class="text-sm text-gray-500 font-regular">Attachments</p>
         
         <div class="space-y-2">
-          <div class="flex items-center overflow-x-auto gap-3">
-            <div 
-              v-for="attachment in attachments"
-              :key="'task-view-attachment-' + attachment.id"
-            >
-              <UPopover :popper="{ placement: 'top-start' }" mode="hover">
-                <div
-                  class="relative w-fit h-fit relative bg-zinc-800 rounded-md"
-                  @mouseenter="hoverAttachmentId = attachment.id"
-                  @mouseleave="hoverAttachmentId = null"
-                  :name="attachment.fileName"
-                >
+          <div class="relative">
+            <div class="flex items-center overflow-x-auto gap-3 scrollbar-hide" ref="attachmentsContainer">
+              <div 
+                v-for="attachment in attachments"
+                :key="'task-view-attachment-' + attachment.id"
+              >
+                <UPopover :popper="{ placement: 'top-start' }" mode="hover">
                   <div
-                    v-if="attachment.thumbnailBase64Url"
-                    class="w-36 h-36 bg-cover bg-center"
-                    :style="{
-                      backgroundImage: `url(${attachment.thumbnailBase64Url})`
-                    }"
-                  />
-                  <div v-else class="flex items-center justify-center w-36 h-36">
-                    <UIcon v-if="attachment.fileType.startsWith('image/')" name="i-heroicons-photo" class="w-10 h-10 text-gray-500" />
-                    <UIcon v-else name="i-heroicons-document-text" class="w-10 h-10 text-gray-500" />
-                  </div>
-                  <div v-show="hoverAttachmentId === attachment.id" class="absolute top-0 right-0 bottom-0 left-0 bg-black bg-opacity-60">
-                    <div class="flex items-center justify-center h-full">
-                      <div class="inline-flex items-center gap-2">
-                        <UButton
-                          icon="i-heroicons-arrow-down-tray"
-                          size="sm"
-                          color="primary"
-                          square
-                          variant="soft"
-                          @click="downloadAttachment(attachment.id)"
-                        />
-                        <UButton
-                          icon="i-heroicons-trash"
-                          size="sm"
-                          color="red"
-                          square
-                          variant="soft"
-                          @click="deleteAttachment(attachment.id)"
-                        />
+                    class="relative w-fit h-fit relative bg-zinc-800 rounded-md"
+                    @mouseenter="hoverAttachmentId = attachment.id"
+                    @mouseleave="hoverAttachmentId = null"
+                    :name="attachment.fileName"
+                  >
+                    <div
+                      v-if="attachment.thumbnailBase64Url"
+                      class="w-36 h-36 bg-cover bg-center"
+                      :style="{
+                        backgroundImage: `url(${attachment.thumbnailBase64Url})`
+                      }"
+                    />
+                    <div v-else class="flex items-center justify-center w-36 h-36">
+                      <UIcon v-if="attachment.fileType.startsWith('image/')" name="i-heroicons-photo" class="w-10 h-10 text-gray-500" />
+                      <UIcon v-else name="i-heroicons-document-text" class="w-10 h-10 text-gray-500" />
+                    </div>
+                    <div v-show="hoverAttachmentId === attachment.id" class="absolute top-0 right-0 bottom-0 left-0 bg-black bg-opacity-60">
+                      <div class="flex items-center justify-center h-full">
+                        <div class="inline-flex items-center gap-2">
+                          <UButton
+                            icon="i-heroicons-arrow-down-tray"
+                            size="sm"
+                            color="primary"
+                            square
+                            variant="soft"
+                            @click="downloadAttachment(attachment.id)"
+                          />
+                          <UButton
+                            icon="i-heroicons-trash"
+                            size="sm"
+                            color="red"
+                            square
+                            variant="soft"
+                            @click="deleteAttachment(attachment.id)"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <template #panel>
-                  <UCard>
-                    <div class="space-y-3">
-                      <div class="flex items-center gap-2">
-                        <p class="text-sm text-gray-600">File name</p>
-                        <div class="grow" />
-                        <p class="text-sm text-gray-300">{{ attachment.fileName }}</p>
-                      </div>
+                  <template #panel>
+                    <UCard>
+                      <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                          <p class="text-sm text-gray-600">File name</p>
+                          <div class="grow" />
+                          <p class="text-sm text-gray-300">{{ attachment.fileName }}</p>
+                        </div>
 
-                      <div class="flex items-center gap-2">
-                        <p class="text-sm text-gray-600">File size</p>
-                        <div class="grow" />
-                        <p class="text-sm text-gray-300">{{ attachment.fileSize }}</p>
-                      </div>
+                        <div class="flex items-center gap-2">
+                          <p class="text-sm text-gray-600">File size</p>
+                          <div class="grow" />
+                          <p class="text-sm text-gray-300">{{ attachment.fileSize }}</p>
+                        </div>
 
-                      <div class="flex items-center gap-2">
-                        <p class="text-sm text-gray-600">File type</p>
-                        <div class="grow" />
-                        <p class="text-sm text-gray-300">{{ attachment.fileType }}</p>
+                        <div class="flex items-center gap-2">
+                          <p class="text-sm text-gray-600">File type</p>
+                          <div class="grow" />
+                          <p class="text-sm text-gray-300">{{ attachment.fileType }}</p>
+                        </div>
                       </div>
-                    </div>
-                  </UCard>
-                </template>
-              </UPopover>
+                    </UCard>
+                  </template>
+                </UPopover>
+              </div>
+            </div>
+            
+            <!-- Scroll indicators -->
+            <div v-if="canScrollLeft" 
+                 class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-zinc-900 to-transparent flex items-center">
+              <UButton icon="i-heroicons-chevron-left" size="xs" color="white" variant="ghost" square 
+                      @click="scrollAttachments('left')" class="ml-1" />
+            </div>
+            <div v-if="canScrollRight" 
+                 class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-zinc-900 to-transparent flex items-center justify-end">
+              <UButton icon="i-heroicons-chevron-right" size="xs" color="white" variant="ghost" square 
+                      @click="scrollAttachments('right')" class="mr-1" />
             </div>
           </div>
           <UInput
@@ -235,7 +249,6 @@
             multiple
             @change="(e) => onFileUpload(e)"
           />
-
         </div>
       </div>
 
@@ -565,8 +578,65 @@ const deleteAttachment = (attachmentId) => {
     })
 }
 
+const attachmentsContainer = ref(null)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
+
+const checkScrollability = () => {
+  if (!attachmentsContainer.value) return
+  
+  const container = attachmentsContainer.value
+  canScrollLeft.value = container.scrollLeft > 0
+  canScrollRight.value = container.scrollLeft < container.scrollWidth - container.clientWidth
+}
+
+const scrollAttachments = (direction) => {
+  if (!attachmentsContainer.value) return
+  
+  const container = attachmentsContainer.value
+  const scrollAmount = 200 // Adjust scroll amount as needed
+  
+  if (direction === 'left') {
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+  } else {
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  }
+}
+
+onMounted(() => {
+  if (attachmentsContainer.value) {
+    checkScrollability()
+    attachmentsContainer.value.addEventListener('scroll', checkScrollability)
+    window.addEventListener('resize', checkScrollability)
+  }
+})
+
+onUnmounted(() => {
+  if (attachmentsContainer.value) {
+    attachmentsContainer.value.removeEventListener('scroll', checkScrollability)
+    window.removeEventListener('resize', checkScrollability)
+  }
+})
+
+// Update checkScrollability when attachments change
+watch(attachments, () => {
+  nextTick(() => {
+    checkScrollability()
+  })
+}, { deep: true })
+
 defineExpose({
   cleanup,
   initAssignees
 })
 </script>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
+</style>
