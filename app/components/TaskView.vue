@@ -51,6 +51,18 @@
         description="This task is archived. You can unarchive it by clicking the button below."
       />
 
+      <div class="flex items-center gap-3 px-3 -my-2 text-xs text-gray-500 font-regular">
+        <div class="flex items-center">
+          Created by
+          <div class="w-2" />
+          <UAvatar class="mr-1" :src="task.createdByGithubAvatarUrl" :alt="task.createdByGithubUsername" size="xs" />
+          <span class="text-gray-300">{{ task.createdByGithubUsername }}</span>
+        </div>
+
+        <div class="grow" />
+        <p class="text-gray-500">{{ useDateFormat(task.createdAt, 'YYYY-MM-DD HH:mm:ss') }}</p>
+      </div>
+
       <UTextarea
         v-model="task.title"
         size="xl"
@@ -192,6 +204,7 @@
 
 <script setup>
 import { useDebounceFn, useClipboard } from '@vueuse/core'
+import { useDateFormat } from '@vueuse/core'
 import { format } from 'date-fns'
 import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
