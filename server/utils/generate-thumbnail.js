@@ -1,4 +1,4 @@
-import sharp from 'sharp'
+import Jimp from 'jimp-compact'
 
 /**
  * Generates a thumbnail from the provided file buffer
@@ -12,7 +12,10 @@ export const generateThumbnail = async (buffer, fileType) => {
     // Ensure buffer is properly converted to Buffer if it's an ArrayBuffer
     const inputBuffer = buffer instanceof ArrayBuffer ? Buffer.from(buffer) : buffer;
     
-    return await sharp(inputBuffer).resize(320, 240, { fit: 'inside' }).toBuffer()
+    const image = await Jimp.read(inputBuffer);
+    // Maintain aspect ratio by setting only the max dimensions
+    image.scaleToFit(320, 240);
+    return await image.getBufferAsync(Jimp.AUTO);
   }
   
   throw new Error('Unsupported file type for thumbnail generation')
