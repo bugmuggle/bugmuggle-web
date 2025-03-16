@@ -159,6 +159,11 @@ export const useTaskStore = defineStore('taskStore', () => {
     return res.data
   }
 
+  const fetchTaskAttachment = async (cid, tid, aid) => {
+    const res = await $fetch(`/api/channel/${cid}/tasks/${tid}/attachments/${aid}/fetch`)
+    return res.data
+  }
+
   const downloadTaskAttachment = async (cid, tid, aid) => {
     const response = await $fetch(`/api/channel/${cid}/tasks/${tid}/attachments/${aid}/download`, {
       responseType: 'blob'
@@ -188,7 +193,15 @@ export const useTaskStore = defineStore('taskStore', () => {
     fetchMyTasks,
     createTask,
     deleteTask,
-    updateTaskOrders, updateTask, getTask, updateTaskAssignees, getTasksByChannelId,
-    uploadTaskAttachment, downloadTaskAttachment, fetchTaskAttachments, deleteTaskAttachment
+    updateTaskOrders,
+    updateTask,
+    getTask,
+    updateTaskAssignees,
+    getTasksByChannelId,
+    uploadTaskAttachment,
+    downloadTaskAttachment,
+    fetchTaskAttachments,
+    deleteTaskAttachment,
+    fetchTaskAttachment
   }
 })

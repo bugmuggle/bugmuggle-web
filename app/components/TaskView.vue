@@ -144,34 +144,76 @@
             @change="(e) => onFileUpload(e)"
           />
 
-          <div v-for="attachment in attachments" :key="attachment.id" 
-               class="flex items-center justify-between p-2 border border-gray-700 rounded-md">
-            <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-paper-clip" />
-              <span class="text-sm">{{ attachment.fileName }}</span>
-            </div>
-            
-            <div class="flex items-center gap-2">
-              <UButton
-                :icon="downloadingAttachments.has(attachment.id) 
-                  ? 'i-heroicons-arrow-path' 
-                  : 'i-heroicons-arrow-down-tray'"
-                size="xs"
-                color="gray"
-                variant="ghost"
-                :loading="downloadingAttachments.has(attachment.id)"
-                @click="downloadAttachment(attachment.id)"
-              />
-              <UButton
-                :icon="deletingAttachments.has(attachment.id)
-                  ? 'i-heroicons-arrow-path'
-                  : 'i-heroicons-trash'"
-                size="xs"
-                color="red"
-                variant="ghost"
-                :loading="deletingAttachments.has(attachment.id)"
-                @click="deleteAttachment(attachment.id)"
-              />
+          <div class="flex items-center overflow-x-auto gap-3">
+            <div 
+              v-for="attachment in attachments"
+              :key="'task-view-attachment-' + attachment.id"
+            >
+              <UPopover mode="hover">
+                <div
+                  class="relative w-fit h-fit relative bg-zinc-800 rounded-md"
+                  @mouseenter="hoverAttachmentId = attachment.id"
+                  @mouseleave="hoverAttachmentId = null"
+                  :name="attachment.fileName"
+                >
+                  <div
+                    v-if="attachment.thumbnailBase64Url"
+                    class="w-36 h-36 bg-cover bg-center"
+                    :style="{
+                      backgroundImage: `url(${attachment.thumbnailBase64Url})`
+                    }"
+                  />
+                  <div v-else class="flex items-center justify-center w-36 h-36">
+                    <UIcon v-if="attachment.fileType.startsWith('image/')" name="i-heroicons-photo" class="w-10 h-10 text-gray-500" />
+                    <UIcon v-else name="i-heroicons-document-text" class="w-10 h-10 text-gray-500" />
+                  </div>
+                  <div v-show="hoverAttachmentId === attachment.id" class="absolute top-0 right-0 bottom-0 left-0 bg-black bg-opacity-60">
+                    <div class="flex items-center justify-center h-full">
+                      <div class="inline-flex items-center gap-2">
+                        <UButton
+                          icon="i-heroicons-arrow-down-tray"
+                          size="sm"
+                          color="primary"
+                          square
+                          variant="soft"
+                          @click="downloadAttachment(attachment.id)"
+                        />
+                        <UButton
+                          icon="i-heroicons-trash"
+                          size="sm"
+                          color="red"
+                          square
+                          variant="soft"
+                          @click="deleteAttachment(attachment.id)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <template #panel>
+                  <UCard>
+                    <div class="space-y-3">
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">File name</p>
+                        <div class="grow" />
+                        <p class="text-sm text-gray-300">{{ attachment.fileName }}</p>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">File size</p>
+                        <div class="grow" />
+                        <p class="text-sm text-gray-300">{{ attachment.fileSize }}</p>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">File type</p>
+                        <div class="grow" />
+                        <p class="text-sm text-gray-300">{{ attachment.fileType }}</p>
+                      </div>
+                    </div>
+                  </UCard>
+                </template>
+              </UPopover>
             </div>
           </div>
         </div>
@@ -209,6 +251,7 @@ const onClickCopyTaskUrl = () => {
   copyTaskUrl(`${window.location.origin}/channel/${props.cid}/task/${props.taskId}`)
 }
 
+const hoverAttachmentId = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
 const selectedDueDate = ref(null)
@@ -403,6 +446,7 @@ const handleUploadResults = (results) => {
   const failed = results.filter((r) => r.status === 'rejected');
 
   succeeded.forEach((result) => {
+    console.log('result::', result.value)
     attachments.value.push(result.value);
   });
 
