@@ -157,19 +157,12 @@
         <p class="text-sm text-gray-500 font-regular">Attachments</p>
         
         <div class="space-y-2">
-          <UInput
-            ref="refFileInput"
-            type="file"
-            multiple
-            @change="(e) => onFileUpload(e)"
-          />
-
           <div class="flex items-center overflow-x-auto gap-3">
             <div 
               v-for="attachment in attachments"
               :key="'task-view-attachment-' + attachment.id"
             >
-              <UPopover mode="hover">
+              <UPopover :popper="{ placement: 'top-start' }" mode="hover">
                 <div
                   class="relative w-fit h-fit relative bg-zinc-800 rounded-md"
                   @mouseenter="hoverAttachmentId = attachment.id"
@@ -236,6 +229,13 @@
               </UPopover>
             </div>
           </div>
+          <UInput
+            ref="refFileInput"
+            type="file"
+            multiple
+            @change="(e) => onFileUpload(e)"
+          />
+
         </div>
       </div>
 
@@ -481,6 +481,10 @@ const handleUploadResults = (results) => {
       description: `${succeeded.length} file(s) uploaded successfully`,
       color: 'green',
     });
+    
+    if (refFileInput.value) {
+      refFileInput.value.input.value = null;
+    }
   }
 
   if (failed.length) {
