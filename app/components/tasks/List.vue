@@ -45,25 +45,27 @@
         >
           <div class="flex items-center gap-2 h-full">
             <UCheckbox v-model="selectTaskById[element.id]" />
-            <div class="flex items-center h-full w-full"  @click="() => emits('click:task', element.id)">
+            <div class="flex items-center h-full w-full truncate"  @click="() => emits('click:task', element.id)">
               <p
                 class="overflow-hidden bg-transparent w-full h-fit truncate block"
-                :class="{ 'opacity-50': readonly }"
+                :class="{ 'opacity-50': readonly, 'mb-5': element.dueDate }"
               >
                 {{ element.title }}
               </p>
             </div>
           </div>
-          <div class="flex items-center gap-1">
-            <UBadge
-              v-if="element.dueDate"
-              class="block w-fit"
-              size="xs"
-              color="orange"
-              variant="soft"
-            >
-              {{ element.dueDateHero || '' }}
-            </UBadge>
+          <div class="relative flex items-center gap-1">
+            <div class="absolute bottom-1 left-6">
+              <UBadge
+                v-if="element.dueDate"
+                class="block w-fit"
+                size="xs"
+                color="orange"
+                variant="soft"
+              >
+                {{ element.dueDateHero || '' }}
+              </UBadge>
+            </div>
 
             <UBadge
               v-if="element.archived"
@@ -75,16 +77,7 @@
             </UBadge>
           </div>
         </div>
-        <UButton
-          icon="i-heroicons-chevron-right"
-          size="xs"
-          color="white"
-          square
-          variant="soft"
-          class="ml-auto"
-          @click="() => emits('click:task', element.id)"
-        />
-        <div  class="w-fit">
+        <div v-if="!taskViewOpen" class="w-fit ml-6">
           <UAvatarGroup
             v-if="assignees.filter(a => a.taskId === element.id).length > 0"
             size="xs"

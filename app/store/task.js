@@ -72,9 +72,9 @@ export const useTaskStore = defineStore('taskStore', () => {
     })
 
     if (res.success) {
-      const index = tasks.value.findIndex(t => t.id === taskId)
+      const index = tasks.value.findIndex(t => t?.id === taskId)
       if (index !== -1) {
-        tasks.value[index] = res.data
+        tasks.value[index] = { ...tasks.value[index], ...res.data }
       }
     }
   }
