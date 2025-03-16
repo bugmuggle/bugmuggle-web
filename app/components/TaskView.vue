@@ -172,12 +172,12 @@
                   >
                     <div
                       v-if="attachment.thumbnailBase64Url"
-                      class="w-36 h-36 bg-cover bg-center"
+                      class="w-24 h-24 bg-cover bg-center"
                       :style="{
                         backgroundImage: `url(${attachment.thumbnailBase64Url})`
                       }"
                     />
-                    <div v-else class="flex items-center justify-center w-36 h-36">
+                    <div v-else class="flex items-center justify-center w-24 h-24">
                       <UIcon v-if="attachment.fileType.startsWith('image/')" name="i-heroicons-photo" class="w-10 h-10 text-gray-500" />
                       <UIcon v-else name="i-heroicons-document-text" class="w-10 h-10 text-gray-500" />
                     </div>
