@@ -2,7 +2,7 @@
   <div class="sticky top-0 z-10 bg-neutral-900 flex items-start gap-0">
     <div class="w-8" />
     <div class="text-gray-600 text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2">
-      <div class="flex items-center gap-2 pl-1">
+      <div class="flex items-center gap-2 pl-3">
         <UCheckbox v-model="selectAllTasks" />
         Task
       </div>
@@ -47,7 +47,7 @@
             <UCheckbox v-model="selectTaskById[element.id]" />
             <div class="flex items-center h-full w-full truncate"  @click="() => emits('click:task', element.id)">
               <p
-                class="overflow-hidden bg-transparent w-full h-fit truncate block"
+                class="overflow-hidden bg-transparent w-full h-fit truncate block pl-1"
                 :class="{ 'opacity-50': readonly, 'mb-5': element.dueDate }"
               >
                 {{ element.title }}
