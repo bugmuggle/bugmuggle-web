@@ -8,8 +8,13 @@ export default defineAuthEventHandler(async (event) => {
   
   if (archived === 'true') {
     results = await useDrizzle()
-      .select()
+      .select({
+        ...tables.tasks,
+        createdByGithubAvatarUrl: tables.users.githubAvatarUrl,
+        createdByGithubUsername: tables.users.githubUsername
+      })
       .from(tables.tasks)
+      .leftJoin(tables.users, eq(tables.tasks.createdBy, tables.users.id))
       .where(
         and(
           eq(tables.tasks.channelId, cid),
@@ -18,8 +23,13 @@ export default defineAuthEventHandler(async (event) => {
       )
   } else {
     results = await useDrizzle()
-      .select()
+      .select({
+        ...tables.tasks,
+        createdByGithubAvatarUrl: tables.users.githubAvatarUrl,
+        createdByGithubUsername: tables.users.githubUsername
+      })
       .from(tables.tasks)
+      .leftJoin(tables.users, eq(tables.tasks.createdBy, tables.users.id))
       .where(
         and(
           eq(tables.tasks.channelId, cid),
