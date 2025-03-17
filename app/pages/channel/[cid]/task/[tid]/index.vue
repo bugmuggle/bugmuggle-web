@@ -32,6 +32,7 @@
             <p class="text-sm text-gray-500 font-regular">Status</p>
             <p class="text-sm font-regular">
               <UBadge
+                class="status"
                 v-if="task?.status"
                 :color="
                   task?.status === 'To Do' ? 'gray' :
@@ -128,7 +129,12 @@ onMounted(async () => {
     color: black !important;
   }
 
-  .date {
+  .body .status {
+    background-color: transparent !important;
+    color: black !important;
+  }
+
+  .body .date {
     background-color: transparent !important;
     color: black !important;
   }
