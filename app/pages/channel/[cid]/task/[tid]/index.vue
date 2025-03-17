@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout name="task">
     <div class="w-full max-w-screen-sm mx-auto block m-4">
-      <UCard>
+      <UCard class="body">
         <template #header>
           <div class="flex items-center gap-3">
             <UButton
@@ -51,7 +51,7 @@
 
           <div class="flex items-center justify-between">
             <p class="text-sm text-gray-500 font-regular">Due date</p>
-            <UBadge v-if="task?.dueDate" color="gray">
+            <UBadge v-if="task?.dueDate" color="gray" class="date">
               {{ format(task?.dueDate, 'd MMM, yyyy') }}
             </UBadge>
             <p v-else class="text-sm text-gray-500 font-regular">No due date</p>
@@ -80,6 +80,16 @@ const cid = useRoute().params.cid
 
 const task = ref(null)
 const assignees = ref([])
+
+const hasAttemptedPrint = ref(false)
+
+const printTask = () => {
+  if (hasAttemptedPrint.value) return
+
+  window.print()
+  hasAttemptedPrint.value = true
+}
+
 onMounted(async () => {
   try {
     const response = await $fetch(`/api/channel/${cid}/tasks/${tid}/get`)
@@ -88,8 +98,39 @@ onMounted(async () => {
 
     const assigneesResponse = await $fetch(`/api/channel/${cid}/tasks/${tid}/assignments/get`)
     assignees.value = assigneesResponse.data.flat()
+
+    setTimeout(() => {
+      printTask()
+    }, 500)
   } catch (error) {
     console.error(error)
   }
 })
 </script>
+
+<style>
+@media print {
+  .body {
+    background-color: white !important;
+    color: black !important;
+    border: none !important;
+  }
+
+  .body > div:nth-child(1) {
+    display: none !important;
+  }
+
+  .body > div:nth-child(2) {
+    border: none !important;
+  }
+
+  .text-gray-500 {
+    color: black !important;
+  }
+
+  .date {
+    background-color: transparent !important;
+    color: black !important;
+  }
+}
+</style>
