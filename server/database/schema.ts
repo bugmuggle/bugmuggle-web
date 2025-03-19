@@ -61,3 +61,12 @@ export const taskAttachments = sqliteTable('task_attachments', {
   uploadedBy: integer('uploaded_by').references(() => users.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
+
+export const githubTokens = sqliteTable('github_tokens', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  channelId: integer('channel_id').notNull().references(() => channels.id),
+  accessToken: text('access_token').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+})
