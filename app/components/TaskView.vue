@@ -198,7 +198,7 @@
                             color="red"
                             square
                             variant="soft"
-                            @click="deleteAttachment(attachment.id)"
+                            @click="ensureDeleteAttachment(attachment.id)"
                           />
                         </div>
                       </div>
@@ -255,6 +255,8 @@
       <div class="h-24" />
     </div>
   </div>
+
+  <DialogsConfirm ref="refConfirmDialog" />
 </template>
 
 <script setup>
@@ -285,6 +287,7 @@ const onClickCopyTaskUrl = () => {
   copyTaskUrl(`${window.location.origin}/channel/${props.cid}/task/${props.taskId}`)
 }
 
+const refConfirmDialog = ref(null)
 const hoverAttachmentId = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
@@ -551,6 +554,17 @@ const downloadAttachment = (attachmentId) => {
     .finally(() => {
       downloadingAttachments.value.delete(attachmentId)
     })
+}
+
+const ensureDeleteAttachment = (attachmentId) => {
+  refConfirmDialog.value.open({
+    title: 'Delete attachment',
+    message: 'Are you sure you want to delete this attachment?',
+    callback: (result) => {
+      console.log('ensureDeleteAttachment::result', result)
+      result && deleteAttachment(attachmentId)
+    }
+  })
 }
 
 const deleteAttachment = (attachmentId) => {
