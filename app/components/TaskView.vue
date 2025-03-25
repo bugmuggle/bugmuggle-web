@@ -323,13 +323,13 @@ const onDeleteTask = () => {
 }
 
 const taskMenu = [
-  [
-    {
-      label: 'Archive',
-      icon: 'i-heroicons-archive-box-20-solid',
-      click: onArchiveTask
-    }
-  ],
+  // [
+  //   {
+  //     label: 'Archive',
+  //     icon: 'i-heroicons-archive-box-20-solid',
+  //     click: onArchiveTask
+  //   }
+  // ],
   [
     {
       label: 'Delete Permanently',
