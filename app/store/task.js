@@ -56,6 +56,8 @@ export const useTaskStore = defineStore('taskStore', () => {
     if (res.success) {
       tasks.value.push(res.data.task)
     }
+
+    return res.data.task
   }
 
   const updateTaskOrders = async (cid, orderString) => {
