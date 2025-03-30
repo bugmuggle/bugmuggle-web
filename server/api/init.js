@@ -17,7 +17,6 @@ export default defineAuthEventHandler(async (event) => {
       }
     })
 
-
     const newUser = await useDrizzle().insert(tables.users).values({
       githubId: user.githubId,
       githubUsername: githubUser.login,
