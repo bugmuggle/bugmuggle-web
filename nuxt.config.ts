@@ -27,7 +27,8 @@ export default defineNuxtConfig({
     oauth: {
       github: {
         clientId: '',
-        clientSecret: ''
+        clientSecret: '',
+        webhookSecret: ''
       }
     },
     public: {
