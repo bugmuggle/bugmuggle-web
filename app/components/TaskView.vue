@@ -71,10 +71,11 @@
             none: 'focus:ring-1 border border-gray-200 dark:border-gray-700 rounded-md'
           },
           size: {
-            xl: 'text-2xl h-fit'
+            xl: 'text-2xl'
           }
         }"
         autoresize
+        rows="1"
         placeholder="Enter task title"
         variant="none"
         @keyup="onChangeTaskTitle"
@@ -84,13 +85,23 @@
         <div class="col-span-2">
           <p class="text-sm text-gray-500 font-regular">Assignee</p>
         </div>
-        <div class="col-span-10">
-          <USelectMenu v-model="selectedAssignee" :loading="loadingSelectAssignee" :multiple="false"
+        <div class="col-span-10 flex items-center h-full">
+          <div class="grow" />
+          <USelectMenu
+            v-model="selectedAssignee"
+            :loading="loadingSelectAssignee"
+            :multiple="false"
             :searchable="searchAssignee" :ui="{
               variant: {
-                none: 'focus:ring-1'
+                none: 'focus:ring-1 w-fit'
               }
-            }" placeholder="Search for a user..." option-attribute="githubUsername" trailing variant="none" by="id">
+            }"
+            placeholder="Search for a user..."
+            option-attribute="githubUsername"
+            trailing
+            variant="none"
+            by="id"
+          >
             <template #label>
               <div v-if="selectedAssignee" class="flex items-center gap-2">
                 <UAvatar :src="selectedAssignee?.githubAvatarUrl" :alt="selectedAssignee?.githubUsername" size="xs" />
@@ -114,7 +125,8 @@
         <div class="col-span-2">
           <p class="text-sm text-gray-500 font-regular">Status</p>
         </div>
-        <div class="col-span-10 border border-gray-200 dark:border-gray-700 rounded-md">
+        <div class="col-span-10 flex items-center h-full">
+          <div class="grow" />
           <USelectMenu
             v-model="selectedStatus"
             :options="[
@@ -129,7 +141,7 @@
             placeholder="Select status"
             :ui="{
               variant: {
-                none: 'focus:ring-1'
+                none: 'focus:ring-1 w-fit'
               }
             }"
             variant="none"
@@ -141,7 +153,8 @@
         <div class="col-span-2">
           <p class="text-sm text-gray-500 font-regular">Due date</p>
         </div>
-        <div class="col-span-10">
+        <div class="col-span-10 flex items-center h-full">
+          <div class="grow" />
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
               :label="selectedDueDate ? format(selectedDueDate, 'd MMM, yyy') : 'Select due date'" />
