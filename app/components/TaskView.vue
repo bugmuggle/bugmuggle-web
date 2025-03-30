@@ -289,8 +289,9 @@ const onArchiveTask = () => {
 }
 
 const onChangeTaskTitle = useDebounceFn((e) => {
+  console.log('onChangeTaskTitle::e', e.target.value)
   taskStore.updateTask(props.cid, props.taskId, { title: e.target.value })
-}, 1000)
+}, 1500)
 
 const onDeleteTask = () => {
   taskStore.deleteTask(props.cid, props.taskId)
