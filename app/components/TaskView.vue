@@ -227,7 +227,7 @@
       <div class="px-4 space-y-1">
         <div class="h-2" />
         <p class="text-sm text-gray-500 font-regular">Description</p>
-        <editor ref="elEditor" v-model="editDescription" />
+        <editor ref="elEditor" v-model="editDescription" class="description-editor" />
       </div>
 
       <div class="h-24"></div>
@@ -624,11 +624,19 @@ defineExpose({
 </script>
 
 <style scoped>
+.description-editor :deep(.ProseMirror) {
+  min-height: auto !important;
+  height: auto;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #374151;
+  border-radius: 0.375rem;
+}
+
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;             /* Chrome, Safari and Opera */
+  display: none;
 }
 </style>
