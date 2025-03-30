@@ -1,20 +1,33 @@
 <template>
-  <div class="sticky top-0 z-10 bg-neutral-900 flex items-start gap-0">
-    <div class="w-8" />
-    <div class="text-gray-600 text-sm w-full max-w-[100%] md:max-w-[600px] lg:max-w-[764px] pr-2">
-      <div class="flex items-center gap-2 pl-3">
+  <div class="grid grid-cols-12">
+    <div
+      :class="[
+        'flex items-center justify-start pr-3',
+        taskViewOpen ? 'col-span-10' : 'col-span-8'
+      ]"
+    >
+      <div class="flex items-center justify-start gap-3 pr-3">
+        <div class="w-6" />
         <UCheckbox v-model="selectAllTasks" />
-        Task
+        <span class="text-xs text-gray-500 dark:text-gray-500">Task</span>
       </div>
     </div>
-    <div class="w-12" />
-    <p class="text-sm text-gray-600">
-      Assignee
-    </p>
-    <div v-if="!taskViewOpen" class="grow" />
-    <p v-if="!taskViewOpen" class="w-32 text-sm text-gray-600">
-      Status
-    </p>
+    <div
+      :class="[
+        'flex items-center justify-end pr-3',
+        taskViewOpen ? 'col-span-2' : 'col-span-1'
+      ]"
+    >
+      <span class="text-xs text-gray-500 dark:text-gray-500">Assignee</span>
+    </div>
+    <div
+      :class="[
+        'col-span-3 flex items-center justify-end pr-3',
+        taskViewOpen ? 'hidden' : 'visible'
+      ]"
+    >
+      <span class="text-xs text-gray-500 dark:text-gray-500">Status</span>
+    </div>
   </div>
   <Sortable
     :list="elements"
@@ -48,14 +61,14 @@
             <div class="flex items-center h-full w-full truncate"  @click="() => emits('click:task', element.id)">
               <p
                 class="overflow-hidden bg-transparent w-full h-fit truncate block pl-1"
-                :class="{ 'opacity-50': readonly, 'mb-5': element.dueDate }"
+                :class="{ 'opacity-50': readonly, 'mb-5': element.dueDate || element.archived }"
               >
                 {{ element.title }}
               </p>
             </div>
           </div>
           <div class="relative flex items-center gap-1">
-            <div class="absolute bottom-1 left-6">
+            <div :class="[ 'absolute bottom-1', element.archived ? 'left-24' : 'left-6' ]">
               <UBadge
                 v-if="element.dueDate"
                 class="block w-fit"
@@ -67,17 +80,20 @@
               </UBadge>
             </div>
 
-            <UBadge
-              v-if="element.archived"
-              color="yellow" :ui="{ rounded: 'rounded-full' }"
-              size="xs"
-              variant="outline"
-            >
-              Archived
-            </UBadge>
+            <div class="absolute bottom-1 left-6">
+              <UBadge
+                v-if="element.archived"
+                class="block w-fit"
+                size="xs"
+                color="yellow"
+                variant="soft"
+              >
+                Archived
+              </UBadge>
+            </div>
           </div>
         </div>
-        <div v-if="!taskViewOpen" class="w-fit ml-6">
+        <div class="w-fit ml-6">
           <UAvatarGroup
             v-if="assignees.filter(a => a.taskId === element.id).length > 0"
             size="xs"

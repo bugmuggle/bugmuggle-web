@@ -41,7 +41,7 @@
             square
             variant="soft"
             label="Task"
-            @click="() => refCreateTask.open()"
+            @click="onCreateTask"
           />
 
           <UPopover>
@@ -102,7 +102,7 @@
             square
             variant="soft"
             label="Create Task"
-            @click="() => refCreateTask.open()"
+            @click="onCreateTask"
           />
 
           <div class="h-4" />
@@ -111,7 +111,6 @@
     </TaskPageWrapper>
   </NuxtLayout>
 
-  <DialogsCreateTask ref="refCreateTask" @success="refreshTasks" />
   <DialogsManageChannelMembers ref="refManageChannelMembers" />
 </template>
 
@@ -136,7 +135,6 @@ const showExtraColumns = ref(true)
 
 const refTasksList = ref(null)
 const channel = ref(null)
-const refCreateTask = ref(null)
 const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
@@ -217,6 +215,26 @@ const onClickTask = (id) => {
         task: id,
       },
     })
+  }
+}
+
+const onCreateTask = async () => {
+  try {
+    // Assuming taskStore.createTask creates a task with a default title (e.g., empty)
+    // and returns the newly created task object including its id.
+    // You might need to adjust the payload { title: '' } based on your API requirements.
+    const newTask = await taskStore.createTask(cid, '', '', 0)
+    console.log('newTask', newTask)
+    if (newTask && newTask.id) {
+      // Use existing logic to open the task view for the new task
+      onClickTask(newTask.id)
+    } else {
+      console.error('Failed to create task or get new task ID')
+      // Optionally show a toast notification for the error
+    }
+  } catch (error) {
+    console.error('Error creating task:', error)
+    // Optionally show a toast notification for the error
   }
 }
 
