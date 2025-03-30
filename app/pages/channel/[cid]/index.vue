@@ -3,7 +3,22 @@
     <TaskPageWrapper ref="refTaskPageWrapper">
       <template #header>
         <div class="flex items-center h-full gap-3">
-          <p class="text-sm font-medium">{{ channel?.name }}</p>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton color="gray" variant="ghost" class="p-1" trailing-icon="i-heroicons-chevron-down">
+              <p class="text-sm font-medium">{{ channel?.name }}</p>
+            </UButton>
+
+            <template #panel="{ close }">
+              <div class="p-2 w-72 space-y-2">
+                <p class="text-xs font-medium text-gray-400">Edit Channel Name</p>
+                <UInput :disabled="savingChannelName" v-model="editingChannelName" placeholder="New channel name..." />
+                <div class="flex justify-end gap-2">
+                  <UButton :disabled="savingChannelName" size="xs" color="gray" variant="ghost" @click="close">Cancel</UButton>
+                  <UButton :disabled="savingChannelName" :loading="savingChannelName" size="xs" color="primary" @click="() => onSaveChannelName(close)">Save</UButton>
+                </div>
+              </div>
+            </template>
+          </UPopover>
           <UButton
             icon="i-heroicons-arrow-path"
             size="xs"
@@ -126,6 +141,8 @@ definePageMeta({
   middleware: 'auth',
 })
 
+const toast = useToast()
+
 const route = useRoute()
 const authStore = useAuthStore()
 const taskStore = useTaskStore()
@@ -134,7 +151,6 @@ const cid = route.params.cid
 const showExtraColumns = ref(true)
 
 const refTasksList = ref(null)
-const channel = ref(null)
 const refTaskPageWrapper = ref(null)
 const refManageChannelMembers = ref(null)
 const isFetching = ref(false)
@@ -143,6 +159,8 @@ const showArchivedTasks = ref(false)
 const hideTasksByGithubId = useStorageLocal('hideTasksByGithubId', {})
 const searchQuery = ref('')
 const hasAnySelectedTasks = ref(false)
+const editingChannelName = ref('')
+const savingChannelName = ref(false)
 
 const taskId = computed(() => route.query.task)
 
@@ -197,6 +215,8 @@ const tasks = computed({
   },
   set(_) {},
 })
+
+const channel = computed(() => channelStore.channels.find(c => c.id === +cid))
 
 const onSort = () => {
   taskStore.updateTaskOrders(cid, tasks.value.map(t => `${t.id}-${t.order}`).join(','))
@@ -253,18 +273,45 @@ const refreshTasks = async () => {
   }
 }
 
+const onSaveChannelName = async (close) => {
+  savingChannelName.value = true
+
+  channelStore.updateChannel(cid, { name: editingChannelName.value })
+    .then(() => {
+      toast.add({
+        title: 'Channel name updated',
+        description: 'Channel name updated successfully',
+        color: 'green',
+      })
+    })
+    .catch((err) => {
+      console.error('Error updating channel name:', err)
+      toast.add({
+        title: 'Error updating channel name',
+        description: 'Failed to update channel name',
+        color: 'red',
+      })
+    })
+    .finally(() => {
+      savingChannelName.value = false
+      close()
+    })
+}
+
 watchEffect(() => {
+  if (channel.value) {
+    editingChannelName.value = channel.value.name
+  }
   showArchivedTasks.value;
   refreshTasks();
 })
 
 onMounted(() => {
   refTaskPageWrapper.value.closeTaskView()
-  $fetch('/api/channel/' + cid + '/get')
-    .then((res) => {
-      channel.value = res.data.channel
+  channelStore.getChannel(cid)
+    .then((data) => {
       useHead({
-        title: `${res.data.channel.name} | Bugmuggle`,
+        title: `${data.channel.name} | Bugmuggle`,
       })
     })
 
