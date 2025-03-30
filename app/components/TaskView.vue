@@ -64,6 +64,7 @@
       </div>
 
       <UTextarea
+        ref="refTitleTextarea"
         v-model="task.title"
         size="xl"
         :ui="{
@@ -167,7 +168,7 @@
       </div>
 
       <div class="px-4 space-y-1 mt-4">
-        <UAccordion :items="[{label: 'Attachments', icon: 'i-heroicons-paper-clip' }]">
+        <UAccordion :items="[{label: `Attachments (${attachments.length})`, icon: 'i-heroicons-paper-clip' }]">
           <template #default="{ item, index, open }">
             <UButton color="gray" :variant="open ? 'solid' : 'ghost'" :ui="{ rounded: 'rounded-none', padding: { sm: 'p-3' } }">
               <template #leading>
@@ -188,7 +189,7 @@
             </UButton>
           </template>
           <template #item="{ item }">
-            <div v-if="item.label === 'Attachments'">
+            <div v-if="item.label.startsWith('Attachments')">
               <div class="space-y-2 p-4">
                 <div
                   v-for="attachment in attachments"
@@ -266,6 +267,7 @@ const onClickCopyTaskUrl = () => {
 }
 
 const refConfirmDialog = ref(null)
+const refTitleTextarea = ref(null)
 const hoverAttachmentId = ref(null)
 const selectedAssignee = ref(null)
 const selectedStatus = ref(null)
@@ -382,6 +384,7 @@ const initAssignees = () => {
       if (refFileInput.value) {
         refFileInput.value.input.value = null
       }
+      refTitleTextarea.value?.textarea?.focus()
     } catch (error) {
       console.error('Error initializing task:', error)
       toast.add({
