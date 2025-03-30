@@ -48,14 +48,14 @@
             <div class="flex items-center h-full w-full truncate"  @click="() => emits('click:task', element.id)">
               <p
                 class="overflow-hidden bg-transparent w-full h-fit truncate block pl-1"
-                :class="{ 'opacity-50': readonly, 'mb-5': element.dueDate }"
+                :class="{ 'opacity-50': readonly, 'mb-5': element.dueDate || element.archived }"
               >
                 {{ element.title }}
               </p>
             </div>
           </div>
           <div class="relative flex items-center gap-1">
-            <div class="absolute bottom-1 left-6">
+            <div :class="[ 'absolute bottom-1', element.archived ? 'left-24' : 'left-6' ]">
               <UBadge
                 v-if="element.dueDate"
                 class="block w-fit"
@@ -67,14 +67,17 @@
               </UBadge>
             </div>
 
-            <UBadge
-              v-if="element.archived"
-              color="yellow" :ui="{ rounded: 'rounded-full' }"
-              size="xs"
-              variant="outline"
-            >
-              Archived
-            </UBadge>
+            <div class="absolute bottom-1 left-6">
+              <UBadge
+                v-if="element.archived"
+                class="block w-fit"
+                size="xs"
+                color="yellow"
+                variant="soft"
+              >
+                Archived
+              </UBadge>
+            </div>
           </div>
         </div>
         <div v-if="!taskViewOpen" class="w-fit ml-6">
