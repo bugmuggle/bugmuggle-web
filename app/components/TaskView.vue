@@ -346,6 +346,7 @@ const initLocalState = () => {
   localDescription.value = task.value.description || ''
 
   nextTick(() => {
+    elEditor.value.setContent(localDescription.value)
     isReady.value = true
   })
 }
