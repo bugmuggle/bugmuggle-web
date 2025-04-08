@@ -137,6 +137,7 @@ const task = ref(null)
 const assignees = ref([])
 
 const taskStore = useTaskStore()
+const toast = useToast()
 const attachments = ref([])
 const downloadingAttachments = ref(new Set())
 
