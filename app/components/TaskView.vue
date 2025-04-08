@@ -487,7 +487,6 @@ const handleUploadResults = (results) => {
       description: `${succeeded.length} file(s) uploaded successfully`,
       color: 'green',
     });
-
     if (refFileInput.value) {
       refFileInput.value.input.value = null;
     }
@@ -531,7 +530,6 @@ const onFileUpload = async (Uploads) => {
 
 const downloadAttachment = (attachmentId) => {
   downloadingAttachments.value.add(attachmentId)
-
   taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
     .catch((error) => {
       console.error('Error downloading attachment:', error)
@@ -559,7 +557,6 @@ const ensureDeleteAttachment = (attachmentId) => {
 
 const deleteAttachment = (attachmentId) => {
   deletingAttachments.value.add(attachmentId)
-
   taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
     .then(() => {
       attachments.value = attachments.value.filter(a => a.id !== attachmentId)
@@ -588,7 +585,6 @@ const canScrollRight = ref(false)
 
 const checkScrollability = () => {
   if (!attachmentsContainer.value) return
-
   const container = attachmentsContainer.value
   canScrollLeft.value = container.scrollLeft > 0
   canScrollRight.value = container.scrollLeft < container.scrollWidth - container.clientWidth
@@ -596,10 +592,8 @@ const checkScrollability = () => {
 
 const scrollAttachments = (direction) => {
   if (!attachmentsContainer.value) return
-
   const container = attachmentsContainer.value
   const scrollAmount = 200 // Adjust scroll amount as needed
-
   if (direction === 'left') {
     container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
   } else {
