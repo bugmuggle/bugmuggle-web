@@ -324,6 +324,20 @@ watch(localDescription, (value) => {
   }
 })
 
+const initLocalState = () => {
+  if (!task.value) return
+
+  isReady.value = false
+  localTaskTitle.value = task.value.title || ''
+  localStatus.value = task.value.status || null
+  localDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
+  localDescription.value = task.value.description || ''
+
+  nextTick(() => {
+    isReady.value = true
+  })
+}
+
 watch(() => props.taskId, () => {
   if (task.value) {
     initLocalState()
@@ -335,21 +349,6 @@ watch(task, (newTask) => {
     initLocalState()
   }
 }, { deep: true })
-
-const initLocalState = () => {
-  if (!task.value) return
-
-  isReady.value = false
-  localTaskTitle.value = task.value.title || ''
-  localStatus.value = task.value.status || null
-  localDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
-  localDescription.value = task.value.description || ''
-
-  nextTick(() => {
-    elEditor.value.setContent(localDescription.value)
-    isReady.value = true
-  })
-}
 
 const onArchiveTask = () => {
   if (!task.value.archived) {
