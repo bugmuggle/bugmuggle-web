@@ -160,7 +160,7 @@
             v-if="selectedDueDate"
             icon="i-heroicons-x-mark"
             size="xs"
-            color="gray"
+            color="white"
             variant="ghost"
             square
             @click="selectedDueDate = null"
@@ -441,7 +441,7 @@ watch(selectedStatus, (value) => {
 
 watch(selectedDueDate, (value) => {
   if (isReady.value) {
-    taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
+    taskStore.updateTask(props.cid, props.taskId, { dueDate: value ? value.toISOString() : null })
   }
 })
 
