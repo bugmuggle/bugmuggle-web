@@ -270,6 +270,7 @@ const refTitleTextarea = ref(null)
 const hoverAttachmentId = ref(null)
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
+const isSwitchingTasks = ref(false)
 const elEditor = ref(null)
 const downloadingAttachments = ref(new Set())
 const deletingAttachments = ref(new Set())
@@ -300,6 +301,12 @@ watch(localTaskTitle, (value) => {
   }
 })
 
+watch(localDescription, (value) => {
+  if (isReady.value) {
+    debouncedUpdateTaskDescription(value)
+  }
+})
+
 watch(localAssignee, (value) => {
   if (isReady.value && value) {
     taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
@@ -318,16 +325,11 @@ watch(localDueDate, (value) => {
   }
 })
 
-watch(localDescription, (value) => {
-  if (isReady.value) {
-    debouncedUpdateTaskDescription(value)
-  }
-})
-
 const initLocalState = () => {
   if (!task.value) return
 
   isReady.value = false
+  isSwitchingTasks.value = true
   localTaskTitle.value = task.value.title || ''
   localStatus.value = task.value.status || null
   localDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
@@ -335,6 +337,7 @@ const initLocalState = () => {
 
   nextTick(() => {
     isReady.value = true
+    isSwitchingTasks.value = false
   })
 }
 
@@ -452,6 +455,10 @@ const cleanup = () => {
     isReady.value = true
   })
 }
+
+watch(isSwitchingTasks, () => {
+  console.log('isSwitchingTasks ', isSwitchingTasks.value)
+})
 
 const closeTaskView = () => {
   useRouter().push({
