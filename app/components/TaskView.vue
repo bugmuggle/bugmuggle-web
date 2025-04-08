@@ -270,10 +270,11 @@ const refTitleTextarea = ref(null)
 const hoverAttachmentId = ref(null)
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
-const isSwitchingTasks = ref(false)
 const elEditor = ref(null)
 const downloadingAttachments = ref(new Set())
 const deletingAttachments = ref(new Set())
+
+const currentTaskId = ref(null)
 
 const localTaskTitle = ref('')
 const localAssignee = ref(null)
@@ -287,23 +288,24 @@ const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
 })
 
-const debouncedUpdateTaskTitle = useDebounceFn((value) => {
-  taskStore.updateTask(props.cid, props.taskId, { title: value })
+const debouncedUpdateTaskTitle = useDebounceFn((value, taskId) => {
+  if (currentTaskId.value === taskId) taskStore.updateTask(props.cid, props.taskId, { title: value })
 }, 1000)
 
-const debouncedUpdateTaskDescription = useDebounceFn((value) => {
-  taskStore.updateTask(props.cid, props.taskId, { description: value })
+const debouncedUpdateTaskDescription = useDebounceFn((value, taskId) => {
+  if (currentTaskId.value === taskId) taskStore.updateTask(props.cid, props.taskId, { description: value })
 }, 1000)
 
 watch(localTaskTitle, (value) => {
   if (isReady.value) {
-    debouncedUpdateTaskTitle(value)
+    debouncedUpdateTaskTitle(value, props.taskId)
   }
 })
 
 watch(localDescription, (value) => {
   if (isReady.value) {
-    debouncedUpdateTaskDescription(value)
+    currentTaskId.value = props.taskId
+    debouncedUpdateTaskDescription(value, props.taskId)
   }
 })
 
@@ -329,7 +331,6 @@ const initLocalState = () => {
   if (!task.value) return
 
   isReady.value = false
-  isSwitchingTasks.value = true
   localTaskTitle.value = task.value.title || ''
   localStatus.value = task.value.status || null
   localDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
@@ -337,11 +338,11 @@ const initLocalState = () => {
 
   nextTick(() => {
     isReady.value = true
-    isSwitchingTasks.value = false
   })
 }
 
 watch(() => props.taskId, () => {
+  currentTaskId.value = props.taskId
   if (task.value) {
     initLocalState()
   }
@@ -455,10 +456,6 @@ const cleanup = () => {
     isReady.value = true
   })
 }
-
-watch(isSwitchingTasks, () => {
-  console.log('isSwitchingTasks ', isSwitchingTasks.value)
-})
 
 const closeTaskView = () => {
   useRouter().push({
