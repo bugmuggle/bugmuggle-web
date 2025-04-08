@@ -37,6 +37,7 @@
             color="red"
             variant="outline"
             label="Delete Task(s)"
+            :class="`transition-all ${taskId ? 'mr-60 max-[1222px]:[&>span:nth-child(2)]:hidden' : ''}`"
             @click="() => refTasksList.onDeleteTask()"
           />
           <UInput v-model="searchQuery" placeholder="Search tasks..." class="w-[300px]" />
@@ -50,12 +51,14 @@
           </UAvatarGroup>
 
           <UButton
-            icon="i-heroicons-plus"
+            :icon="loading ? 'i-heroicons-arrow-path' : 'i-heroicons-plus'"
             size="xs"
             color="white"
             square
             variant="soft"
-            label="Task"
+            :label="loading ? '' : 'Task'"
+            :class="{ 'animate-spin': loading }"
+            :disabled="loading"
             @click="onCreateTask"
           />
 
@@ -111,12 +114,14 @@
           />
 
           <UButton
-            icon="i-heroicons-plus"
+            :icon="loading ? 'i-heroicons-arrow-path' : 'i-heroicons-plus'"
             size="xs"
             color="white"
             square
             variant="soft"
-            label="Create Task"
+            :label="loading ? '' : 'Create Task'"
+            :class="{ 'animate-spin': loading }"
+            :disabled="loading"
             @click="onCreateTask"
           />
 
@@ -161,6 +166,8 @@ const searchQuery = ref('')
 const hasAnySelectedTasks = ref(false)
 const editingChannelName = ref('')
 const savingChannelName = ref(false)
+
+const loading = ref(false)
 
 const taskId = computed(() => route.query.task)
 
@@ -239,6 +246,7 @@ const onClickTask = (id) => {
 }
 
 const onCreateTask = async () => {
+  loading.value = true
   try {
     // Assuming taskStore.createTask creates a task with a default title (e.g., empty)
     // and returns the newly created task object including its id.
@@ -255,6 +263,8 @@ const onCreateTask = async () => {
   } catch (error) {
     console.error('Error creating task:', error)
     // Optionally show a toast notification for the error
+  } finally {
+    loading.value = false
   }
 }
 

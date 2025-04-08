@@ -155,6 +155,15 @@
         </div>
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
+          <UButton
+            v-if="selectedDueDate"
+            icon="i-heroicons-x-mark"
+            size="xs"
+            color="white"
+            variant="ghost"
+            square
+            @click="selectedDueDate = null"
+          />
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
               :label="localDueDate ? format(localDueDate, 'd MMM, yyy') : 'Select due date'" />
@@ -451,6 +460,29 @@ const closeTaskView = () => {
   emits('close')
 }
 
+watch(selectedAssignee, (value) => {
+  if (isReady.value) {
+    // taskStore.updateTaskAssignees(props.cid, props.taskId, value.map(a => a.id))
+    taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+  }
+})
+
+watch(selectedStatus, (value) => {
+  if (isReady.value) {
+    taskStore.updateTask(props.cid, props.taskId, { status: value })
+  }
+})
+
+watch(selectedDueDate, (value) => {
+  if (isReady.value) {
+    taskStore.updateTask(props.cid, props.taskId, { dueDate: value ? value.toISOString() : null })
+  }
+})
+
+const debouncedUpdateTask = useDebounceFn((value) => {
+  taskStore.updateTask(props.cid, props.taskId, { description: value })
+}, 1000)
+
 const searchAssignee = async (query) => {
   loadingSelectAssignee.value = true
 
@@ -496,7 +528,6 @@ const handleUploadResults = (results) => {
       description: `${succeeded.length} file(s) uploaded successfully`,
       color: 'green',
     });
-
     if (refFileInput.value) {
       refFileInput.value.input.value = null;
     }
@@ -540,7 +571,6 @@ const onFileUpload = async (Uploads) => {
 
 const downloadAttachment = (attachmentId) => {
   downloadingAttachments.value.add(attachmentId)
-
   taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
     .catch((error) => {
       console.error('Error downloading attachment:', error)
@@ -568,7 +598,6 @@ const ensureDeleteAttachment = (attachmentId) => {
 
 const deleteAttachment = (attachmentId) => {
   deletingAttachments.value.add(attachmentId)
-
   taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
     .then(() => {
       attachments.value = attachments.value.filter(a => a.id !== attachmentId)
@@ -597,7 +626,6 @@ const canScrollRight = ref(false)
 
 const checkScrollability = () => {
   if (!attachmentsContainer.value) return
-
   const container = attachmentsContainer.value
   canScrollLeft.value = container.scrollLeft > 0
   canScrollRight.value = container.scrollLeft < container.scrollWidth - container.clientWidth
