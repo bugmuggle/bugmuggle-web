@@ -156,13 +156,13 @@
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
           <UButton
-            v-if="selectedDueDate"
+            v-if="localDueDate"
             icon="i-heroicons-x-mark"
             size="xs"
             color="white"
             variant="ghost"
             square
-            @click="selectedDueDate = null"
+            @click="localDueDate = null"
           />
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
@@ -460,20 +460,20 @@ const closeTaskView = () => {
   emits('close')
 }
 
-watch(selectedAssignee, (value) => {
+watch(localAssignee, (value) => {
   if (isReady.value) {
     // taskStore.updateTaskAssignees(props.cid, props.taskId, value.map(a => a.id))
     taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
   }
 })
 
-watch(selectedStatus, (value) => {
+watch(localStatus, (value) => {
   if (isReady.value) {
     taskStore.updateTask(props.cid, props.taskId, { status: value })
   }
 })
 
-watch(selectedDueDate, (value) => {
+watch(localDueDate, (value) => {
   if (isReady.value) {
     taskStore.updateTask(props.cid, props.taskId, { dueDate: value ? value.toISOString() : null })
   }
