@@ -409,7 +409,7 @@ const fetchAttachments = async () => {
 
 const refFileInput = ref(null)
 
-const initAssignees = () => {
+const init = () => {
   setTimeout(async () => {
     try {
       isReady.value = false
@@ -636,7 +636,7 @@ onMounted(() => {
 
   if (task.value) {
     initLocalState()
-    initAssignees()
+    init()
   }
 })
 
@@ -656,7 +656,7 @@ watch(attachments, () => {
 
 defineExpose({
   cleanup,
-  initAssignees
+  init
 })
 </script>
 
