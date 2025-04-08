@@ -65,7 +65,7 @@
 
       <UTextarea
         ref="refTitleTextarea"
-        v-model="task.title"
+        v-model="localTaskTitle"
         size="xl"
         :ui="{
           variant: {
@@ -89,7 +89,7 @@
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
           <USelectMenu
-            v-model="selectedAssignee"
+            v-model="localAssignee"
             :loading="loadingSelectAssignee"
             :multiple="false"
             :searchable="searchAssignee" :ui="{
@@ -104,9 +104,9 @@
             by="id"
           >
             <template #label>
-              <div v-if="selectedAssignee" class="flex items-center gap-2">
-                <UAvatar :src="selectedAssignee?.githubAvatarUrl" :alt="selectedAssignee?.githubUsername" size="xs" />
-                <p class="text-sm text-gray-500">{{ selectedAssignee?.githubUsername }}</p>
+              <div v-if="localAssignee" class="flex items-center gap-2">
+                <UAvatar :src="localAssignee?.githubAvatarUrl" :alt="localAssignee?.githubUsername" size="xs" />
+                <p class="text-sm text-gray-500">{{ localAssignee?.githubUsername }}</p>
               </div>
               <div v-else>
                 <p class="text-sm text-gray-500">No assignee</p>
@@ -129,7 +129,7 @@
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
           <USelectMenu
-            v-model="selectedStatus"
+            v-model="localStatus"
             :options="[
               'To Do',
               'In Progress',
@@ -137,7 +137,7 @@
               'Testing',
               'Completed',
               'Blocked',
-              'Cancelled'
+              'Cancelled',
             ]"
             placeholder="Select status"
             :ui="{
@@ -158,10 +158,10 @@
           <div class="grow" />
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
-              :label="selectedDueDate ? format(selectedDueDate, 'd MMM, yyy') : 'Select due date'" />
+              :label="localDueDate ? format(localDueDate, 'd MMM, yyy') : 'Select due date'" />
 
             <template #panel="{ close }">
-              <DatePicker v-model="selectedDueDate" :attributes="dateAttributes" is-required @close="close" />
+              <DatePicker v-model="localDueDate" :attributes="dateAttributes" is-required @close="close" />
             </template>
           </UPopover>
         </div>
@@ -228,7 +228,7 @@
       <div class="px-4 space-y-1">
         <div class="h-2" />
         <p class="text-sm text-gray-500 font-regular">Description</p>
-        <editor ref="elEditor" v-model="editDescription" class="description-editor" />
+        <editor ref="elEditor" v-model="localDescription" class="description-editor" />
       </div>
 
       <div class="h-24"></div>
@@ -329,12 +329,73 @@ const dateAttributes = [
   }
 ]
 
-const task = computed({
-  get: () => {
-    return taskStore.getTask(+props.taskId)
-  },
-  set: (_) => {}
+const task = computed(() => taskStore.getTask(+props.taskId))
+
+const localTaskTitle = ref('')
+const localAssignee = ref(null)
+const localStatus = ref(null)
+const localDueDate = ref(null)
+const localDescription = ref('')
+
+const debouncedUpdateTitle = useDebounceFn((value) => {
+  taskStore.updateTask(props.cid, props.taskId, { title: value })
+}, 1000)
+
+const debouncedUpdateAssignee = useDebounceFn((value) => {
+  taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+}, 500)
+
+const debouncedUpdateStatus = useDebounceFn((value) => {
+  taskStore.updateTask(props.cid, props.taskId, { status: value })
+}, 500)
+
+const debouncedUpdateDueDate = useDebounceFn((value) => {
+  taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
+}, 500)
+
+const debouncedUpdateDescription = useDebounceFn((value) => {
+  taskStore.updateTask(props.cid, props.taskId, { description: value })
+}, 1000)
+
+watch(localTaskTitle, (value) => {
+  if (isReady.value) {
+    debouncedUpdateTitle(value)
+  }
 })
+
+watch(localAssignee, (value) => {
+  if (isReady.value) {
+    debouncedUpdateAssignee(value)
+  }
+})
+
+watch(localStatus, (value) => {
+  if (isReady.value) {
+    debouncedUpdateStatus(value)
+  }
+})
+
+watch(localDueDate, (value) => {
+  if (isReady.value) {
+    debouncedUpdateDueDate(value)
+  }
+})
+
+watch(localDescription, (value) => {
+  if (isReady.value) {
+    debouncedUpdateDescription(value)
+  }
+})
+
+watch(() => task.value, (newTask) => {
+  if (newTask) {
+    localTaskTitle.value = newTask.title
+    localAssignee.value = assignees.value[0]
+    localStatus.value = newTask.status
+    localDueDate.value = newTask.dueDate ? new Date(newTask.dueDate) : null
+    localDescription.value = newTask.description
+  }
+}, { immediate: true })
 
 const onUnarchiveTask = () => {
   taskStore.updateTask(props.cid, props.taskId, { archived: false })
@@ -479,7 +540,7 @@ const handleUploadResults = (results) => {
       description: `${succeeded.length} file(s) uploaded successfully`,
       color: 'green',
     });
-    
+
     if (refFileInput.value) {
       refFileInput.value.input.value = null;
     }
@@ -523,7 +584,7 @@ const onFileUpload = async (Uploads) => {
 
 const downloadAttachment = (attachmentId) => {
   downloadingAttachments.value.add(attachmentId)
-  
+
   taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
     .catch((error) => {
       console.error('Error downloading attachment:', error)
@@ -551,7 +612,7 @@ const ensureDeleteAttachment = (attachmentId) => {
 
 const deleteAttachment = (attachmentId) => {
   deletingAttachments.value.add(attachmentId)
-  
+
   taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
     .then(() => {
       attachments.value = attachments.value.filter(a => a.id !== attachmentId)
@@ -580,7 +641,7 @@ const canScrollRight = ref(false)
 
 const checkScrollability = () => {
   if (!attachmentsContainer.value) return
-  
+
   const container = attachmentsContainer.value
   canScrollLeft.value = container.scrollLeft > 0
   canScrollRight.value = container.scrollLeft < container.scrollWidth - container.clientWidth
@@ -588,10 +649,10 @@ const checkScrollability = () => {
 
 const scrollAttachments = (direction) => {
   if (!attachmentsContainer.value) return
-  
+
   const container = attachmentsContainer.value
   const scrollAmount = 200 // Adjust scroll amount as needed
-  
+
   if (direction === 'left') {
     container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
   } else {
