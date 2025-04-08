@@ -314,7 +314,12 @@ watch(localDescription, (value) => {
 })
 
 watch(localAssignee, (value) => {
-  if (isReady.value && value) taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+  if (isReady.value && value) {
+    const currentAssignee = assignees.value.find(a => a.taskId === props.taskId)
+    if (!currentAssignee || currentAssignee.userId !== value.id) {
+      taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+    }
+  }
 })
 
 watch(localStatus, (value) => {
@@ -462,7 +467,6 @@ const closeTaskView = () => {
 
 watch(localAssignee, (value) => {
   if (isReady.value) {
-    // taskStore.updateTaskAssignees(props.cid, props.taskId, value.map(a => a.id))
     taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
   }
 })
