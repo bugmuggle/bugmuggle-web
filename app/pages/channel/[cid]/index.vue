@@ -37,6 +37,7 @@
             color="red"
             variant="outline"
             label="Delete Task(s)"
+            :class="`transition-all ${taskId ? 'mr-60 min-[1222px]:' : ''}`"
             @click="() => refTasksList.onDeleteTask()"
           />
           <UInput v-model="searchQuery" placeholder="Search tasks..." class="w-[300px]" />
