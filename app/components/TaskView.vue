@@ -290,41 +290,30 @@ const assignees = computed(() => {
 
 const debouncedUpdateTaskTitle = useDebounceFn((value, taskId) => {
   if (currentTaskId.value === taskId) taskStore.updateTask(props.cid, props.taskId, { title: value })
-}, 1000)
+}, 500)
 
 const debouncedUpdateTaskDescription = useDebounceFn((value, taskId) => {
   if (currentTaskId.value === taskId) taskStore.updateTask(props.cid, props.taskId, { description: value })
-}, 1000)
+}, 500)
 
 watch(localTaskTitle, (value) => {
-  if (isReady.value) {
-    debouncedUpdateTaskTitle(value, props.taskId)
-  }
+  if (isReady.value) debouncedUpdateTaskTitle(value, props.taskId)
 })
 
 watch(localDescription, (value) => {
-  if (isReady.value) {
-    currentTaskId.value = props.taskId
-    debouncedUpdateTaskDescription(value, props.taskId)
-  }
+  if (isReady.value) debouncedUpdateTaskDescription(value, props.taskId)
 })
 
 watch(localAssignee, (value) => {
-  if (isReady.value && value) {
-    taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
-  }
+  if (isReady.value && value) taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
 })
 
 watch(localStatus, (value) => {
-  if (isReady.value) {
-    taskStore.updateTask(props.cid, props.taskId, { status: value })
-  }
+  if (isReady.value) taskStore.updateTask(props.cid, props.taskId, { status: value })
 })
 
 watch(localDueDate, (value) => {
-  if (isReady.value && value) {
-    taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
-  }
+  if (isReady.value && value) taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
 })
 
 const initLocalState = () => {
@@ -343,15 +332,11 @@ const initLocalState = () => {
 
 watch(() => props.taskId, () => {
   currentTaskId.value = props.taskId
-  if (task.value) {
-    initLocalState()
-  }
+  if (task.value) initLocalState()
 }, { immediate: true })
 
 watch(task, (newTask) => {
-  if (newTask && isReady.value === false) {
-    initLocalState()
-  }
+  if (newTask && isReady.value === false) initLocalState()
 }, { deep: true })
 
 const onArchiveTask = () => {
