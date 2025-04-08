@@ -94,8 +94,6 @@
                         <div class="grow"></div>
                         <UButton icon="i-heroicons-arrow-down-tray" size="xs" color="primary" square variant="soft"
                           :loading="downloadingAttachments.has(attachment.id)" @click="downloadAttachment(attachment.id)" />
-                        <UButton icon="i-heroicons-trash" size="xs" color="red" square variant="soft"
-                          :loading="deletingAttachments.has(attachment.id)" @click="ensureDeleteAttachment(attachment.id)" />
                       </div>
                       <div class="flex items-center gap-2 pl-7">
                         <p class="text-xs text-gray-500">{{ attachment.fileSize }}</p>
@@ -141,7 +139,6 @@ const assignees = ref([])
 const taskStore = useTaskStore()
 const attachments = ref([])
 const downloadingAttachments = ref(new Set())
-const deletingAttachments = ref(new Set())
 
 const fetchAttachments = async () => {
   try {
