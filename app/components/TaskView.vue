@@ -168,6 +168,7 @@
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
               :label="selectedDueDate ? format(selectedDueDate, 'd MMM, yyy') : 'Select due date'" />
+
             <template #panel="{ close }">
               <DatePicker v-model="selectedDueDate" :attributes="dateAttributes" is-required @close="close" />
             </template>
