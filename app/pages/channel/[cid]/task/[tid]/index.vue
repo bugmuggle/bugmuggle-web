@@ -148,6 +148,22 @@ const fetchAttachments = async () => {
     console.error('Error fetching attachments:', error)
   }
 }
+const downloadAttachment = (attachmentId) => {
+  downloadingAttachments.value.add(attachmentId)
+
+  taskStore.downloadTaskAttachment(cid, tid, attachmentId)
+    .catch((error) => {
+      console.error('Error downloading attachment:', error)
+      toast.add({
+        title: 'Download failed',
+        description: 'Failed to download attachment',
+        color: 'red',
+      })
+    })
+    .finally(() => {
+      downloadingAttachments.value.delete(attachmentId)
+    })
+}
 
 onMounted(async () => {
   try {
