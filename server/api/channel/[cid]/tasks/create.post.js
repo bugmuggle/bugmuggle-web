@@ -15,7 +15,7 @@ export default defineAuthEventHandler(async (event) => {
   }).returning()
 
   // Fetch the complete task data with creator information
-  const completeTask = await useDrizzle()
+  const taskWithCreator = await useDrizzle()
     .select({
       ...tables.tasks,
       createdByGithubAvatarUrl: tables.users.githubAvatarUrl,
@@ -27,6 +27,6 @@ export default defineAuthEventHandler(async (event) => {
 
   return {
     success: true,
-    data: { task: completeTask[0] },
+    data: { task: taskWithCreator[0] },
   }
 })
