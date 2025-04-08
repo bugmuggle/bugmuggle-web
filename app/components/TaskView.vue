@@ -156,10 +156,18 @@
         </div>
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
+          <UButton
+            v-if="selectedDueDate"
+            icon="i-heroicons-x-mark"
+            size="xs"
+            color="gray"
+            variant="ghost"
+            square
+            @click="selectedDueDate = null"
+          />
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
               :label="selectedDueDate ? format(selectedDueDate, 'd MMM, yyy') : 'Select due date'" />
-
             <template #panel="{ close }">
               <DatePicker v-model="selectedDueDate" :attributes="dateAttributes" is-required @close="close" />
             </template>
@@ -479,7 +487,7 @@ const handleUploadResults = (results) => {
       description: `${succeeded.length} file(s) uploaded successfully`,
       color: 'green',
     });
-    
+
     if (refFileInput.value) {
       refFileInput.value.input.value = null;
     }
@@ -523,7 +531,7 @@ const onFileUpload = async (Uploads) => {
 
 const downloadAttachment = (attachmentId) => {
   downloadingAttachments.value.add(attachmentId)
-  
+
   taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
     .catch((error) => {
       console.error('Error downloading attachment:', error)
@@ -551,7 +559,7 @@ const ensureDeleteAttachment = (attachmentId) => {
 
 const deleteAttachment = (attachmentId) => {
   deletingAttachments.value.add(attachmentId)
-  
+
   taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
     .then(() => {
       attachments.value = attachments.value.filter(a => a.id !== attachmentId)
@@ -580,7 +588,7 @@ const canScrollRight = ref(false)
 
 const checkScrollability = () => {
   if (!attachmentsContainer.value) return
-  
+
   const container = attachmentsContainer.value
   canScrollLeft.value = container.scrollLeft > 0
   canScrollRight.value = container.scrollLeft < container.scrollWidth - container.clientWidth
@@ -588,10 +596,10 @@ const checkScrollability = () => {
 
 const scrollAttachments = (direction) => {
   if (!attachmentsContainer.value) return
-  
+
   const container = attachmentsContainer.value
   const scrollAmount = 200 // Adjust scroll amount as needed
-  
+
   if (direction === 'left') {
     container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
   } else {
