@@ -334,7 +334,7 @@ watch(localDescription, (value) => {
 
 watch(localAssignee, (value) => {
   if (isReady.value && value) {
-    const currentAssignee = assignees.value.find(a => a.taskId === props.taskId)
+    const currentAssignee = props.assignees.find(a => a.taskId === props.taskId)
     if (!currentAssignee || currentAssignee.userId !== value.id) {
       emits('update-task-assignees', [value.id])
     }
@@ -346,7 +346,7 @@ watch(localStatus, (value) => {
 })
 
 watch(localDueDate, (value) => {
-  if (isReady.value && value) emits('update-task', { dueDate: value.toISOString() })
+  if (isReady.value) emits('update-task', { dueDate: value ? value.toISOString() : null })
 })
 
 const initLocalState = () => {
