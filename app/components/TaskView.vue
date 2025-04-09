@@ -65,7 +65,7 @@
 
       <UTextarea
         ref="refTitleTextarea"
-        v-model="task.title"
+        v-model="localTaskTitle"
         size="xl"
         :ui="{
           variant: {
@@ -79,7 +79,6 @@
         rows="1"
         placeholder="Enter task title"
         variant="none"
-        @keyup="onChangeTaskTitle"
       />
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
@@ -89,7 +88,7 @@
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
           <USelectMenu
-            v-model="selectedAssignee"
+            v-model="localAssignee"
             :loading="loadingSelectAssignee"
             :multiple="false"
             :searchable="searchAssignee" :ui="{
@@ -104,9 +103,9 @@
             by="id"
           >
             <template #label>
-              <div v-if="selectedAssignee" class="flex items-center gap-2">
-                <UAvatar :src="selectedAssignee?.githubAvatarUrl" :alt="selectedAssignee?.githubUsername" size="xs" />
-                <p class="text-sm text-gray-500">{{ selectedAssignee?.githubUsername }}</p>
+              <div v-if="localAssignee" class="flex items-center gap-2">
+                <UAvatar :src="localAssignee?.githubAvatarUrl" :alt="localAssignee?.githubUsername" size="xs" />
+                <p class="text-sm text-gray-500">{{ localAssignee?.githubUsername }}</p>
               </div>
               <div v-else>
                 <p class="text-sm text-gray-500">No assignee</p>
@@ -129,7 +128,7 @@
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
           <USelectMenu
-            v-model="selectedStatus"
+            v-model="localStatus"
             :options="[
               'To Do',
               'In Progress',
@@ -157,20 +156,20 @@
         <div class="col-span-10 flex items-center h-full">
           <div class="grow" />
           <UButton
-            v-if="selectedDueDate"
+            v-if="localDueDate"
             icon="i-heroicons-x-mark"
             size="xs"
             color="white"
             variant="ghost"
             square
-            @click="selectedDueDate = null"
+            @click="localDueDate = null"
           />
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton icon="i-heroicons-calendar-days-20-solid" variant="ghost" color="gray"
-              :label="selectedDueDate ? format(selectedDueDate, 'd MMM, yyy') : 'Select due date'" />
+              :label="localDueDate ? format(localDueDate, 'd MMM, yyy') : 'Select due date'" />
 
             <template #panel="{ close }">
-              <DatePicker v-model="selectedDueDate" :attributes="dateAttributes" is-required @close="close" />
+              <DatePicker v-model="localDueDate" :attributes="dateAttributes" is-required @close="close" />
             </template>
           </UPopover>
         </div>
@@ -237,7 +236,7 @@
       <div class="px-4 space-y-1">
         <div class="h-2" />
         <p class="text-sm text-gray-500 font-regular">Description</p>
-        <editor ref="elEditor" v-model="editDescription" class="description-editor" />
+        <editor ref="elEditor" v-model="localDescription" class="description-editor" />
       </div>
 
       <div class="h-24"></div>
@@ -251,9 +250,9 @@
 import { useDebounceFn, useClipboard } from '@vueuse/core'
 import { useDateFormat } from '@vueuse/core'
 import { format } from 'date-fns'
-import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
-const taskStore = useTaskStore()
+import { useToast } from '#imports'
+
 const channelStore = useChannelStore()
 const toast = useToast()
 
@@ -265,10 +264,37 @@ const props = defineProps({
   cid: {
     type: String,
     default: () => { return '' }
+  },
+  assignees: {
+    type: Array,
+    default: () => []
+  },
+  task: {
+    type: Object,
+    default: () => null
+  },
+  attachments: {
+    type: Array,
+    default: () => []
+  },
+  downloadingAttachments: {
+    type: Set,
+    default: () => new Set()
+  },
+  deletingAttachments: {
+    type: Set,
+    default: () => new Set()
   }
 })
 
-const emits = defineEmits(['close'])
+const emits = defineEmits([
+  'close',
+  'update-task',
+  'update-task-assignees',
+  'upload-attachment',
+  'download-attachment',
+  'delete-attachment'
+])
 
 const { copy: copyTaskUrl, copied: isCopiedTaskUrl } = useClipboard()
 const onClickCopyTaskUrl = () => {
@@ -278,38 +304,93 @@ const onClickCopyTaskUrl = () => {
 const refConfirmDialog = ref(null)
 const refTitleTextarea = ref(null)
 const hoverAttachmentId = ref(null)
-const selectedAssignee = ref(null)
-const selectedStatus = ref(null)
-const selectedDueDate = ref(null)
-const editDescription = ref('')
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
 const elEditor = ref(null)
-const downloadingAttachments = ref(new Set())
-const deletingAttachments = ref(new Set())
-const assignees = computed(() => {
-  return taskStore.assignees.filter(a => a.taskId === props.taskId)
+
+const currentTaskId = ref(null)
+
+const localTaskTitle = ref('')
+const localAssignee = ref(null)
+const localStatus = ref(null)
+const localDueDate = ref(null)
+const localDescription = ref('')
+
+const debouncedUpdateTaskTitle = useDebounceFn((value, taskId) => {
+  if (currentTaskId.value === taskId) emits('update-task', { title: value })
+}, 500)
+
+const debouncedUpdateTaskDescription = useDebounceFn((value, taskId) => {
+  if (currentTaskId.value === taskId) emits('update-task', { description: value })
+}, 500)
+
+watch(localTaskTitle, (value) => {
+  if (isReady.value) debouncedUpdateTaskTitle(value, props.taskId)
 })
 
+watch(localDescription, (value) => {
+  if (isReady.value) debouncedUpdateTaskDescription(value, props.taskId)
+})
+
+watch(localAssignee, (value) => {
+  if (isReady.value && value) {
+    const currentAssignee = props.assignees.find(a => a.taskId === props.taskId)
+    if (!currentAssignee || currentAssignee.userId !== value.id) {
+      emits('update-task-assignees', [value.id])
+    }
+  }
+})
+
+watch(localStatus, (value) => {
+  if (isReady.value) emits('update-task', { status: value })
+})
+
+watch(localDueDate, (value) => {
+  if (isReady.value) emits('update-task', { dueDate: value ? value.toISOString() : null })
+})
+
+const initLocalState = () => {
+  if (!props.task) return
+
+  isReady.value = false
+  localTaskTitle.value = props.task.title || ''
+  localStatus.value = props.task.status || null
+  localDueDate.value = props.task.dueDate ? new Date(props.task.dueDate) : null
+  localDescription.value = props.task.description || ''
+
+  nextTick(() => {
+    isReady.value = true
+  })
+}
+
+watch(() => props.taskId, () => {
+  currentTaskId.value = props.taskId
+  if (props.task) initLocalState()
+}, { immediate: true })
+
+watch(() => props.task, (newTask) => {
+  if (newTask) {
+    isReady.value = false
+    initLocalState()
+    nextTick(() => {
+      isReady.value = true
+    })
+  }
+}, { deep: true })
+
 const onArchiveTask = () => {
-  if (!task.value.archived) {
-    taskStore.updateTask(props.cid, props.taskId, { archived: true })
+  if (!props.task.archived) {
+    emits('update-task', { archived: true })
   }
 }
 
-const onChangeTaskTitle = useDebounceFn((e) => {
-  console.log('onChangeTaskTitle::e', e.target.value)
-  taskStore.updateTask(props.cid, props.taskId, { title: e.target.value })
-}, 1500)
+const onUnarchiveTask = () => {
+  emits('update-task', { archived: false })
+}
 
 const onDeleteTask = () => {
-  taskStore.deleteTask(props.cid, props.taskId)
-    .then(() => {
-      closeTaskView()
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  emits('update-task', { deleted: true })
+  closeTaskView()
 }
 
 const taskMenu = [
@@ -333,67 +414,27 @@ const taskMenu = [
 
 const dateAttributes = [
   {
-    dot: "green",
+    dot: 'green',
     dates: new Date()
   }
 ]
 
-const task = computed({
-  get: () => {
-    return taskStore.getTask(+props.taskId)
-  },
-  set: (_) => {}
-})
-
-const onUnarchiveTask = () => {
-  taskStore.updateTask(props.cid, props.taskId, { archived: false })
-}
-
-const searchAssignee = async (query) => {
-  loadingSelectAssignee.value = true
-
-  try {
-    const users = await channelStore.getUsers(props.cid)
-    return users.filter(user => user.githubUsername.toLowerCase().includes(query.toLowerCase()))
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loadingSelectAssignee.value = false
-  }
-}
-
-watch(() => props.taskId, (value) => {
-  task.value = taskStore.getTask(value)
-})
-
-const attachments = ref([])
-
-const fetchAttachments = async () => {
-  try {
-    const res = await taskStore.fetchTaskAttachments(props.cid, props.taskId)
-    attachments.value = res
-  } catch (error) {
-    console.error('Error fetching attachments:', error)
-  }
-}
-
 const refFileInput = ref(null)
 
-const initAssignees = () => {
+const init = () => {
   setTimeout(async () => {
     try {
       isReady.value = false
-      selectedAssignee.value = assignees.value[0]
-      selectedStatus.value = task.value.status
-      selectedDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
-      editDescription.value = task.value.description
+      localAssignee.value = props.assignees[0]
+
       if (elEditor.value) {
-        elEditor.value.setContent(task.value.description)
+        elEditor.value.setContent(props.task.description)
       }
-      await fetchAttachments()
+
       if (refFileInput.value) {
         refFileInput.value.input.value = null
       }
+
       refTitleTextarea.value?.textarea?.focus()
     } catch (error) {
       console.error('Error initializing task:', error)
@@ -412,7 +453,11 @@ const initAssignees = () => {
 
 const cleanup = () => {
   isReady.value = false
-  selectedAssignee.value = null
+  localTaskTitle.value = ''
+  localAssignee.value = null
+  localStatus.value = null
+  localDueDate.value = null
+  localDescription.value = ''
   nextTick(() => {
     isReady.value = true
   })
@@ -427,122 +472,49 @@ const closeTaskView = () => {
   emits('close')
 }
 
-watch(selectedAssignee, (value) => {
-  if (isReady.value) {
-    // taskStore.updateTaskAssignees(props.cid, props.taskId, value.map(a => a.id))
-    taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
-  }
-})
+const searchAssignee = async (query) => {
+  loadingSelectAssignee.value = true
 
-watch(selectedStatus, (value) => {
-  if (isReady.value) {
-    taskStore.updateTask(props.cid, props.taskId, { status: value })
+  try {
+    const users = await channelStore.getUsers(props.cid)
+    return users.filter(user => user.githubUsername.toLowerCase().includes(query.toLowerCase()))
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loadingSelectAssignee.value = false
   }
-})
-
-watch(selectedDueDate, (value) => {
-  if (isReady.value) {
-    taskStore.updateTask(props.cid, props.taskId, { dueDate: value ? value.toISOString() : null })
-  }
-})
-
-const debouncedUpdateTask = useDebounceFn((value) => {
-  taskStore.updateTask(props.cid, props.taskId, { description: value })
-}, 1000)
-
-watch(editDescription, (value) => {
-  if (isReady.value) {
-    debouncedUpdateTask(value)
-  }
-})
+}
 
 const openTaskInNewTab = () => {
   window.open(`/channel/${props.cid}/task/${props.taskId}`, '_blank')
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 const validateFileSize = (files) => {
-  const oversizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
-  return oversizedFiles;
-};
-
-const uploadFiles = async (files) => {
-  const resolvers = files.map((file) => taskStore.uploadTaskAttachment(props.cid, props.taskId, file));
-  const results = await Promise.allSettled(resolvers);
-  return results;
-};
-
-const handleUploadResults = (results) => {
-  const succeeded = results.filter((r) => r.status === 'fulfilled');
-  const failed = results.filter((r) => r.status === 'rejected');
-
-  succeeded.forEach((result) => {
-    console.log('result::', result.value)
-    attachments.value.push(result.value);
-  });
-
-  if (succeeded.length) {
-    toast.add({
-      title: 'Upload successful',
-      description: `${succeeded.length} file(s) uploaded successfully`,
-      color: 'green',
-    });
-    if (refFileInput.value) {
-      refFileInput.value.input.value = null;
-    }
-  }
-
-  if (failed.length) {
-    toast.add({
-      title: 'Upload failed',
-      description: `${failed.length} file(s) failed to upload`,
-      color: 'red',
-    });
-  }
-};
+  const oversizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE)
+  return oversizedFiles
+}
 
 const onFileUpload = async (Uploads) => {
   const files = Array.from(Uploads)
-  if (!files.length) return;
+  if (!files.length) return
 
-  const oversizedFiles = validateFileSize(files);
+  const oversizedFiles = validateFileSize(files)
   if (oversizedFiles.length) {
     toast.add({
       title: 'Files too large',
       description: `${oversizedFiles.map((file) => file.name).join(', ')} exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB limit`,
       color: 'red',
-    });
-    return;
+    })
+    return
   }
 
-  try {
-    const results = await uploadFiles(files);
-    handleUploadResults(results);
-  } catch (error) {
-    console.error('Error during file upload:', error);
-    toast.add({
-      title: 'Upload error',
-      description: 'An error occurred while uploading files',
-      color: 'red',
-    });
-  }
-};
+  emits('upload-attachment', files)
+}
 
 const downloadAttachment = (attachmentId) => {
-  downloadingAttachments.value.add(attachmentId)
-  taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
-    .catch((error) => {
-      console.error('Error downloading attachment:', error)
-      toast.add({
-        title: 'Download failed',
-        description: 'Failed to download attachment',
-        color: 'red'
-      })
-    })
-    .finally(() => {
-      downloadingAttachments.value.delete(attachmentId)
-    })
+  emits('download-attachment', attachmentId)
 }
 
 const ensureDeleteAttachment = (attachmentId) => {
@@ -550,34 +522,9 @@ const ensureDeleteAttachment = (attachmentId) => {
     title: 'Delete attachment',
     message: 'Are you sure you want to delete this attachment?',
     callback: (result) => {
-      console.log('ensureDeleteAttachment::result', result)
-      result && deleteAttachment(attachmentId)
+      result && emits('delete-attachment', attachmentId)
     }
   })
-}
-
-const deleteAttachment = (attachmentId) => {
-  deletingAttachments.value.add(attachmentId)
-  taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
-    .then(() => {
-      attachments.value = attachments.value.filter(a => a.id !== attachmentId)
-      toast.add({
-        title: 'Attachment deleted',
-        description: 'File was successfully deleted',
-        color: 'green'
-      })
-    })
-    .catch((error) => {
-      console.error('Error deleting attachment:', error)
-      toast.add({
-        title: 'Delete failed',
-        description: 'Failed to delete attachment',
-        color: 'red'
-      })
-    })
-    .finally(() => {
-      deletingAttachments.value.delete(attachmentId)
-    })
 }
 
 const attachmentsContainer = ref(null)
@@ -593,8 +540,10 @@ const checkScrollability = () => {
 
 const scrollAttachments = (direction) => {
   if (!attachmentsContainer.value) return
+
   const container = attachmentsContainer.value
   const scrollAmount = 200 // Adjust scroll amount as needed
+
   if (direction === 'left') {
     container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
   } else {
@@ -608,6 +557,11 @@ onMounted(() => {
     attachmentsContainer.value.addEventListener('scroll', checkScrollability)
     window.addEventListener('resize', checkScrollability)
   }
+
+  if (props.task) {
+    initLocalState()
+    init()
+  }
 })
 
 onUnmounted(() => {
@@ -617,8 +571,7 @@ onUnmounted(() => {
   }
 })
 
-// Update checkScrollability when attachments change
-watch(attachments, () => {
+watch(() => props.attachments, () => {
   nextTick(() => {
     checkScrollability()
   })
@@ -626,7 +579,7 @@ watch(attachments, () => {
 
 defineExpose({
   cleanup,
-  initAssignees
+  init
 })
 </script>
 
