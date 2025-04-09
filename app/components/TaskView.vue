@@ -250,9 +250,9 @@
 import { useDebounceFn, useClipboard } from '@vueuse/core'
 import { useDateFormat } from '@vueuse/core'
 import { format } from 'date-fns'
-import { useTaskStore } from '@/store/task'
 import { useChannelStore } from '@/store/channel'
-const taskStore = useTaskStore()
+import { useToast } from '#imports'
+
 const channelStore = useChannelStore()
 const toast = useToast()
 

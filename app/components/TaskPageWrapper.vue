@@ -81,7 +81,6 @@ const fetchAttachments = async (id) => {
 const handleUpdateTask = async (updates) => {
   try {
     await taskStore.updateTask(cid, taskViewId.value, updates)
-    await fetchTask(taskViewId.value)
   } catch (error) {
     console.error('Error updating task:', error)
     toast.add({
@@ -95,7 +94,6 @@ const handleUpdateTask = async (updates) => {
 const handleUpdateTaskAssignees = async (assigneeIds) => {
   try {
     await taskStore.updateTaskAssignees(cid, taskViewId.value, assigneeIds)
-    await fetchTask(taskViewId.value)
   } catch (error) {
     console.error('Error updating assignees:', error)
     toast.add({
@@ -183,8 +181,6 @@ const handleDeleteAttachment = async (attachmentId) => {
 }
 
 const openTaskView = async (id) => {
-  closeTaskView()
-
   taskViewOpen.value = true
   taskViewId.value = id
   await Promise.all([
