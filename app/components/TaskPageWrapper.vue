@@ -14,7 +14,21 @@
       taskViewOpen ? 'right-0' : '-right-[700px]'
     ]">
       <div class="h-full">
-        <task-view ref="refTaskView" :task-id="taskViewId" :cid="cid" @close="closeTaskView" />
+        <task-view
+          ref="refTaskView"
+          :task-id="taskViewId"
+          :cid="cid"
+          :task="task"
+          :attachments="attachments"
+          :downloading-attachments="downloadingAttachments"
+          :deleting-attachments="deletingAttachments"
+          @close="closeTaskView"
+          @update-task="handleUpdateTask"
+          @update-task-assignees="handleUpdateTaskAssignees"
+          @upload-attachment="handleUploadAttachment"
+          @download-attachment="handleDownloadAttachment"
+          @delete-attachment="handleDeleteAttachment"
+        />
       </div>
     </div>
   </div>
@@ -22,27 +36,174 @@
 
 <script setup>
 import { useStorage } from '@vueuse/core'
+import { useTaskStore } from '@/store/task'
+import { useToast } from '#imports'
+
+const taskStore = useTaskStore()
+const toast = useToast()
 
 const taskViewOpen = useStorage('bugmuggle-taskViewOpen', false)
 const taskViewId = ref(null)
 const refTaskView = ref(null)
 
+const task = ref(null)
+const attachments = ref([])
+const downloadingAttachments = ref(new Set())
+const deletingAttachments = ref(new Set())
+
 const cid = useRoute().params.cid
 
-const openTaskView = (id) => {
+const fetchTask = async (id) => {
+  try {
+    task.value = await taskStore.getTask(+id)
+  } catch (error) {
+    console.error('Error fetching task:', error)
+    toast.add({
+      title: 'Error',
+      description: 'Failed to fetch task details',
+      color: 'red',
+    })
+  }
+}
+
+const fetchAttachments = async (id) => {
+  try {
+    attachments.value = await taskStore.fetchTaskAttachments(cid, id)
+  } catch (error) {
+    console.error('Error fetching attachments:', error)
+  }
+}
+
+const handleUpdateTask = async (updates) => {
+  try {
+    await taskStore.updateTask(cid, taskViewId.value, updates)
+    await fetchTask(taskViewId.value)
+  } catch (error) {
+    console.error('Error updating task:', error)
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update task',
+      color: 'red',
+    })
+  }
+}
+
+const handleUpdateTaskAssignees = async (assigneeIds) => {
+  try {
+    await taskStore.updateTaskAssignees(cid, taskViewId.value, assigneeIds)
+    await fetchTask(taskViewId.value)
+  } catch (error) {
+    console.error('Error updating assignees:', error)
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update assignees',
+      color: 'red',
+    })
+  }
+}
+
+const handleUploadAttachment = async (files) => {
+  try {
+    const results = await Promise.allSettled(
+      files.map((file) => taskStore.uploadTaskAttachment(cid, taskViewId.value, file))
+    )
+
+    const succeeded = results.filter((r) => r.status === 'fulfilled')
+    const failed = results.filter((r) => r.status === 'rejected')
+
+    succeeded.forEach((result) => {
+      attachments.value.push(result.value)
+    })
+
+    if (succeeded.length) {
+      toast.add({
+        title: 'Upload successful',
+        description: `${succeeded.length} file(s) uploaded successfully`,
+        color: 'green',
+      })
+    }
+
+    if (failed.length) {
+      toast.add({
+        title: 'Upload failed',
+        description: `${failed.length} file(s) failed to upload`,
+        color: 'red',
+      })
+    }
+  } catch (error) {
+    console.error('Error uploading attachments:', error)
+    toast.add({
+      title: 'Upload error',
+      description: 'An error occurred while uploading files',
+      color: 'red',
+    })
+  }
+}
+
+const handleDownloadAttachment = async (attachmentId) => {
+  downloadingAttachments.value.add(attachmentId)
+  try {
+    await taskStore.downloadTaskAttachment(cid, taskViewId.value, attachmentId)
+  } catch (error) {
+    console.error('Error downloading attachment:', error)
+    toast.add({
+      title: 'Download failed',
+      description: 'Failed to download attachment',
+      color: 'red',
+    })
+  } finally {
+    downloadingAttachments.value.delete(attachmentId)
+  }
+}
+
+const handleDeleteAttachment = async (attachmentId) => {
+  deletingAttachments.value.add(attachmentId)
+  try {
+    await taskStore.deleteTaskAttachment(cid, taskViewId.value, attachmentId)
+    attachments.value = attachments.value.filter(a => a.id !== attachmentId)
+    toast.add({
+      title: 'Attachment deleted',
+      description: 'File was successfully deleted',
+      color: 'green',
+    })
+  } catch (error) {
+    console.error('Error deleting attachment:', error)
+    toast.add({
+      title: 'Delete failed',
+      description: 'Failed to delete attachment',
+      color: 'red',
+    })
+  } finally {
+    deletingAttachments.value.delete(attachmentId)
+  }
+}
+
+const openTaskView = async (id) => {
+  closeTaskView()
+
   taskViewOpen.value = true
   taskViewId.value = id
-  refTaskView.value.init()
+  await Promise.all([
+    fetchTask(id),
+    fetchAttachments(id),
+  ])
+  nextTick(() => {
+    refTaskView.value?.init()
+  })
 }
 
 const closeTaskView = () => {
   taskViewOpen.value = false
   taskViewId.value = null
-  refTaskView.value.cleanup()
+  task.value = null
+  attachments.value = []
+  downloadingAttachments.value.clear()
+  deletingAttachments.value.clear()
+  refTaskView.value?.cleanup()
 }
 
 defineExpose({
   openTaskView,
-  closeTaskView
+  closeTaskView,
 })
 </script>

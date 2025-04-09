@@ -264,10 +264,33 @@ const props = defineProps({
   cid: {
     type: String,
     default: () => { return '' }
+  },
+  task: {
+    type: Object,
+    default: () => null
+  },
+  attachments: {
+    type: Array,
+    default: () => []
+  },
+  downloadingAttachments: {
+    type: Set,
+    default: () => new Set()
+  },
+  deletingAttachments: {
+    type: Set,
+    default: () => new Set()
   }
 })
 
-const emits = defineEmits(['close'])
+const emits = defineEmits([
+  'close',
+  'update-task',
+  'update-task-assignees',
+  'upload-attachment',
+  'download-attachment',
+  'delete-attachment'
+])
 
 const { copy: copyTaskUrl, copied: isCopiedTaskUrl } = useClipboard()
 const onClickCopyTaskUrl = () => {
@@ -280,8 +303,6 @@ const hoverAttachmentId = ref(null)
 const loadingSelectAssignee = ref(false)
 const isReady = ref(true)
 const elEditor = ref(null)
-const downloadingAttachments = ref(new Set())
-const deletingAttachments = ref(new Set())
 
 const currentTaskId = ref(null)
 
@@ -291,18 +312,16 @@ const localStatus = ref(null)
 const localDueDate = ref(null)
 const localDescription = ref('')
 
-const task = computed(() => taskStore.getTask(+props.taskId))
-
 const assignees = computed(() => {
-  return taskStore.assignees.filter(a => a.taskId === props.taskId)
+  return props.task?.assignees || []
 })
 
 const debouncedUpdateTaskTitle = useDebounceFn((value, taskId) => {
-  if (currentTaskId.value === taskId) taskStore.updateTask(props.cid, props.taskId, { title: value })
+  if (currentTaskId.value === taskId) emits('update-task', { title: value })
 }, 500)
 
 const debouncedUpdateTaskDescription = useDebounceFn((value, taskId) => {
-  if (currentTaskId.value === taskId) taskStore.updateTask(props.cid, props.taskId, { description: value })
+  if (currentTaskId.value === taskId) emits('update-task', { description: value })
 }, 500)
 
 watch(localTaskTitle, (value) => {
@@ -317,27 +336,27 @@ watch(localAssignee, (value) => {
   if (isReady.value && value) {
     const currentAssignee = assignees.value.find(a => a.taskId === props.taskId)
     if (!currentAssignee || currentAssignee.userId !== value.id) {
-      taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
+      emits('update-task-assignees', [value.id])
     }
   }
 })
 
 watch(localStatus, (value) => {
-  if (isReady.value) taskStore.updateTask(props.cid, props.taskId, { status: value })
+  if (isReady.value) emits('update-task', { status: value })
 })
 
 watch(localDueDate, (value) => {
-  if (isReady.value && value) taskStore.updateTask(props.cid, props.taskId, { dueDate: value.toISOString() })
+  if (isReady.value && value) emits('update-task', { dueDate: value.toISOString() })
 })
 
 const initLocalState = () => {
-  if (!task.value) return
+  if (!props.task) return
 
   isReady.value = false
-  localTaskTitle.value = task.value.title || ''
-  localStatus.value = task.value.status || null
-  localDueDate.value = task.value.dueDate ? new Date(task.value.dueDate) : null
-  localDescription.value = task.value.description || ''
+  localTaskTitle.value = props.task.title || ''
+  localStatus.value = props.task.status || null
+  localDueDate.value = props.task.dueDate ? new Date(props.task.dueDate) : null
+  localDescription.value = props.task.description || ''
 
   nextTick(() => {
     isReady.value = true
@@ -346,31 +365,32 @@ const initLocalState = () => {
 
 watch(() => props.taskId, () => {
   currentTaskId.value = props.taskId
-  if (task.value) initLocalState()
+  if (props.task) initLocalState()
 }, { immediate: true })
 
-watch(task, (newTask) => {
-  if (newTask && isReady.value === false) initLocalState()
+watch(() => props.task, (newTask) => {
+  if (newTask) {
+    isReady.value = false
+    initLocalState()
+    nextTick(() => {
+      isReady.value = true
+    })
+  }
 }, { deep: true })
 
 const onArchiveTask = () => {
-  if (!task.value.archived) {
-    taskStore.updateTask(props.cid, props.taskId, { archived: true })
+  if (!props.task.archived) {
+    emits('update-task', { archived: true })
   }
 }
 
 const onUnarchiveTask = () => {
-  taskStore.updateTask(props.cid, props.taskId, { archived: false })
+  emits('update-task', { archived: false })
 }
 
 const onDeleteTask = () => {
-  taskStore.deleteTask(props.cid, props.taskId)
-    .then(() => {
-      closeTaskView()
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  emits('update-task', { deleted: true })
+  closeTaskView()
 }
 
 const taskMenu = [
@@ -394,21 +414,10 @@ const taskMenu = [
 
 const dateAttributes = [
   {
-    dot: "green",
+    dot: 'green',
     dates: new Date()
   }
 ]
-
-const attachments = ref([])
-
-const fetchAttachments = async () => {
-  try {
-    const res = await taskStore.fetchTaskAttachments(props.cid, props.taskId)
-    attachments.value = res
-  } catch (error) {
-    console.error('Error fetching attachments:', error)
-  }
-}
 
 const refFileInput = ref(null)
 
@@ -419,10 +428,8 @@ const init = () => {
       localAssignee.value = assignees.value[0]
 
       if (elEditor.value) {
-        elEditor.value.setContent(task.value.description)
+        elEditor.value.setContent(props.task.description)
       }
-
-      await fetchAttachments()
 
       if (refFileInput.value) {
         refFileInput.value.input.value = null
@@ -465,28 +472,6 @@ const closeTaskView = () => {
   emits('close')
 }
 
-watch(localAssignee, (value) => {
-  if (isReady.value) {
-    taskStore.updateTaskAssignees(props.cid, props.taskId, [value.id])
-  }
-})
-
-watch(localStatus, (value) => {
-  if (isReady.value) {
-    taskStore.updateTask(props.cid, props.taskId, { status: value })
-  }
-})
-
-watch(localDueDate, (value) => {
-  if (isReady.value) {
-    taskStore.updateTask(props.cid, props.taskId, { dueDate: value ? value.toISOString() : null })
-  }
-})
-
-const debouncedUpdateTask = useDebounceFn((value) => {
-  taskStore.updateTask(props.cid, props.taskId, { description: value })
-}, 1000)
-
 const searchAssignee = async (query) => {
   loadingSelectAssignee.value = true
 
@@ -504,89 +489,32 @@ const openTaskInNewTab = () => {
   window.open(`/channel/${props.cid}/task/${props.taskId}`, '_blank')
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 const validateFileSize = (files) => {
-  const oversizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
-  return oversizedFiles;
-};
-
-const uploadFiles = async (files) => {
-  const resolvers = files.map((file) => taskStore.uploadTaskAttachment(props.cid, props.taskId, file));
-  const results = await Promise.allSettled(resolvers);
-  return results;
-};
-
-const handleUploadResults = (results) => {
-  const succeeded = results.filter((r) => r.status === 'fulfilled');
-  const failed = results.filter((r) => r.status === 'rejected');
-
-  succeeded.forEach((result) => {
-    console.log('result::', result.value)
-    attachments.value.push(result.value);
-  });
-
-  if (succeeded.length) {
-    toast.add({
-      title: 'Upload successful',
-      description: `${succeeded.length} file(s) uploaded successfully`,
-      color: 'green',
-    });
-    if (refFileInput.value) {
-      refFileInput.value.input.value = null;
-    }
-  }
-
-  if (failed.length) {
-    toast.add({
-      title: 'Upload failed',
-      description: `${failed.length} file(s) failed to upload`,
-      color: 'red',
-    });
-  }
-};
+  const oversizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE)
+  return oversizedFiles
+}
 
 const onFileUpload = async (Uploads) => {
   const files = Array.from(Uploads)
-  if (!files.length) return;
+  if (!files.length) return
 
-  const oversizedFiles = validateFileSize(files);
+  const oversizedFiles = validateFileSize(files)
   if (oversizedFiles.length) {
     toast.add({
       title: 'Files too large',
       description: `${oversizedFiles.map((file) => file.name).join(', ')} exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB limit`,
       color: 'red',
-    });
-    return;
+    })
+    return
   }
 
-  try {
-    const results = await uploadFiles(files);
-    handleUploadResults(results);
-  } catch (error) {
-    console.error('Error during file upload:', error);
-    toast.add({
-      title: 'Upload error',
-      description: 'An error occurred while uploading files',
-      color: 'red',
-    });
-  }
-};
+  emits('upload-attachment', files)
+}
 
 const downloadAttachment = (attachmentId) => {
-  downloadingAttachments.value.add(attachmentId)
-  taskStore.downloadTaskAttachment(props.cid, props.taskId, attachmentId)
-    .catch((error) => {
-      console.error('Error downloading attachment:', error)
-      toast.add({
-        title: 'Download failed',
-        description: 'Failed to download attachment',
-        color: 'red'
-      })
-    })
-    .finally(() => {
-      downloadingAttachments.value.delete(attachmentId)
-    })
+  emits('download-attachment', attachmentId)
 }
 
 const ensureDeleteAttachment = (attachmentId) => {
@@ -594,34 +522,9 @@ const ensureDeleteAttachment = (attachmentId) => {
     title: 'Delete attachment',
     message: 'Are you sure you want to delete this attachment?',
     callback: (result) => {
-      console.log('ensureDeleteAttachment::result', result)
-      result && deleteAttachment(attachmentId)
+      result && emits('delete-attachment', attachmentId)
     }
   })
-}
-
-const deleteAttachment = (attachmentId) => {
-  deletingAttachments.value.add(attachmentId)
-  taskStore.deleteTaskAttachment(props.cid, props.taskId, attachmentId)
-    .then(() => {
-      attachments.value = attachments.value.filter(a => a.id !== attachmentId)
-      toast.add({
-        title: 'Attachment deleted',
-        description: 'File was successfully deleted',
-        color: 'green'
-      })
-    })
-    .catch((error) => {
-      console.error('Error deleting attachment:', error)
-      toast.add({
-        title: 'Delete failed',
-        description: 'Failed to delete attachment',
-        color: 'red'
-      })
-    })
-    .finally(() => {
-      deletingAttachments.value.delete(attachmentId)
-    })
 }
 
 const attachmentsContainer = ref(null)
@@ -655,7 +558,7 @@ onMounted(() => {
     window.addEventListener('resize', checkScrollability)
   }
 
-  if (task.value) {
+  if (props.task) {
     initLocalState()
     init()
   }
@@ -668,8 +571,7 @@ onUnmounted(() => {
   }
 })
 
-// Update checkScrollability when attachments change
-watch(attachments, () => {
+watch(() => props.attachments, () => {
   nextTick(() => {
     checkScrollability()
   })
