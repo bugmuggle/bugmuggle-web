@@ -19,6 +19,7 @@
           :task-id="taskViewId"
           :cid="cid"
           :task="task"
+          :assignees="assignees"
           :attachments="attachments"
           :downloading-attachments="downloadingAttachments"
           :deleting-attachments="deletingAttachments"
@@ -47,6 +48,9 @@ const taskViewId = ref(null)
 const refTaskView = ref(null)
 
 const task = ref(null)
+const assignees = computed(() => {
+  return taskStore.assignees.filter(a => a.taskId === taskViewId.value)
+})
 const attachments = ref([])
 const downloadingAttachments = ref(new Set())
 const deletingAttachments = ref(new Set())

@@ -265,6 +265,10 @@ const props = defineProps({
     type: String,
     default: () => { return '' }
   },
+  assignees: {
+    type: Array,
+    default: () => []
+  },
   task: {
     type: Object,
     default: () => null
@@ -311,10 +315,6 @@ const localAssignee = ref(null)
 const localStatus = ref(null)
 const localDueDate = ref(null)
 const localDescription = ref('')
-
-const assignees = computed(() => {
-  return props.task?.assignees || []
-})
 
 const debouncedUpdateTaskTitle = useDebounceFn((value, taskId) => {
   if (currentTaskId.value === taskId) emits('update-task', { title: value })
@@ -425,7 +425,7 @@ const init = () => {
   setTimeout(async () => {
     try {
       isReady.value = false
-      localAssignee.value = assignees.value[0]
+      localAssignee.value = props.assignees[0]
 
       if (elEditor.value) {
         elEditor.value.setContent(props.task.description)
