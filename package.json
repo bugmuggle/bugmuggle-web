@@ -27,6 +27,7 @@
     "@tiptap/extension-typography": "^2.11.5",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.39.3",
+    "editorjs-drag-drop": "^1.1.16",
     "editorjs-hyperlink": "^1.0.6",
     "highlight.js": "^11.11.1",
     "jimp-compact": "0.16.1-2",

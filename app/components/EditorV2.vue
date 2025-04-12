@@ -11,6 +11,7 @@ import List from '@editorjs/list'
 import Code from '@editorjs/code'
 import Paragraph from '@editorjs/paragraph'
 import Hyperlink from 'editorjs-hyperlink'
+import DragDrop from 'editorjs-drag-drop'
 
 const props = defineProps({
   readonly: {
@@ -57,6 +58,7 @@ const initEditor = async () => {
       if (inputContent.value) {
         setContent(inputContent.value)
       }
+      new DragDrop(editor, '2px solid #fff')
     },
   })
 }
