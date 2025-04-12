@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   try {
     const path = getRouterParam(event, 'path')
-    const blob = await hubBlob().get(path)
+    const blob = await hubBlob().get(`attachments/${path}`)
     
     if (!blob) {
       throw createError({ statusCode: 404, message: 'File not found' })

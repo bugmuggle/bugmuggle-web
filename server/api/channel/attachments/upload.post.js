@@ -11,9 +11,9 @@ export default defineAuthEventHandler(async (event) => {
 
     const uniqueId = nanoid()
     const fileExtension = file.name.split('.').pop()
-    const blobKey = `attachments/${uniqueId}.${fileExtension}`
+    const blobKey = `${uniqueId}.${fileExtension}`
     
-    await hubBlob().put(blobKey, file, {
+    await hubBlob().put(`attachments/${blobKey}`, file, {
       type: file.type,
       metadata: {
         fileName: file.name,

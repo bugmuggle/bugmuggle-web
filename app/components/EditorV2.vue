@@ -169,42 +169,21 @@ defineExpose({
 
 <style>
 .ce-toolbar__plus {
-  color: #e4e4e4;
+  color: white;
 }
-
 .ce-toolbar__settings-btn {
-  color: #e4e4e4;
+  color: white;
 }
 
-.ce-inline-toolbar__buttons {
-  color: #e4e4e4;
+.ce-toolbar__plus:hover {
+  color: gray;
+}
+.ce-toolbar__settings-btn:hover {
+  color: gray;
 }
 
-.ce-conversion-toolbar {
-  background: #2d2d2d;
-  border: 1px solid #4a5568;
-}
-
-.ce-conversion-toolbar__label {
-  color: #e4e4e4;
-}
-
-.ce-conversion-toolbar__icon {
-  background-color: #e4e4e4;
-}
-
-.cdx-block {
-  padding: 0.5rem 0;
-}
-
-.cdx-input {
-  color: #e4e4e4;
-  background: #2d2d2d;
-  border: 1px solid #4a5568;
-}
-
-.cdx-settings-button {
-  color: #e4e4e4;
+.cdx-search-field__input {
+  color: gray;
 }
 
 /* Quote styles */
@@ -213,41 +192,11 @@ defineExpose({
 }
 
 .cdx-quote__text {
-  color: #e4e4e4;
+  color: white;
   font-style: italic;
 }
 
 .cdx-quote__caption {
   display: none !important;
-}
-
-/* Image styles */
-.cdx-image {
-  margin: 1rem 0;
-}
-
-.cdx-image__picture {
-  max-width: 100%;
-  margin: 0 auto;
-  display: block;
-}
-
-.cdx-image__image {
-  max-width: 100%;
-  vertical-align: bottom;
-  display: block;
-  margin: 0 auto;
-}
-
-.cdx-image__caption {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  text-align: center;
-}
-
-.cdx-image__stretched {
-  max-width: none;
-  width: 100%;
 }
 </style>
