@@ -448,7 +448,7 @@ watch(selectedDueDate, (value) => {
 })
 
 const debouncedUpdateTask = useDebounceFn((value) => {
-  taskStore.updateTask(props.cid, props.taskId, { description: value })
+  taskStore.updateTask(props.cid, props.taskId, { description: JSON.stringify(value.blocks) })
 }, 1000)
 
 watch(editDescription, (value) => {

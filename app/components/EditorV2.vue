@@ -69,7 +69,7 @@ const setContent = async (content) => {
     try {
       // If content is already in Editor.js format, use it directly
       if (content && typeof content === 'object' && 'blocks' in content) {
-        await editor.render(content)
+        await editor.render(JSON.parse(content))
       } else if (content) {
         // If content is a string or other format, convert it to Editor.js format
         await editor.render({
@@ -105,33 +105,12 @@ defineExpose({
 </script>
 
 <style>
-.ce-block__content {
-  max-width: 100%;
-}
-
-.ce-toolbar__content {
-  max-width: 100%;
-}
-
-.codex-editor {
-  color: #e4e4e4;
-}
-
-.ce-block--selected .ce-block__content {
-  background: #2d2d2d;
-}
-
 .ce-toolbar__plus {
   color: #e4e4e4;
 }
 
 .ce-toolbar__settings-btn {
   color: #e4e4e4;
-}
-
-.ce-inline-toolbar {
-  background: #2d2d2d;
-  border: 1px solid #4a5568;
 }
 
 .ce-inline-toolbar__buttons {
@@ -164,8 +143,4 @@ defineExpose({
 .cdx-settings-button {
   color: #e4e4e4;
 }
-
-.cdx-settings-button:hover {
-  background: #4a5568;
-}
-</style> 
+</style>
