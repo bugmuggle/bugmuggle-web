@@ -64,14 +64,18 @@ const initEditor = async () => {
   })
 }
 
+const isHtmlString = (str) => {
+  if (typeof str !== 'string') return false
+  return /<[a-z][\s\S]*>/i.test(str)
+}
+
 const setContent = async (content) => {
   if (editor && isEditorReady) {
+    console.log('setContent::content', content)
     try {
-      // If content is already in Editor.js format, use it directly
-      if (content && typeof content === 'object' && 'blocks' in content) {
-        await editor.render(JSON.parse(content))
-      } else if (content) {
-        // If content is a string or other format, convert it to Editor.js format
+      // If it's HTML, convert it to Editor.js blocks
+      if (isHtmlString(content)) {
+        console.log('content is html string')
         await editor.render({
           blocks: [
             {
@@ -81,6 +85,12 @@ const setContent = async (content) => {
               },
             },
           ],
+        })
+        return
+      } else {
+        console.log('content is editorjs block')
+        await editor.render({
+          blocks: JSON.parse(content),
         })
       }
     } catch (error) {
