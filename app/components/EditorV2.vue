@@ -102,7 +102,7 @@ const initEditor = async () => {
       if (inputContent.value) {
         setContent(inputContent.value)
       }
-      new DragDrop(editor, '2px dashed #fff')
+      new DragDrop(editor, '2px dashed white')
     },
   })
 }
@@ -140,7 +140,6 @@ const setContent = async (content) => {
             },
           ],
         })
-        return
       } else {
         await editor.render({
           blocks: JSON.parse(content),

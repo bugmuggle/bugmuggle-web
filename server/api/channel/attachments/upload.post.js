@@ -4,7 +4,7 @@ export default defineAuthEventHandler(async (event) => {
   try {
     const formData = await readFormData(event)
     const file = formData.get('file')
-    
+
     if (!file) {
       throw createError({ statusCode: 400, message: 'No file provided' })
     }
@@ -12,7 +12,7 @@ export default defineAuthEventHandler(async (event) => {
     const uniqueId = nanoid()
     const fileExtension = file.name.split('.').pop()
     const blobKey = `${uniqueId}.${fileExtension}`
-    
+
     await hubBlob().put(`attachments/${blobKey}`, file, {
       type: file.type,
       metadata: {
@@ -31,10 +31,10 @@ export default defineAuthEventHandler(async (event) => {
     }
   } catch (error) {
     console.error('File upload error:', error)
-    throw createError({ 
-      statusCode: 500, 
+    throw createError({
+      statusCode: 500,
       message: 'Error processing file upload',
       cause: error,
     })
   }
-}) 
+})
