@@ -64,18 +64,29 @@ const initEditor = async () => {
   })
 }
 
-const isHtmlString = (str) => {
-  if (typeof str !== 'string') return false
-  return /<[a-z][\s\S]*>/i.test(str)
+const isHtmlOrPlainText = (str) => {
+  if (!str) return false
+
+  // If it looks like HTML, accept it
+  if (/<[a-z][\s\S]*>/i.test(str)) return true
+
+  // Try to parse JSON — if it's a structured object/array, reject
+  try {
+    const parsed = JSON.parse(str)
+    if (typeof parsed === 'object' && parsed !== null) return false
+  } catch (e) {
+    // Not JSON — treat as plain text
+    return true
+  }
+
+  // If it's a primitive (number, boolean), also not valid
+  return false
 }
 
 const setContent = async (content) => {
   if (editor && isEditorReady) {
-    console.log('setContent::content', content)
     try {
-      // If it's HTML, convert it to Editor.js blocks
-      if (isHtmlString(content)) {
-        console.log('content is html string')
+      if (isHtmlOrPlainText(content)) {
         await editor.render({
           blocks: [
             {
@@ -88,7 +99,6 @@ const setContent = async (content) => {
         })
         return
       } else {
-        console.log('content is editorjs block')
         await editor.render({
           blocks: JSON.parse(content),
         })
