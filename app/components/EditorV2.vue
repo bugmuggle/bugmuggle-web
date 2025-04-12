@@ -13,6 +13,7 @@ import Paragraph from '@editorjs/paragraph'
 import Hyperlink from 'editorjs-hyperlink'
 import DragDrop from 'editorjs-drag-drop'
 import Quote from '@editorjs/quote'
+import ImageTool from '@editorjs/image'
 
 const props = defineProps({
   readonly: {
@@ -24,6 +25,28 @@ const props = defineProps({
 const inputContent = defineModel()
 let editor = null
 let isEditorReady = false
+
+const uploadImage = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await $fetch('/api/channel/attachments/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error uploading image:', error)
+    return {
+      success: 0,
+      error: {
+        message: 'Failed to upload image',
+      },
+    }
+  }
+}
 
 const initEditor = async () => {
   editor = new EditorJS({
@@ -52,6 +75,19 @@ const initEditor = async () => {
         inlineToolbar: true,
         config: {
           quotePlaceholder: '',
+        },
+      },
+      image: {
+        class: ImageTool,
+        config: {
+          uploader: {
+            uploadByFile(file) {
+              return uploadImage(file)
+            },
+            uploadByUrl(url) {
+              return uploadImage(url)
+            },
+          },
         },
       },
     },
@@ -171,35 +207,8 @@ defineExpose({
   color: #e4e4e4;
 }
 
-/* Checklist styles */
-.cdx-checklist__item {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.cdx-checklist__item-checkbox {
-  margin-right: 0.5rem;
-  width: 16px;
-  height: 16px;
-  border: 1px solid #4a5568;
-  border-radius: 3px;
-  background: #2d2d2d;
-}
-
-.cdx-checklist__item--checked .cdx-checklist__item-checkbox {
-  background: #4a5568;
-}
-
-.cdx-checklist__item-text {
-  color: #e4e4e4;
-  flex-grow: 1;
-}
-
 /* Quote styles */
 .cdx-quote {
-  /* border-left: 3px solid #4a5568; */
-  /* padding-left: 1rem; */
   margin: 1rem;
 }
 
@@ -210,5 +219,35 @@ defineExpose({
 
 .cdx-quote__caption {
   display: none !important;
+}
+
+/* Image styles */
+.cdx-image {
+  margin: 1rem 0;
+}
+
+.cdx-image__picture {
+  max-width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.cdx-image__image {
+  max-width: 100%;
+  vertical-align: bottom;
+  display: block;
+  margin: 0 auto;
+}
+
+.cdx-image__caption {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.cdx-image__stretched {
+  max-width: none;
+  width: 100%;
 }
 </style>
