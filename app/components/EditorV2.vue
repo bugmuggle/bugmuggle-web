@@ -9,8 +9,8 @@ import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
 import List from '@editorjs/list'
 import Code from '@editorjs/code'
-import Quote from '@editorjs/quote'
 import Paragraph from '@editorjs/paragraph'
+import Hyperlink from 'editorjs-hyperlink'
 
 const props = defineProps({
   readonly: {
@@ -40,10 +40,7 @@ const initEditor = async () => {
         inlineToolbar: true,
       },
       code: Code,
-      quote: {
-        class: Quote,
-        inlineToolbar: true,
-      },
+      hyperlink: Hyperlink,
       paragraph: {
         class: Paragraph,
         inlineToolbar: true,
