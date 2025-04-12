@@ -13,6 +13,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@editorjs/code": "^2.9.3",
+    "@editorjs/editorjs": "^2.30.8",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/list": "^2.0.6",
+    "@editorjs/paragraph": "^2.11.7",
+    "@editorjs/quote": "^2.7.6",
     "@nuxt/eslint": "^0.7.5",
     "@nuxt/ui": "2.21.0",
     "@nuxthub/core": "0.8.17",

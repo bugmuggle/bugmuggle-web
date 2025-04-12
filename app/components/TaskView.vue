@@ -237,7 +237,8 @@
       <div class="px-4 space-y-1">
         <div class="h-2" />
         <p class="text-sm text-gray-500 font-regular">Description</p>
-        <editor ref="elEditor" v-model="editDescription" class="description-editor" />
+        <!-- <editor ref="elEditor" v-model="editDescription" class="description-editor" /> -->
+        <EditorV2 ref="elEditor" v-model="editDescription" :readonly="false" class="description-editor" />
       </div>
 
       <div class="h-24"></div>
