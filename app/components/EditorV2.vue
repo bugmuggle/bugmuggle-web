@@ -21,8 +21,9 @@ const props = defineProps({
 
 const inputContent = defineModel()
 let editor = null
+let isEditorReady = false
 
-const initEditor = () => {
+const initEditor = async () => {
   editor = new EditorJS({
     holder: 'editorjs',
     readOnly: props.readonly,
@@ -54,20 +55,30 @@ const initEditor = () => {
         inputContent.value = outputData
       }
     },
+    onReady: () => {
+      isEditorReady = true
+      if (inputContent.value) {
+        setContent(inputContent.value)
+      }
+    },
   })
 }
 
 const setContent = async (content) => {
-  if (editor) {
-    await editor.render(content)
+  if (editor && isEditorReady) {
+    try {
+      // await editor.render(content)
+      await editor.render({
+        blocks: content,
+      })
+    } catch (error) {
+      console.error('Error rendering content:', error)
+    }
   }
 }
 
-onMounted(() => {
-  initEditor()
-  if (inputContent.value) {
-    setContent(inputContent.value)
-  }
+onMounted(async () => {
+  await initEditor()
 })
 
 onBeforeUnmount(() => {
