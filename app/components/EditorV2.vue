@@ -67,10 +67,22 @@ const initEditor = async () => {
 const setContent = async (content) => {
   if (editor && isEditorReady) {
     try {
-      // await editor.render(content)
-      await editor.render({
-        blocks: content,
-      })
+      // If content is already in Editor.js format, use it directly
+      if (content && typeof content === 'object' && 'blocks' in content) {
+        await editor.render(content)
+      } else if (content) {
+        // If content is a string or other format, convert it to Editor.js format
+        await editor.render({
+          blocks: [
+            {
+              type: 'paragraph',
+              data: {
+                text: content.toString(),
+              },
+            },
+          ],
+        })
+      }
     } catch (error) {
       console.error('Error rendering content:', error)
     }
