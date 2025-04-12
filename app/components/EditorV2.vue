@@ -12,6 +12,7 @@ import Code from '@editorjs/code'
 import Paragraph from '@editorjs/paragraph'
 import Hyperlink from 'editorjs-hyperlink'
 import DragDrop from 'editorjs-drag-drop'
+import Quote from '@editorjs/quote'
 
 const props = defineProps({
   readonly: {
@@ -46,6 +47,13 @@ const initEditor = async () => {
         class: Paragraph,
         inlineToolbar: true,
       },
+      quote: {
+        class: Quote,
+        inlineToolbar: true,
+        config: {
+          quotePlaceholder: '',
+        },
+      },
     },
     onChange: async () => {
       if (!props.readonly) {
@@ -58,7 +66,7 @@ const initEditor = async () => {
       if (inputContent.value) {
         setContent(inputContent.value)
       }
-      new DragDrop(editor, '2px solid #fff')
+      new DragDrop(editor, '2px dashed #fff')
     },
   })
 }
@@ -161,5 +169,46 @@ defineExpose({
 
 .cdx-settings-button {
   color: #e4e4e4;
+}
+
+/* Checklist styles */
+.cdx-checklist__item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.cdx-checklist__item-checkbox {
+  margin-right: 0.5rem;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #4a5568;
+  border-radius: 3px;
+  background: #2d2d2d;
+}
+
+.cdx-checklist__item--checked .cdx-checklist__item-checkbox {
+  background: #4a5568;
+}
+
+.cdx-checklist__item-text {
+  color: #e4e4e4;
+  flex-grow: 1;
+}
+
+/* Quote styles */
+.cdx-quote {
+  /* border-left: 3px solid #4a5568; */
+  /* padding-left: 1rem; */
+  margin: 1rem;
+}
+
+.cdx-quote__text {
+  color: #e4e4e4;
+  font-style: italic;
+}
+
+.cdx-quote__caption {
+  display: none !important;
 }
 </style>
