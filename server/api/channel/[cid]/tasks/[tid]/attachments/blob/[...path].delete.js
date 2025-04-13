@@ -1,5 +1,4 @@
 export default defineAuthEventHandler(async (event) => {
-  console.log('delete')
   try {
     const cid = getRouterParam(event, 'cid')
     const tid = getRouterParam(event, 'tid')

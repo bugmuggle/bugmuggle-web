@@ -231,14 +231,32 @@ defineExpose({
 }
 
 .ce-toolbar__plus:hover {
-  color: gray;
+  color: lightgray;
+  background-color: #1f2937;
 }
 .ce-toolbar__settings-btn:hover {
-  color: gray;
+  color: lightgray;
+  background-color: #1f2937;
 }
 
-.cdx-search-field__input {
-  color: gray;
+.ce-popover__container {
+  color: white;
+  background-color: #111827;
+}
+.ce-popover__search {
+  color: lightgray;
+  background-color: #111827;
+}
+
+.ce-popover-item {
+  color: white;
+}
+.ce-popover-item:hover {
+  background-color: #1f2937 !important;
+}
+
+.ce-block--selected .ce-block__content {
+  background-color: #213f2c !important;
 }
 
 /* Quote styles */
