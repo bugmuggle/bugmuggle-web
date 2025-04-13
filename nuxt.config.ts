@@ -1,17 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // https://nuxt.com/modules
+
+  css: ['~/assets/css/main.css'],
+
   modules: [
-    '@nuxt/eslint',
     '@nuxt/ui',
+    '@nuxt/eslint',
     'nuxt-auth-utils',
     '@pinia/nuxt',
     '@nuxthub/core',
     '@vueuse/nuxt',
     'nuxt-tiptap-editor'
   ],
-
-  css: ['~/assets/css/main.css'],
 
   colorMode: {
     preference: 'dark'
