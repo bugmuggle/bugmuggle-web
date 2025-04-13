@@ -20,6 +20,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  cid: {
+    type: String,
+    required: true,
+  },
+  tid: {
+    type: Number,
+    required: true,
+  },
 })
 
 const inputContent = defineModel()
@@ -31,12 +39,17 @@ const uploadImage = async (file) => {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await $fetch('/api/channel/attachments/upload', {
+    const response = await $fetch(`/api/channel/${props.cid}/tasks/${props.tid}/attachments/upload`, {
       method: 'POST',
       body: formData,
     })
 
-    return response
+    return {
+      success: 1,
+      file: {
+        url: `/api/channel/${props.cid}/tasks/${props.tid}/attachments/blob/${response.data.blobKey}`,
+      },
+    }
   } catch (error) {
     console.error('Error uploading image:', error)
     return {
@@ -49,19 +62,15 @@ const uploadImage = async (file) => {
 }
 
 const deleteImage = async (url) => {
-  console.log('deleteImage')
-  console.log(url)
   try {
-    // Extract the path from the URL
-    const path = url.split('/api/channel/attachments/blob/')[1]
-    if (!path) return
+    // Extract the blob key from the URL
+    const blobKey = url.split('/blob/')[1]
+    if (!blobKey) return
 
-    const response = await $fetch('/api/channel/attachments/delete', {
-      method: 'POST',
-      body: { path },
+    await $fetch(`/api/channel/${props.cid}/tasks/${props.tid}/attachments/blob`, {
+      method: 'DELETE',
+      body: { path: blobKey },
     })
-
-    console.log(response)
   } catch (error) {
     console.error('Error deleting image:', error)
   }
@@ -190,6 +199,8 @@ const setContent = async (content) => {
 
 onMounted(async () => {
   await initEditor()
+  console.log(props.cid)
+  console.log(props.tid)
 })
 
 onBeforeUnmount(() => {

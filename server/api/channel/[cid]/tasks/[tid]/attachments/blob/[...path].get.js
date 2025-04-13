@@ -1,5 +1,7 @@
 export default defineEventHandler(async (event) => {
   try {
+    const cid = getRouterParam(event, 'cid')
+    const tid = getRouterParam(event, 'tid')
     const path = getRouterParam(event, 'path')
     const blob = await hubBlob().get(`attachments/${path}`)
 
@@ -22,4 +24,4 @@ export default defineEventHandler(async (event) => {
       cause: error,
     })
   }
-})
+}) 

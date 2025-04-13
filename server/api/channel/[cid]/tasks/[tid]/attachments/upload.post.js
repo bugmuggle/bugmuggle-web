@@ -2,6 +2,8 @@ import { nanoid } from 'nanoid'
 
 export default defineAuthEventHandler(async (event) => {
   try {
+    const cid = getRouterParam(event, 'cid')
+    const tid = getRouterParam(event, 'tid')
     const formData = await readFormData(event)
     const file = formData.get('file')
 
