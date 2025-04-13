@@ -79,7 +79,7 @@
         rows="1"
         placeholder="Enter task title"
         variant="none"
-        @keyup="onChangeTaskTitle"
+        @keyup="onKeyUpTaskTitle"
       />
 
       <div class="grid grid-cols-12 items-center gap-3 px-4">
@@ -290,6 +290,7 @@ const deletingAttachments = ref(new Set())
 const assignees = computed(() => {
   return taskStore.assignees.filter(a => a.taskId === props.taskId)
 })
+const task = ref({})
 
 const onArchiveTask = () => {
   if (!task.value.archived) {
@@ -297,10 +298,24 @@ const onArchiveTask = () => {
   }
 }
 
-const onChangeTaskTitle = useDebounceFn((e) => {
-  console.log('onChangeTaskTitle::e', e.target.value)
-  taskStore.updateTask(props.cid, props.taskId, { title: e.target.value })
-}, 1500)
+const debouncedUpdateTitleFunctions = new Map();
+
+const getDebouncedUpdateTitle = (taskId) => {
+  if (!debouncedUpdateTitleFunctions.has(taskId)) {
+    const debouncedFn = useDebounceFn((value) => {
+      taskStore.updateTask(props.cid, taskId, { title: value });
+    }, 100);
+    debouncedUpdateTitleFunctions.set(taskId, debouncedFn);
+  }
+  return debouncedUpdateTitleFunctions.get(taskId);
+};
+
+const onKeyUpTaskTitle = (e) => {
+  if (isReady.value && props.taskId !== -1) {
+    const debouncedUpdate = getDebouncedUpdateTitle(props.taskId);
+    debouncedUpdate(e.target.value);
+  }
+}
 
 const onDeleteTask = () => {
   taskStore.deleteTask(props.cid, props.taskId)
@@ -337,13 +352,6 @@ const dateAttributes = [
     dates: new Date()
   }
 ]
-
-const task = computed({
-  get: () => {
-    return taskStore.getTask(+props.taskId)
-  },
-  set: (_) => {}
-})
 
 const onUnarchiveTask = () => {
   taskStore.updateTask(props.cid, props.taskId, { archived: false })
@@ -410,6 +418,17 @@ const initAssignees = () => {
   }, 100)
 }
 
+const init = function () {
+  initAssignees()
+  if (props.taskId !== -1) {
+    task.value = taskStore.getTask(props.taskId)
+
+    if (elEditor.value) {
+      elEditor.value.setContent(task.value.description)
+    }
+  }
+}
+
 const cleanup = () => {
   isReady.value = false
   selectedAssignee.value = null
@@ -446,13 +465,22 @@ watch(selectedDueDate, (value) => {
   }
 })
 
-const debouncedUpdateTask = useDebounceFn((value) => {
-  taskStore.updateTask(props.cid, props.taskId, { description: value })
-}, 1000)
+const debouncedUpdateTaskFunctions = new Map();
+
+const getDebouncedUpdateTask = (taskId) => {
+  if (!debouncedUpdateTaskFunctions.has(taskId)) {
+    const debouncedFn = useDebounceFn((value) => {
+      taskStore.updateTask(props.cid, taskId, { description: value });
+    }, 10);
+    debouncedUpdateTaskFunctions.set(taskId, debouncedFn);
+  }
+  return debouncedUpdateTaskFunctions.get(taskId);
+};
 
 watch(editDescription, (value) => {
-  if (isReady.value) {
-    debouncedUpdateTask(value)
+  if (isReady.value && props.taskId !== -1) {
+    const debouncedUpdate = getDebouncedUpdateTask(props.taskId);
+    debouncedUpdate(value);
   }
 })
 
@@ -626,7 +654,7 @@ watch(attachments, () => {
 
 defineExpose({
   cleanup,
-  initAssignees
+  init
 })
 </script>
 

@@ -32,7 +32,7 @@ const cid = useRoute().params.cid
 const openTaskView = (id) => {
   taskViewOpen.value = true
   taskViewId.value = id
-  refTaskView.value.initAssignees()
+  refTaskView.value.init()
 }
 
 const closeTaskView = () => {
