@@ -48,6 +48,32 @@ const uploadImage = async (file) => {
   }
 }
 
+const deleteImage = async (url) => {
+  console.log('deleteImage')
+  console.log(url)
+  try {
+    // Extract the path from the URL
+    const path = url.split('/api/channel/attachments/blob/')[1]
+    if (!path) return
+
+    const response = await $fetch('/api/channel/attachments/delete', {
+      method: 'POST',
+      body: { path },
+    })
+
+    console.log(response)
+  } catch (error) {
+    console.error('Error deleting image:', error)
+  }
+}
+
+let previousImages = []
+const getImageUrls = (blocks) => {
+  return blocks
+    .filter(block => block.type === 'image')
+    .map(block => block.data.file.url)
+}
+
 const initEditor = async () => {
   editor = new EditorJS({
     holder: 'editorjs',
@@ -95,27 +121,38 @@ const initEditor = async () => {
       if (!props.readonly) {
         const outputData = await editor.save()
         inputContent.value = outputData
+
+        const currentImages = getImageUrls(outputData.blocks)
+
+        const deletedImages = previousImages.filter(url => !currentImages.includes(url))
+
+        if (deletedImages.length > 0) {
+          for (const url of deletedImages) {
+            await deleteImage(url)
+          }
+        }
+
+        previousImages = currentImages
       }
     },
     onReady: () => {
       isEditorReady = true
       if (inputContent.value) {
         setContent(inputContent.value)
+        previousImages = getImageUrls(inputContent.value.blocks || [])
       }
       new DragDrop(editor, '2px dashed white')
     },
   })
 }
 
-const isHtmlOrPlainText = (str) => {
-  if (!str) return false
-
+const isHtmlOrPlainText = (content) => {
   // If it looks like HTML, accept it
-  if (/<[a-z][\s\S]*>/i.test(str)) return true
+  if (/<[a-z][\s\S]*>/i.test(content)) return true
 
   // Try to parse JSON — if it's a structured object/array, reject
   try {
-    const parsed = JSON.parse(str)
+    const parsed = JSON.parse(content)
     if (typeof parsed === 'object' && parsed !== null) return false
   } catch (e) {
     // Not JSON — treat as plain text
