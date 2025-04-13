@@ -11,6 +11,8 @@ export default defineNuxtConfig({
     'nuxt-tiptap-editor'
   ],
 
+  css: ['~/assets/css/main.css'],
+
   colorMode: {
     preference: 'dark'
   },
