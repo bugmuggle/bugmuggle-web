@@ -1,7 +1,9 @@
 <template>
   <NuxtRouteAnnouncer />
   <NuxtLoadingIndicator />
-  <NuxtPage />
+  <UApp>
+    <NuxtPage />
+  </UApp>
   <UNotifications :ui="{ 
     container: 'z-[9999]'
   }" />

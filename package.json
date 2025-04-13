@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^0.7.5",
-    "@nuxt/ui": "2.21.0",
+    "@nuxt/ui": "3.0.2",
     "@nuxthub/core": "0.8.17",
     "@pinia/nuxt": "^0.10.1",
     "@tiptap/extension-code-block-lowlight": "^2.11.5",
