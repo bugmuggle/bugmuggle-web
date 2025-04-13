@@ -26,6 +26,16 @@ export const members = sqliteTable('members', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
 
+const sections = sqliteTable('sections', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  order: integer('order'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+  createdBy: integer('created_by').references(() => users.id),
+  channelId: integer('channel_id').references(() => channels.id),
+})
+
 export const tasks = sqliteTable('tasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   title: text('title').notNull(),
@@ -33,6 +43,7 @@ export const tasks = sqliteTable('tasks', {
   description: text('description'),
   createdBy: integer('created_by').references(() => users.id),
   channelId: integer('channel_id').references(() => channels.id),
+  sectionId: integer('section_id').references(() => sections.id),
   order: integer('order'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),

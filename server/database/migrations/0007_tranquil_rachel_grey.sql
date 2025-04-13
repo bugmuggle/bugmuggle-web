@@ -1,0 +1,1 @@
+ALTER TABLE `tasks` ADD `section_id` integer REFERENCES sections(id);
