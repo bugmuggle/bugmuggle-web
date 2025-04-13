@@ -15,20 +15,17 @@ export default defineAuthEventHandler(async (event) => {
     const fileExtension = file.name.split('.').pop()
     const blobKey = `${uniqueId}.${fileExtension}`
 
-    await hubBlob().put(`attachments/${blobKey}`, file, {
+    await hubBlob().put(`attachments/${cid}/${tid}/${blobKey}`, file, {
       type: file.type,
       metadata: {
         fileName: file.name,
       },
     })
 
-    // Construct the URL using the blob key
-    const url = `/api/channel/attachments/blob/${blobKey}`
-
     return {
-      success: 1,
-      file: {
-        url,
+      success: true,
+      data: {
+        blobKey,
       },
     }
   } catch (error) {

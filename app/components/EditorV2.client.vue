@@ -44,16 +44,25 @@ const uploadImage = async (file) => {
       body: formData,
     })
 
+    if (response.success) {
+      return {
+        success: true,
+        file: {
+          url: `/api/channel/${props.cid}/tasks/${props.tid}/attachments/blob/${response.data.blobKey}`,
+        },
+      }
+    }
+
     return {
-      success: 1,
-      file: {
-        url: `/api/channel/${props.cid}/tasks/${props.tid}/attachments/blob/${response.data.blobKey}`,
+      success: false,
+      error: {
+        message: 'Failed to upload image',
       },
     }
   } catch (error) {
     console.error('Error uploading image:', error)
     return {
-      success: 0,
+      success: false,
       error: {
         message: 'Failed to upload image',
       },
@@ -67,9 +76,8 @@ const deleteImage = async (url) => {
     const blobKey = url.split('/blob/')[1]
     if (!blobKey) return
 
-    await $fetch(`/api/channel/${props.cid}/tasks/${props.tid}/attachments/blob`, {
+    await $fetch(`/api/channel/${props.cid}/tasks/${props.tid}/attachments/blob/${blobKey}`, {
       method: 'DELETE',
-      body: { path: blobKey },
     })
   } catch (error) {
     console.error('Error deleting image:', error)

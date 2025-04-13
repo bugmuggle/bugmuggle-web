@@ -3,13 +3,13 @@ export default defineAuthEventHandler(async (event) => {
   try {
     const cid = getRouterParam(event, 'cid')
     const tid = getRouterParam(event, 'tid')
-    const { path } = await readBody(event)
+    const path = getRouterParam(event, 'path')
 
     if (!path) {
       throw createError({ statusCode: 400, message: 'No path provided' })
     }
 
-    await hubBlob().del(`attachments/${path}`)
+    await hubBlob().del(`attachments/${cid}/${tid}/${path}`)
 
     return {
       success: true,
