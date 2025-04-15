@@ -26,7 +26,7 @@ export const members = sqliteTable('members', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
 
-const sections = sqliteTable('sections', {
+export const sections = sqliteTable('sections', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   order: integer('order'),

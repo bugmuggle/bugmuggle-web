@@ -30,7 +30,7 @@
     </div>
   </div>
   <Sortable
-    :list="elements"
+    :list="elements.filter(x => isDefault ? +(x.sectionId ?? -1) < 0 : (sectionId ?? -1) > -1 ? x.sectionId === sectionId : false)"
     item-key="id"
     tag="div"
     :options="{
@@ -164,6 +164,18 @@ defineProps({
     type: Boolean,
     default: () => {
       return true
+    }
+  },
+  isDefault: {
+    type: Boolean,
+    default: () => {
+      return false
+    }
+  },
+  sectionId: {
+    type: Number,
+    default: () => {
+      return -1
     }
   }
 })

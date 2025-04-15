@@ -109,7 +109,7 @@
           >
             <template #default="{ item, index, open }">
               <UButton color="gray" variant="ghost" class="border-b border-gray-200 dark:border-gray-700" :ui="{ rounded: 'rounded-none', padding: { sm: 'p-3' } }">
-                <span class="truncate">{{ item.label }}</span>
+                <span class="truncate" contenteditable>{{ item.label }}</span>
 
                 <template #trailing>
                   <UIcon
@@ -121,7 +121,32 @@
               </UButton>
             </template>
             <template #item="{ item }">
-              hello
+              <div class="py-2 px-4">
+                <div v-if="item.isDefault">
+                  <tasks-list
+                    ref="refTasksList"
+                    v-model="tasks"
+                    :showExtraColumns="showExtraColumns"
+                    is-default
+                    @sort="onSort"
+                    @update:title="onUpdateTitle"
+                    @click:task="onClickTask"
+                    @has-any-selected-tasks="(v) => hasAnySelectedTasks = v"
+                  />
+                </div>
+
+                <UButton
+                  :icon="loading ? 'i-heroicons-arrow-path' : 'i-heroicons-plus'"
+                  size="xs"
+                  color="white"
+                  square
+                  variant="soft"
+                  :label="loading ? '' : 'Create Task'"
+                  :class="{ 'animate-spin': loading }"
+                  :disabled="loading"
+                  @click="onCreateTask"
+                />
+              </div>
             </template>
           </UAccordion>
           <UButton
@@ -133,28 +158,6 @@
           >
             Create Section
           </UButton>
-          <tasks-list
-            ref="refTasksList"
-            v-model="tasks"
-            :showExtraColumns="showExtraColumns"
-            @sort="onSort"
-            @update:title="onUpdateTitle"
-            @click:task="onClickTask"
-            @has-any-selected-tasks="(v) => hasAnySelectedTasks = v"
-          />
-
-          <UButton
-            :icon="loading ? 'i-heroicons-arrow-path' : 'i-heroicons-plus'"
-            size="xs"
-            color="white"
-            square
-            variant="soft"
-            :label="loading ? '' : 'Create Task'"
-            :class="{ 'animate-spin': loading }"
-            :disabled="loading"
-            @click="onCreateTask"
-          />
-
           <div class="h-4" />
         </div>
       </template>
@@ -211,7 +214,11 @@ watch(taskId, (value) => {
   }
 })
 
-const sections = computed(() => [])
+const sections = computed(() => {
+  return [
+    { label: 'Default', isDefault: true, defaultOpen: true }
+  ]
+})
 const members = computed(() => channelStore.members)
 const assignees = computed(() => {
   return taskStore.assignees
